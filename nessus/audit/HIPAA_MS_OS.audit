@@ -1,0 +1,911 @@
+#
+# (C) 2011-2013 Tenable Network Security, Inc.
+#
+# This script is released under the Tenable Subscription License and
+# may not be used from within scripts released under another license
+# without authorization from Tenable Network Security Inc.
+#
+# See the following licenses for details:
+#
+# http://static.tenable.com/prod_docs/Nessus_4_SLA_and_Subscription_Agreement.pdf
+# http://static.tenable.com/prod_docs/Subscription_Agreement.pdf
+#
+# @PROFESSIONALFEED@
+#
+# $Revision: 1.4 $
+# $Date: 2013/03/13 11:31:06 $
+#
+# Description	: This .audit is based on NIST document SP 800-66 rev 1, "An Introductory Resource Guide for
+#		  Implementing the Health Insurance Portability and Accountability Act (HIPAA) Security Rule",
+#		  October 2008.
+#		  http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf
+#		  It has been tested to perform basic checks against a Microsoft Windows 2008 Server system.
+#
+#
+# NOTE		: HIPAA itself is a set of guidelines rather than hard set, well defined rules.  Some of the
+#		  areas HIPAA focuses on are not to be tested via automated processes and require manual
+#		  examination, often of the EHR/EMR software being used to ensure it meets minimun requirements.
+#
+# NOTE		: HIPAA control points are often high level and lack specific values to check for. In cases where
+#		  controls are examined which contain explicit values, these queries use values taken from other
+#		  public standards and benchmarks.
+#
+# NOTE		: Auxillary reference is available at : http://www.hipaasurvivalguide.com/hipaa-regulations/hipaa-regulations.php
+#
+
+
+<check_type: "Windows" version:"2">
+<group_policy: "HIPAA">
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Maximum Application Log Size (KB)'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DWORD
+ reg_key	: "HKLM\Software\Policies\Microsoft\Windows\EventLog\Application"
+ reg_item	: "MaxSize"
+ value_data	: [32768..MAX]
+ reg_option	: CAN_BE_NULL
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Maximum Security Log Size (KB)'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DWORD
+ reg_key	: "HKLM\Software\Policies\Microsoft\Windows\EventLog\Security"
+ reg_item	: "MaxSize"
+ value_data	: [81920..MAX]
+ reg_option	: CAN_BE_NULL
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Maximum System Log Size (KB)'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DWORD
+ reg_key	: "HKLM\Software\Policies\Microsoft\Windows\EventLog\System"
+ reg_item	: "MaxSize"
+ value_data	: [32768..MAX]
+ reg_option	: CAN_BE_NULL
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Retain application log'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DAY
+ value_data	: [365..MAX]
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\Application"
+ reg_item	: "Retention"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Retain security log'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DAY
+ value_data	: [365..MAX]
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\Security"
+ reg_item	: "Retention"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Retain system log'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_DAY
+ value_data	: [365..MAX]
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\System"
+ reg_item	: "Retention"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Application Log Restrict Guest Access'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_SET
+ value_data	: "Enabled"
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\Application"
+ reg_item	: "RestrictGuestAccess"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'Security Log Restrict Guest Access'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_SET
+ value_data	: "Enabled"
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\Security"
+ reg_item	: "RestrictGuestAccess"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.308(a)(1)(ii)(D) - Information System Activity Review (R) 'System Log Restrict Guest Access'"
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AU-6"
+ info		: "AU-7"
+ info		: "CA-7"
+ info		: "IR-5"
+ info		: "IR-6"
+ info		: "SI-4"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 199"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-18"
+ info		: "NIST SP 800-30"
+ info		: "NIST SP 800-37"
+ info		: "NIST Draft SP 800-39"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-55"
+ info		: "NIST SP 800-60"
+ info		: "NIST SP 800-84"
+ info		: "NIST SP 800-92"
+ info		: "NIST SP 800-100"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-3"
+ value_type	: POLICY_SET
+ value_data	: "Enabled"
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\Eventlog\System"
+ reg_item	: "RestrictGuestAccess"
+ reg_type	: REG_DWORD
+</custom_item>
+
+<if>
+ <condition type :"OR" >
+  <custom_item>
+   type		: WMI_POLICY
+   description	: "HIPAA 164.308(a)(5)(ii)(B) - Protection from Malicious Software (A) 'root\SecurityCenter'"
+   value_type	: POLICY_TEXT
+   wmi_namespace: "root\SecurityCenter"
+   wmi_request	: "SELECT displayName FROM AntiVirusProduct"
+   wmi_attribute: "displayName"
+   wmi_key	: "displayName"
+   value_data	: ".+"
+   check_type	: CHECK_REGEX
+   info		: "ref. https://www.pcisecuritystandards.org/documents/pci_dss_v2.pdf pg 37"
+   info		: "Note this check is only applicable to desktop OS's such as Windows XP, Vista, and 7"
+  </custom_item>
+
+  <custom_item>
+   type 	: WMI_POLICY
+   description	: "HIPAA 164.308(a)(5)(ii)(B) - Protection from Malicious Software (A) 'root\SecurityCenter2'"
+   value_type	: POLICY_TEXT
+   wmi_namespace: "root\SecurityCenter2"
+   wmi_request	: "SELECT displayName FROM AntiVirusProduct"
+   wmi_attribute: "displayName"
+   wmi_key	: "displayName"
+   value_data	: ".+"
+   check_type	: CHECK_REGEX
+   info		: "ref. https://www.pcisecuritystandards.org/documents/pci_dss_v2.pdf pg 37"
+   info		: "Note this check is only applicable to desktop OS's such as Windows XP, Vista, and 7"
+  </custom_item>
+ </condition>
+ <then>
+  <report type : "PASSED" >
+   description	: "HIPAA 164.308(a)(5)(ii)(B) - Protection from Malicious Software (A) 'root\SecurityCenter2'"
+   info		: "NIST SP 800-53 Security Controls Mapping :"
+   info		: "AT-2"
+   info		: "SI-3"
+   info		: "SI-4"
+   info		: "SI-8"
+   info		: "NIST Publications Crosswalk :"
+   info		: "NIST SP 800-12"
+   info		: "NIST SP 800-14"
+   info		: "NIST SP 800-16"
+   info		: "NIST SP 800-50"
+   info		: "NIST SP 800-61"
+   info		: "NIST SP 800-83"
+   info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+  </report>
+ </then>
+ <else>
+  <report type : "FAILED" >
+   description	: "HIPAA 164.308(a)(5)(ii)(B) - Protection from Malicious Software (A) 'root\SecurityCenter2'"
+   info		: "NIST SP 800-53 Security Controls Mapping :"
+   info		: "AT-2"
+   info		: "SI-3"
+   info		: "SI-4"
+   info		: "SI-8"
+   info		: "NIST Publications Crosswalk :"
+   info		: "NIST SP 800-12"
+   info		: "NIST SP 800-14"
+   info		: "NIST SP 800-16"
+   info		: "NIST SP 800-50"
+   info		: "NIST SP 800-61"
+   info		: "NIST SP 800-83"
+   info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+  </report>
+ </else>
+</if>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(C) - Log-in Monitoring (A) 'AUDIT_LOGON'"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_LOGON
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-2"
+ info		: "AC-13"
+ info		: "AU-2"
+ info		: "AU-6"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(C) - Log-in Monitoring (A) 'AUDIT_ACCOUNT_LOGON'"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_ACCOUNT_LOGON
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-2"
+ info		: "AC-13"
+ info		: "AU-2"
+ info		: "AU-6"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(C) - Log-in Monitoring (A) 'AUDIT_ACCOUNT_MANAGER'"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_ACCOUNT_MANAGER
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-2"
+ info		: "AC-13"
+ info		: "AU-2"
+ info		: "AU-6"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Enforce Password History"
+ value_type	: POLICY_DWORD
+ value_data	: [4..MAX]
+ password_policy: ENFORCE_PASSWORD_HISTORY
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description    : "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Maximum Password Age"
+ value_type     : TIME_DAY
+ value_data     : [MIN..90]
+ password_policy: MAXIMUM_PASSWORD_AGE
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Minimum Password Age"
+ value_type	: TIME_DAY
+ value_data	: [1..MAX]
+ password_policy: MINIMUM_PASSWORD_AGE
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Minimum Password Length"
+ value_type	: POLICY_DWORD
+ value_data	: [7..MAX] 
+ password_policy: MINIMUM_PASSWORD_LENGTH
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Password Must Meet Complexity Requirements"
+ value_type	: POLICY_SET
+ value_data	: "Enabled"
+ password_policy: COMPLEXITY_REQUIREMENTS
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Store Passwords Using Reversible Encryption"
+ value_type	: POLICY_SET
+ value_data	: "Disabled"
+ password_policy: REVERSIBLE_ENCRYPTION
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: LOCKOUT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Account Lockout Duration"
+ value_type	: TIME_MINUTE
+ value_data	: [30..MAX]
+ lockout_policy	: LOCKOUT_DURATION
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: LOCKOUT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Account Lockout Threshold"
+ value_type	: POLICY_DWORD
+ value_data	: [MIN..6]
+ lockout_policy	: LOCKOUT_THRESHOLD
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: LOCKOUT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Reset Account Lockout Counter After"
+ value_type	: TIME_MINUTE
+ value_data	: [6..MAX]
+ lockout_policy	: LOCKOUT_RESET
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Audit Account Logon Events"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_ACCOUNT_LOGON
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Audit Account Management"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_ACCOUNT_MANAGER
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: AUDIT_POLICY
+ description	: "HIPAA 164.308(a)(5)(ii)(D) - Password Management (A) - Audit Logon Events"
+ value_type	: AUDIT_SET
+ value_data	: "Success, Failure"
+ audit_policy	: AUDIT_LOGON
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "IA-2"
+ info		: "IA-4"
+ info		: "IA-5"
+ info		: "IA-6"
+ info		: "IA-7"
+ info		: "NIST Publications Crosswalk :"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-16"
+ info		: "NIST SP 800-50"
+ info		: "NIST SP 800-61"
+ info		: "NIST SP 800-83"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-5"
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.312(a)(2)(iii) - Automatic Logoff (A): Terminate an electronic session after a predetermined time of inactivity 'AutoDisconnect'."
+ value_type	: POLICY_DWORD
+ value_data	: [1..15]
+ reg_key	: "HKLM\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters"
+ reg_item	: "AutoDisconnect"
+ reg_type	: REG_DWORD
+ info		: "NOTE : HIPAA does not specify a hard limit for this value.  Currently set to '15'."
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-11"
+ info		: "AC-12"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-11"
+</custom_item>
+
+<custom_item>
+ type		: REGISTRY_SETTING
+ description	: "HIPAA 164.312(a)(2)(iii) - Automatic Logoff (A): Terminate an electronic session after a predetermined time of inactivity 'MaxIdleTime'."
+ value_type	: POLICY_DWORD
+ value_data	: [MIN..900000]
+ reg_key	: "HKLM\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services"
+ reg_item	: "MaxIdleTime"
+ reg_option	: CAN_NOT_BE_NULL
+ info		: "NOTE : HIPAA does not specify a hard limit for this value.  Currently set to '900000'."
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-11"
+ info		: "AC-12"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-11"
+</custom_item>
+
+<custom_item>
+ type		: PASSWORD_POLICY
+ description	: "HIPAA 164.312(a)(2)(iii) - Automatic Logoff (A): Terminate an electronic session after a predetermined time of inactivity 'FORCE_LOGOFF'"
+ value_type	: POLICY_SET
+ value_data	: "Enabled"
+ password_policy: FORCE_LOGOFF
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "AC-11"
+ info		: "AC-12"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-11"
+</custom_item>
+
+<if>
+ <condition type : "AND" >
+  <custom_item>
+   type		: REGISTRY_SETTING
+   description	: "Check for OS type"
+   value_type	: POLICY_TEXT
+   value_data	: "Windows (7|Vista (Enterprise|Ultimate))"
+   reg_key	: "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+   reg_item	: "ProductName"
+   check_type	: CHECK_REGEX
+  </custom_item>
+ </condition>
+ <then>
+  <custom_item>
+   type		: WMI_POLICY
+   description	: "HIPAA 164.312(a)(2)(iv) - Encryption and Decryption (A)"
+   value_type	: POLICY_DWORD
+   wmi_namespace: "root\cimv2\Security\MicrosoftVolumeEncryption"
+   wmi_request	: "SELECT ProtectionStatus FROM Win32_EncryptableVolume"
+   wmi_attribute: "ProtectionStatus"
+   wmi_key	: "ProtectionStatus"
+   value_data	: "1"
+   info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-11"
+   info		: "NIST SP 800-53 Security Controls Mapping :"
+   info		: "AC-3"
+   info		: "SC-13"
+   info		: "164.312(e)(2)(ii) 	Encryption (A): Implement a mechanism to encrypt electronic protected health information whenever deemed appropriate."
+   info		: "NIST SP 800-53 Security Controls Mapping :"
+   info		: "SC-9"
+   info		: "SC-12"
+   info		: "SC-13"
+   info		: "NIST Publications Crosswalk :"
+   info		: "FIPS 140-2"
+   info		: "NIST SP 800-12"
+   info		: "NIST SP 800-14"
+   info		: "NIST SP 800-21"
+   info		: "NIST SP 800-24"
+   info		: "NIST SP 800-41"
+   info		: "NIST SP 800-42"
+   info		: "NIST SP 800-45"
+   info		: "NIST SP 800-46"
+   info		: "NIST SP 800-48"
+   info		: "NIST SP 800-52"
+   info		: "NIST SP 800-53"
+   info		: "NIST SP 800-58"
+   info		: "NIST SP 800-63"
+   info		: "NIST SP 800-77"
+   info		: "NIST SP 800-81"
+   info		: "NIST SP 800-113"
+   info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-12"
+  </custom_item>
+ </then>
+</if>
+
+<custom_item>
+ type		: SERVICE_POLICY
+ description	: "HIPAA 164.312(e)(1) - Transmission Security 'MSFtpsvc'"
+ value_type	: SERVICE_SET
+ value_data	: "Disabled"
+ service_name	: "MSFtpsvc"
+ svc_option	: CAN_BE_NULL
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "SC-9"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 140-2"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-21"
+ info		: "NIST SP 800-24"
+ info		: "NIST SP 800-41"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-45"
+ info		: "NIST SP 800-46"
+ info		: "NIST SP 800-48"
+ info		: "NIST SP 800-52"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-58"
+ info		: "NIST SP 800-63"
+ info		: "NIST SP 800-77"
+ info		: "NIST SP 800-81"
+ info		: "NIST SP 800-113"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-12"
+</custom_item>
+
+<custom_item>
+ type		: SERVICE_POLICY
+ description	: "HIPAA 164.312(e)(1) - Transmission Security 'TFTPD'"
+ value_type	: SERVICE_SET
+ value_data	: "Disabled"
+ service_name	: "TFTPD"
+ svc_option	: CAN_BE_NULL
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "SC-9"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 140-2"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-21"
+ info		: "NIST SP 800-24"
+ info		: "NIST SP 800-41"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-45"
+ info		: "NIST SP 800-46"
+ info		: "NIST SP 800-48"
+ info		: "NIST SP 800-52"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-58"
+ info		: "NIST SP 800-63"
+ info		: "NIST SP 800-77"
+ info		: "NIST SP 800-81"
+ info		: "NIST SP 800-113"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-12"
+</custom_item>
+
+<custom_item>
+ type		: SERVICE_POLICY
+ description	: "HIPAA 164.312(e)(1) - Transmission Security 'Telnet'"
+ value_type	: SERVICE_SET
+ value_data	: "Disabled"
+ service_name	: "TlntSvr"
+ svc_option	: CAN_BE_NULL
+ info		: "NIST SP 800-53 Security Controls Mapping :"
+ info		: "SC-9"
+ info		: "NIST Publications Crosswalk :"
+ info		: "FIPS 140-2"
+ info		: "NIST SP 800-12"
+ info		: "NIST SP 800-14"
+ info		: "NIST SP 800-21"
+ info		: "NIST SP 800-24"
+ info		: "NIST SP 800-41"
+ info		: "NIST SP 800-42"
+ info		: "NIST SP 800-45"
+ info		: "NIST SP 800-46"
+ info		: "NIST SP 800-48"
+ info		: "NIST SP 800-52"
+ info		: "NIST SP 800-53"
+ info		: "NIST SP 800-58"
+ info		: "NIST SP 800-63"
+ info		: "NIST SP 800-77"
+ info		: "NIST SP 800-81"
+ info		: "NIST SP 800-113"
+ info		: "http://csrc.nist.gov/publications/nistpubs/800-66-Rev1/SP-800-66-Revision1.pdf pg. D-12"
+</item>
+
+
+</group_policy>
+</check_type>

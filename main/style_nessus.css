@@ -1,0 +1,86 @@
+table.main {
+margin-left:auto;
+margin-right:auto;
+background-color: #a1a1a1;
+width: 95%;
+text-align: left
+}
+table.main2 {
+margin-left:auto;
+margin-right:auto;
+background-color: #a1a1a1;
+text-align: left
+}
+table.execMain {
+background-color: #a1a1a1;
+text-align: left
+}
+table.machine {
+width: 100%;
+text-align: left
+}
+td.top {
+height: 20px;
+color: #555555;
+font-weight: bold;
+font-family: tahoma;
+font-size: 10pt;
+background-color: #a2b5cd
+}
+td.left {
+border-top: 1px solid #a1a1a1;
+height: 18px;
+width: 200px;
+color: #555555;
+font-weight: bold;
+font-family: tahoma;
+font-size: 10pt;
+vertical-align: top;
+background-color: #dcdcdc
+}
+
+pre.left {
+height: 18px;
+width: 200px;
+color: #555555;
+font-weight: bold;
+font-family: tahoma;
+font-size: 10pt;
+vertical-align: top;
+background-color: #dcdcdc
+}
+
+td.right {
+border-top: 1px solid #a1a1a1;
+border-left: 1px solid #a1a1a1;
+color: #000000;
+font-family: tahoma;
+font-size: 8pt;
+background-color: white
+}
+
+pre.right {
+color: #000000;
+font-family: tahoma;
+font-size: 8pt;
+background-color: white
+}
+
+td.line1 {
+border-top: 1px solid #a1a1a1;
+border-left: 1px solid #a1a1a1;
+color: #000000;
+font-family: tahoma;
+font-size: 10pt;
+vertical-align: top;
+background-color: #dcdcdc
+
+}
+td.line2 {
+border-top: 1px solid #a1a1a1;
+border-left: 1px solid #a1a1a1;
+color: #000000;
+font-family: tahoma;
+font-size: 10pt;
+background-color: white
+}

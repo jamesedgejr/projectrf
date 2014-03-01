@@ -1,0 +1,65 @@
+<script>
+function selectAll(selectBox,selectAll) {
+    // have we been passed an ID
+    if (typeof selectBox == "string") {
+        selectBox = document.getElementById(selectBox);
+    }
+
+    // is the select box a multiple select box?
+    if (selectBox.type == "select-multiple") {
+        for (var i = 0; i < selectBox.options.length; i++) {
+            selectBox.options[i].selected = selectAll;
+        }
+    }
+}
+</script>
+
+<table style="text-align: left; width: 750px;" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width: 600px;">
+
+	  </td>
+      <td style="width: 250px;" valign="top" align="right">
+      <table style="text-align: left; width: 225px;" border="0" cellpadding="2" cellspacing="2">
+          <tr>
+            <td colspan="2" rowspan="1" style="width: 30px;">Selection Heading</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input  type="checkbox">
+			</td>
+            <td style="width: 174px;"></td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input  type="checkbox">
+			</td>
+            <td style="width: 174px;"></td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input  type="checkbox">
+			</td>
+            <td style="width: 174px;"></td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input  type="checkbox">
+			</td>
+            <td style="width: 174px;"></td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input  type="checkbox">
+			</td>
+            <td style="width: 174px;"></td>
+          </tr>
+      </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+		<?php include '../main/footer.php'; ?>
+      </td>
+    </tr>
+</table>

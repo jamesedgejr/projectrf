@@ -1,0 +1,268 @@
+domain & ip address;
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2'
+
+
+number of hosts scanned, up, down and difference
+
+SELECT DISTINCT
+nmap_runstats_xml.hosts_up,
+nmap_runstats_xml.hosts_down,
+nmap_runstats_xml.hosts_total
+FROM
+nmap_runstats_xml
+WHERE
+nmap_runstats_xml.agency = 'test2'
+
+GeoIP locations (long,lat) #this needs to be easily extracted to csv in order to create a heat map using bing http://www.bing.com/community/site_blogs/b/maps/archive/2011/06/15/new-heat-map-creator-app-makes-heat-maps-easy.aspx
+
+
+Number of webservers by type: Apache, MS IIS, nginx, and "other" (see attachment)
+
+SELECT
+nmap_ports_xml.port_service_product, count(nmap_ports_xml.port_service_product)
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open'
+GROUP BY
+nmap_ports_xml.port_service_product
+
+Number of versions of each web server by type: e.g. Apache 1.3.x, 2.0.x, 2.2.x etc  (see attachment)
+
+SELECT
+nmap_ports_xml.port_service_product,
+Count(nmap_ports_xml.port_service_version),
+nmap_ports_xml.port_service_version
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open'
+GROUP BY
+nmap_ports_xml.port_service_version
+
+
+How many web servers were scanned with google-malware?
+
+SELECT
+nmap_nse_xml.script_id,
+count(nmap_nse_xml.script_id)
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_id = 'http-google-malware'
+GROUP BY
+nmap_nse_xml.script_id
+
+
+How many infected web servers did google-malware detect?
+
+SELECT
+nmap_nse_xml.script_id,
+count(nmap_nse_xml.script_output)
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_id = 'http-google-malware' AND
+nmap_nse_xml.script_output <> 'Host is safe to browse.'
+GROUP BY
+nmap_nse_xml.script_output
+
+How many web servers have FTP enabled?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'http'
+AND nmap_hosts_xml.address_addr IN (SELECT
+nmap_hosts_xml.address_addr
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'ftp')
+
+
+How many FTP offering accept anonymous FTP logins?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name,
+nmap_ports_xml.port_portid,
+nmap_ports_xml.port_service_name,
+nmap_ports_xml.port_service_product,
+nmap_ports_xml.port_service_version
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_id = 'ftp-anon'
+
+How many web servers are offering HTTPS?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name,
+nmap_ports_xml.port_portid,
+nmap_ports_xml.port_service_name,
+nmap_ports_xml.port_service_product,
+nmap_ports_xml.port_service_version
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'https'
+
+How many HTTPS offerings are still running SSLv2 and accept weak cipher suites?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name,
+nmap_ports_xml.port_portid,
+nmap_ports_xml.port_service_name,
+nmap_ports_xml.port_service_product,
+nmap_ports_xml.port_service_version,
+nmap_nse_xml.script_id,
+nmap_nse_xml.script_output
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_id = 'sslv2'
+
+How many web servers have SSH enabled?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'http'
+AND nmap_hosts_xml.address_addr IN (SELECT
+nmap_hosts_xml.address_addr
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'ssh')
+
+How many SSH implementations are still running SSHv1?
+How many web server have RDP enabled?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_service_name = 'http'
+AND nmap_hosts_xml.address_addr IN (SELECT
+nmap_hosts_xml.address_addr
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_ports_xml.port_portid = '3389')
+
+How many RDP implementations are running vulnerable versions?
+
+How many web servers are running potentially risk HTTP methods?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name,
+nmap_ports_xml.port_portid,
+nmap_ports_xml.port_service_name,
+nmap_ports_xml.port_service_product,
+nmap_ports_xml.port_service_version,
+nmap_nse_xml.script_id,
+nmap_nse_xml.script_output
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_output LIKE '%risky methods%'
+
+How many web server are running TRACE?
+
+SELECT DISTINCT
+nmap_hosts_xml.address_addr,
+nmap_hosts_xml.hostname_name,
+nmap_ports_xml.port_portid,
+nmap_ports_xml.port_service_name,
+nmap_ports_xml.port_service_product,
+nmap_ports_xml.port_service_version,
+nmap_nse_xml.script_id,
+nmap_nse_xml.script_output
+FROM
+nmap_runstats_xml
+INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
+INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
+INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
+WHERE
+nmap_runstats_xml.agency = 'test2' AND
+nmap_ports_xml.port_state = 'open' AND
+nmap_nse_xml.script_output LIKE '%TRACE%'

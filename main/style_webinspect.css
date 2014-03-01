@@ -1,0 +1,55 @@
+table.main {
+background-color: #c0c0c0;
+align: center;
+width: 95%;
+text-align: left
+}
+table.machine {
+align: center;
+width: 100%;
+text-align: left
+}
+td.top {
+color: #266d73;
+font-weight: bold;
+font-family: Arial;
+font-size: 12px;
+background-color: #cccccc
+}
+td.left {
+border-top: 1px solid #c0c0c0;
+width: 200px;
+color: #266d73;
+font-weight: bold;
+font-family: Arial;
+font-size: 12px;
+vertical-align: top;
+background-color: #f1f1f1
+}
+td.right {
+border-top: 1px solid #c0c0c0;
+border-left: 1px solid #c0c0c0;
+color: #000000;
+font-family: Arial;
+font-size: 12px;
+background-color: #ffffff
+}
+
+td.line1 {
+border-top: 1px solid #c0c0c0;
+border-left: 1px solid #c0c0c0;
+color: #000000;
+font-family: tahoma;
+font-size: 10pt;
+vertical-align: top;
+background-color: #f1f1f1
+
+}
+td.line2 {
+border-top: 1px solid #c0c0c0;
+border-left: 1px solid #c0c0c0;
+color: #000000;
+font-family: tahoma;
+font-size: 10pt;
+background-color: #ffffff
+}
