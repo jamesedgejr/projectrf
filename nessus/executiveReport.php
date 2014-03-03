@@ -38,10 +38,11 @@ $diff_seconds -= $diff_minutes * 60;
     PHP Code for gathering data for Host Vulnerability Statistics 
 --------------------------------------------------------------------*/
 $sql = 	"SELECT DISTINCT
-	nessus_results.host_name
+	nessus_tags.host_name
 FROM
 	nessus_results
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 WHERE
 	nessus_results.agency = '$agency' AND 
@@ -57,12 +58,13 @@ while ($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
 }
 
 	$sql = "SELECT
-	  nessus_results.host_name,
+	  nessus_tags.host_name,
 	  nessus_results.severity,
 	  nessus_results.cveList
 	FROM
 	  nessus_results
-	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+	INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 	INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 	WHERE
 		nessus_results.agency = '$agency' AND 
@@ -143,7 +145,7 @@ FROM
 nessus_results
 INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
 INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-INNER JOIN nessus_tmp_hosts ON nessus_results.host_name = nessus_tmp_hosts.host_name
+INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 WHERE
 	nessus_results.agency = '$agency' AND 
 	nessus_results.report_name = '$report_name' AND
@@ -163,7 +165,7 @@ FROM
 nessus_results
 INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
 INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-INNER JOIN nessus_tmp_hosts ON nessus_results.host_name = nessus_tmp_hosts.host_name
+INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 WHERE
 	nessus_results.agency = '$agency' AND 
 	nessus_results.report_name = '$report_name' AND
@@ -224,7 +226,8 @@ $fam_sql = "SELECT
 	Count(nessus_results.severity) AS sevCount
 FROM
 	nessus_results
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 WHERE
 	nessus_results.agency = '$agency' AND 
@@ -250,7 +253,8 @@ while ($fam_row = $fam_result->fetchRow(DB_FETCHMODE_ASSOC)){
 		nessus_results.cveList
 	FROM
 		nessus_results
-	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+	INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 	INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 	WHERE
 		nessus_results.agency = '$agency' AND 
@@ -555,7 +559,8 @@ $sql = "SELECT
 	Count(nessus_results.pluginName) AS pluginCount
 FROM
 	nessus_results
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 WHERE
 	(nessus_results.severity = '3' OR nessus_results.severity = '2') AND

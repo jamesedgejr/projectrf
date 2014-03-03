@@ -1,3 +1,4 @@
+
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 -- Table structure for AppScan_ApplicationData_BrokenLinks
@@ -238,7 +239,7 @@ CREATE TABLE `dumpsec_group_table` (
   `GroupMember` varchar(255) DEFAULT NULL,
   `MemberType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`RowID`)
-) ENGINE=MyISAM AUTO_INCREMENT=63350 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=64146 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for dumpsec_temp_groups
@@ -284,7 +285,7 @@ CREATE TABLE `dumpsec_user_table` (
   `PasswordAgeDays` varchar(255) DEFAULT NULL,
   `LastLogonAgeDays` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`RowID`)
-) ENGINE=MyISAM AUTO_INCREMENT=334891 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=335305 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for kismet_results_newcore
@@ -515,9 +516,6 @@ CREATE TABLE `nessus_results` (
   `exploitability_ease` varchar(255) DEFAULT NULL,
   `fname` varchar(255) DEFAULT NULL,
   `icsaList` text,
-  `host_end` varchar(10) DEFAULT NULL,
-  `host_name` varchar(50) NOT NULL,
-  `host_start` varchar(10) DEFAULT NULL,
   `iavaList` text,
   `iavbList` text,
   `metasploit_name` varchar(255) DEFAULT NULL,
@@ -549,9 +547,9 @@ CREATE TABLE `nessus_results` (
   `vuln_publication_date` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`resultsID`),
   KEY `nessus_pluginID_index` (`pluginID`) USING HASH,
-  KEY `nessus_host_index` (`agency`,`scan_start`,`scan_end`,`report_name`,`host_name`,`port`,`service`,`protocol`,`host_end`,`host_start`) USING HASH,
+  KEY `nessus_host_index` (`agency`,`scan_start`,`scan_end`,`report_name`,`port`,`service`,`protocol`) USING HASH,
   FULLTEXT KEY `nessus_plugin_index` (`pluginName`,`pluginFamily`,`severity`,`cvss_vector`,`risk_factor`,`description`,`synopsis`,`see_also`,`plugin_output`,`solution`,`cveList`,`bidList`,`msftList`)
-) ENGINE=MyISAM AUTO_INCREMENT=621343 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=743966 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nessus_tags
@@ -559,18 +557,17 @@ CREATE TABLE `nessus_results` (
 DROP TABLE IF EXISTS `nessus_tags`;
 CREATE TABLE `nessus_tags` (
   `tagID` int(10) NOT NULL AUTO_INCREMENT,
+  `bios_uuid` varchar(50) DEFAULT NULL,
+  `fqdn` varchar(100) DEFAULT NULL,  
+  `host_end` varchar(10) DEFAULT NULL, 
+  `host_name` varchar(50) NOT NULL,  
+  `host_start` varchar(10) DEFAULT NULL, 
   `ip_addr` varchar(15) DEFAULT NULL,
-  `mac_addr` varchar(17) DEFAULT NULL,
-  `fqdn` varchar(100) DEFAULT NULL,
+  `local_checks_proto` varchar(255) DEFAULT NULL,
+  `mac_addr` varchar(17) DEFAULT NULL,  
   `netbios` varchar(16) DEFAULT NULL,
   `operating_system` varchar(100) DEFAULT NULL,
-  `host_start` varchar(10) DEFAULT NULL,
-  `host_end` varchar(10) DEFAULT NULL,
-  `system_type` varchar(255) DEFAULT NULL,
-  `ssh_auth_meth` varchar(255) DEFAULT NULL,
-  `ssh_login_used` varchar(255) DEFAULT NULL,
-  `smb_login_used` varchar(255) DEFAULT NULL,
-  `local_checks_proto` varchar(255) DEFAULT NULL,
+  `operating_system_unsupported` varchar(5) DEFAULT NULL,
   `pcidss_compliance_failed` varchar(10) DEFAULT NULL,
   `pcidss_compliance` varchar(10) DEFAULT NULL,
   `pcidss_low_risk_flaw` varchar(10) DEFAULT NULL,
@@ -583,10 +580,13 @@ CREATE TABLE `nessus_tags` (
   `pcidss_deprecated_ssl` varchar(10) DEFAULT NULL,
   `pcidss_reachable_db` varchar(10) DEFAULT NULL,
   `pcidss_expired_ssl_certificate` varchar(10) DEFAULT NULL,
-  `bios_uuid` varchar(50) DEFAULT NULL,
+  `ssh_auth_meth` varchar(255) DEFAULT NULL,
+  `smb_login_used` varchar(255) DEFAULT NULL,
+  `ssh_login_used` varchar(255) DEFAULT NULL,
+  `system_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tagID`),
   KEY `compliance_index` (`ip_addr`,`mac_addr`,`fqdn`,`netbios`,`operating_system`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=219364 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=220321 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for nessus_temp_severity
@@ -740,7 +740,7 @@ CREATE TABLE `nmap_runstats_xml` (
   `hosts_total` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `runstats` (`id`,`agency`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_temp_hosts

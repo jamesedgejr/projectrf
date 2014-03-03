@@ -54,44 +54,38 @@ foreach($xml->Report->ReportHost as $ReportHost){
 	   It depends on if you used the IP or DNS name when a machine was scanned.
 	*/
 	$host_name = $ReportHost[name];
-	$HOST_END = $operating_system = $mac_addr = $ip_addr = $fqdn = $netbios = $host_start = $system_type = "";
+	$host_end = $operating_system = $mac_addr = $ip_addr = $fqdn = $netbios = $host_start = $system_type = "";
 	foreach($ReportHost->HostProperties->tag as $tag){
 		switch ($tag[name]) {
-			case "HOST_END":
-				$host_end = $tag;
-				break;
-			case "operating-system":
-				$operating_system = $tag;
-				break;
-			case "mac-address":
-				$mac_addr = $tag;
-				break;
-			case "host-ip":
-				$ip_addr = $tag;
+			case "bios-uuid":
+				$bios_uuid = $tag;
 				break;
 			case "host-fqdn":
 				$fqdn = $tag;
 				break;
-			case "netbios-name":
-				$netbios = $tag;
+			case "HOST_END":
+				$host_end = $tag;
 				break;
 			case "HOST_START":
 				$host_start = $tag;
 				break;
-			case "system-type":
-				$system_type = $tag;
-				break;
-			case "ssh-auth-meth":
-				$ssh_auth_meth = $tag;
-				break;
-			case "ssh-login-used":
-				$ssh_login_used = $tag;
-				break;
-			case "smb-login-used":
-				$smb_login_used = $tag;
+			case "host-ip":
+				$ip_addr = $tag;
 				break;
 			case "local-checks-proto":
 				$local_checks_proto = $tag;
+				break;
+			case "mac-address":
+				$mac_addr = $tag;
+				break;
+			case "netbios-name":
+				$netbios = $tag;
+				break;
+			case "operating-system":
+				$operating_system = $tag;
+				break;
+			case "operating-system-unsupported":
+				$operating_system_unsupported = $tag;
 				break;
 /*-----PCI DSS COMPLIANCE -------------------------------------------------*/
 			case "pcidss:compliance:failed":
@@ -130,8 +124,18 @@ foreach($xml->Report->ReportHost as $ReportHost){
 			case "pcidss:expired_ssl_certificate":
 				$pcidss_expired_ssl_certificate = $tag;
 				break;
-			case "bios-uuid":
-				$bios_uuid = $tag;
+/*-----PCI DSS COMPLIANCE -------------------------------------------------*/
+			case "smb-login-used":
+				$smb_login_used = $tag;
+				break;
+			case "ssh-auth-meth":
+				$ssh_auth_meth = $tag;
+				break;
+			case "ssh-login-used":
+				$ssh_login_used = $tag;
+				break;
+			case "system-type":
+				$system_type = $tag;
 				break;
 			default:  //who knows all the wonderful tags nessus has created.  I specifically ignore MSxx-xxx, netstat-XXXX, patch-summary-XXXX, and traceroute tags.
 					if(!preg_match("/MS\d+-\d+/i", $tag[name])){
@@ -146,18 +150,41 @@ foreach($xml->Report->ReportHost as $ReportHost){
 		}
 	}
 	$sql = "INSERT INTO nessus_tags 
-				(fqdn,host_end,host_start,ip_addr,local_checks_proto,mac_addr,netbios,operating_system,pcidss_compliance,
-				pcidss_compliance_failed,pcidss_deprecated_ssl,pcidss_directory_browsing,
-				pcidss_expired_ssl_certificate,pcidss_high_risk_flaw,pcidss_low_risk_flaw,
-				pcidss_medium_risk_flaw,pcidss_obsolete_operating_system,pcidss_reachable_db,
-				pcidss_www_header_injection,pcidss_www_xss,ssh_auth_meth,ssh_login_used,smb_login_used,system_type,bios_uuid)
+			(
+				bios_uuid,
+				fqdn,
+				host_end,
+				host_name,
+				host_start,
+				ip_addr,
+				local_checks_proto,
+				mac_addr,
+				netbios,
+				operating_system,
+				operating_system_unsupported,
+				pcidss_compliance,
+				pcidss_compliance_failed,
+				pcidss_deprecated_ssl,
+				pcidss_directory_browsing,
+				pcidss_expired_ssl_certificate,
+				pcidss_high_risk_flaw,
+				pcidss_low_risk_flaw,
+				pcidss_medium_risk_flaw,
+				pcidss_obsolete_operating_system,
+				pcidss_reachable_db,
+				pcidss_www_header_injection,
+				pcidss_www_xss,
+				smb_login_used,
+				ssh_auth_meth,
+				ssh_login_used,
+				system_type
+			)
 			VALUES 
-				('$fqdn','$host_end','$host_start','$ip_addr','$local_checks_proto','$mac_addr','$netbios','$operating_system','$pcidss_compliance',
-				'$pcidss_compliance_failed','$pcidss_deprecated_ssl','$pcidss_directory_browsing','$pcidss_expired_ssl_certificate',
-				'$pcidss_high_risk_flaw','$pcidss_low_risk_flaw','$pcidss_medium_risk_flaw','$pcidss_obsolete_operating_system',
-				'$pcidss_reachable_db','$pcidss_www_header_injection','$pcidss_www_xss','$ssh_auth_meth','$ssh_login_used','$smb_login_used','$system_type', '$bios_uuid')
-			";	
-	$result = $db->query($sql);ifDBError($result);
+				(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+			";
+	$sth = $db->prepare($sql);
+	$sql_data = array($bios_uuid,$fqdn,$host_end,$host_name,$host_start,$ip_addr,$local_checks_proto,$mac_addr,$netbios,$operating_system,$operating_system_unsupported,$pcidss_compliance,$pcidss_compliance_failed,$pcidss_deprecated_ssl,$pcidss_directory_browsing,$pcidss_expired_ssl_certificate,$pcidss_high_risk_flaw,$pcidss_low_risk_flaw,$pcidss_medium_risk_flaw,$pcidss_obsolete_operating_system,$pcidss_reachable_db,$pcidss_www_header_injection,$pcidss_www_xss,$smb_login_used,$ssh_auth_meth,$ssh_login_used,$system_type);
+	$results = $db->execute($sth, $sql_data);ifDBError($results);	
 	$sql = "SELECT LAST_INSERT_ID()";
 	$tagID = $db->getRow($sql);ifDBError($result);
 
@@ -174,12 +201,11 @@ foreach($xml->Report->ReportHost as $ReportHost){
 		$pluginName = htmlspecialchars($ReportItem[pluginName], ENT_QUOTES);
 		$pluginFamily = htmlspecialchars($ReportItem[pluginFamily], ENT_QUOTES);
 		
-		//XML document not lists items in alphabetical order
+		//XML document now lists items in alphabetical order
 		foreach ($ReportItem->bid as $bid) {
 			$bidList = $bidList . "," . htmlspecialchars($bid);
 		}
 		$canvas_package = htmlspecialchars($ReportItem->canvas_package, ENT_QUOTES);
-		$cvss_base_score = htmlspecialchars($ReportItem->cvss_base_score, ENT_QUOTES);
 		foreach ($ReportItem->cert as $cert) {
 			$certList = $certList . "," . htmlspecialchars($cert);
 		}
@@ -305,9 +331,6 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					exploitability_ease, 
 					fname,
 					icsaList,
-					host_end, 
-					host_name, 
-					host_start, 
 					iavaList, 
 					iavbList,
 					metasploit_name, 
@@ -339,63 +362,11 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					vuln_publication_date
 					) 
 				VALUES 
-					(
-					'$agency', 
-					'$bidList',
-					'$canvas_package',
-					'$certList', 
-					'$cpe',
-					'$cveList', 
-					'$cvss_base_score', 
-					'$cvss_temporal_score', 
-					'$cvss_temporal_vector', 
-					'$cvss_vector',
-					'$cweList', 
-					'$d2_elliot_name',
-					'$description', 
-					'$edbList',
-					'$exploit_available', 
-					'$exploit_framework_canvas',
-					'$exploit_framework_core',
-					'$exploit_framework_d2_elliot',
-					'$exploit_framework_metasploit', 
-					'$exploitability_ease', 
-					'$fname',
-					'$icsaList',
-					'host_end', 
-					'$host_name', 
-					'host_start', 
-					'$iavaList',
-					'$iavbList',
-					'$metasploit_name', 
-					'$msftList', 
-					'$osvdbList', 
-					'$patch_publication_date', 
-					'$plugin_modification_date', 
-					'$plugin_output', 
-					'$plugin_publication_date', 
-					'$plugin_type', 
-					'$pluginFamily', 
-					'$pluginID', 
-					'$pluginName', 
-					'$port', 
-					'$protocol', 
-					'$report_name', 
-					'$risk_factor', 
-					'$scan_end', 
-					'$scan_start', 
-					'$script_version', 
-					'$secuniaList', 
-					'$see_alsoList', 
-					'$service', 
-					'$severity', 
-					'$solution', 
-					'$stig_severity',
-					'$synopsis', 
-					'$tagID[0]', 
-					'$vuln_publication_date'
-				)";
-		$result = $db->query($sql);ifDBError($result);
+					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+		";
+		$sth = $db->prepare($sql);
+		$sql_data = array($agency,$bidList,$canvas_package,$certList,$cpe,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$d2_elliot_name,$description,$edbList,$exploit_available,$exploit_framework_canvas,$exploit_framework_core,$exploit_framework_d2_elliot,$exploit_framework_metasploit,$exploitability_ease,$fname,$icsaList,$iavaList,$iavbList,$metasploit_name,$msftList,$osvdbList,$patch_publication_date,$plugin_modification_date,$plugin_output,$plugin_publication_date,$plugin_type,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$script_version,$secuniaList,$see_alsoList,$service,$severity,$solution,$stig_severity,$synopsis,$tagID[0],$vuln_publication_date);
+		$results = $db->execute($sth, $sql_data);ifDBError($results);		
 	}
 }
 /*
@@ -405,8 +376,10 @@ sort($startScanArray);
 $scan_start = $startScanArray[0];
 rsort($endScanArray);
 $scan_end = $endScanArray[0];
-$sql_update_nessus_results = "UPDATE nessus_results SET scan_start = '$scan_start', scan_end = '$scan_end' WHERE scan_start = '$randValue' AND scan_end = '$randValue'";
-$result = $db->query($sql_update_nessus_results);ifDBError($result);
+$sql_update_nessus_results = "UPDATE nessus_results SET scan_start = ?, scan_end = ? WHERE scan_start = ? AND scan_end = ?";
+$sth = $db->prepare($sql_update_nessus_results);
+$sql_data = array($scan_start,$scan_end,$randValue,$randValue);
+$results = $db->execute($sth, $sql_data);ifDBError($results);	
 
 //process and display any Nesses <tag> elements that the developer has not seen before
 $newTags = array_unique($newTag);

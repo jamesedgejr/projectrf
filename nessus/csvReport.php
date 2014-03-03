@@ -110,7 +110,8 @@ $sql = "SELECT DISTINCT
 	nessus_results.vuln_publication_date
 FROM
 	nessus_results
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
+INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 INNER JOIN nessus_tmp_severity ON nessus_tmp_severity.severity = nessus_results.severity
 INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 WHERE

@@ -46,7 +46,7 @@ nessus_results.plugin_output
 FROM
 nessus_results
 Inner Join nessus_tags ON nessus_tags.tagID = nessus_results.tagID
-Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
+Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 WHERE
 nessus_results.pluginID =  '10719' AND
 nessus_results.agency = '$agency' AND

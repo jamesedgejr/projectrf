@@ -1,0 +1,4 @@
+host_name moved from nessus_results to nessus_tags
+host_start and host_end removed from nessus_results.  It already exists in nessus_tags and weren't even used in nessus_results.
+alphabetically ordered nessus_tags
+modified nessus report.php to reflect the database structure changes

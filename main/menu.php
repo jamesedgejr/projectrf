@@ -8,6 +8,10 @@
 	</tr>
 	<tr>
 		<td></td>
+		<td width="95%"><a href="../nessus/upload_v1.php">Import Nessus .nessus (v1)</a></td>
+	</tr>
+	<tr>
+		<td></td>
 		<td><a href="../nessus/create_report.php">Nessus Report</a></td>
 	</tr>
 	<tr>

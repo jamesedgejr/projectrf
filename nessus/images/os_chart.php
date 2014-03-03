@@ -19,7 +19,7 @@ $os_sql = "SELECT DISTINCT
 			nessus_results
 		  INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
 		  INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-		  INNER JOIN nessus_tmp_hosts ON nessus_results.host_name = nessus_tmp_hosts.host_name
+		  INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 		  WHERE
 			nessus_results.agency = '$agency' AND 
 			nessus_results.report_name = '$report_name' AND
@@ -40,7 +40,7 @@ $sql = "SELECT
 			nessus_results
 		  INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
 		  INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-		  INNER JOIN nessus_tmp_hosts ON nessus_results.host_name = nessus_tmp_hosts.host_name
+		  INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 		  WHERE
 			nessus_results.agency = '$agency' AND 
 			nessus_results.report_name = '$report_name' AND

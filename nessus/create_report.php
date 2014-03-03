@@ -18,7 +18,7 @@ $agency_sql = 	"SELECT DISTINCT
 $agency_result = $db->query($agency_sql);ifError($plugin_result);
 if($agency != ""){
 	$host_sql = "SELECT DISTINCT
-					nessus_results.host_name,
+					nessus_tags.host_name,
 					nessus_tags.ip_addr,
 					nessus_tags.fqdn,
 					nessus_tags.netbios
@@ -31,7 +31,7 @@ if($agency != ""){
 					nessus_results.scan_start='$scan_start' AND
 					nessus_results.scan_end='$scan_end'
 				ORDER BY 
-					nessus_results.host_name
+					nessus_tags.host_name
 				";
 
 	$host_result = $db->query($host_sql);ifError($host_result);
