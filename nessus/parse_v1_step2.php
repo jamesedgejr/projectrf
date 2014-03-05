@@ -13,6 +13,21 @@ a:hover {text-decoration: underline}
 	<td valign="top">
 
 <?php
+/*
+Version 1 of the Nessus XML file does not have any reference to the Plugin Family.  
+I use this when organizing the plugins during report generation so we kinda need that.
+I parsed all the nasl files to create pluginID.to.Family.csv which we will now load
+into an array called pluginFamilyIndex with pluginID as the index.
+*/
+	$file = fopen("pluginID.to.Family.csv", "r");
+	$pluginFamilyIndex = array();
+	while (($line = fgets($file)) !== false){
+		$lineArray = explode(",",$line);
+		$pluginFamilyIndex[$lineArray[0]] = trim($lineArray[1]);
+	}
+	$pluginFamilyIndex[0] = "No Plugin ID";
+	fclose($file);
+
 $agency = $_POST["agency"];
 $uploadfile = $_POST["uploadfile"];
 if(file_exists($uploadfile)) { 
@@ -34,6 +49,7 @@ $db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
 $report_name = $xml->Report->ReportName;
 $scan_start = strtotime($xml->Report->StartTime);
 $scan_end = strtotime($xml->Report->StopTime);
+$notInIndex = array();
 foreach($xml->Report->ReportHost as $ReportHost){
 /*
 <HostName>192.168.1.60</HostName>
@@ -90,10 +106,20 @@ foreach($xml->Report->ReportHost as $ReportHost){
 		$protocol = htmlspecialchars($portTemp[1], ENT_QUOTES);
 		$severity = htmlspecialchars($ReportItem->severity, ENT_QUOTES);
 		$pluginID = htmlspecialchars($ReportItem->pluginID, ENT_QUOTES);
+		
+		if (array_key_exists($pluginID, $pluginFamilyIndex)) {
+			$pluginFamily = htmlspecialchars($pluginFamilyIndex[$pluginID], ENT_QUOTES);
+		} else {
+			$pluginFamily = "Not in Index";
+			$notInIndex[] = $pluginID;
+		}
+		$file = file_get_contents("http://www.tenable.com/plugins/index.php?view=single&id=?pluginID");
+		if(preg_match("/<p><strong>Family:</strong>([\w:]+)<\/p>/",$file,$matches)){
+			echo $matches[1] . "<br>";
+		}
 		$pluginName = htmlspecialchars($ReportItem->pluginName, ENT_QUOTES);
 		$data = $ReportItem->data;
 		$dataArray = explode('\n\n', $data);
-		//print_r($dataArray);
 		for($x=0;$x<count($dataArray);$x++){
 			if($dataArray[$x] == 'Synopsis :'){
 					$synopsis = htmlspecialchars($dataArray[$x+1]);
@@ -176,6 +202,7 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					msftList, 
 					osvdbList, 
 					plugin_output, 
+					pluginFamily,
 					pluginID, 
 					pluginName, 
 					port, 
@@ -193,13 +220,22 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					tagID
 					) 
 				VALUES 
-					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		$sth = $db->prepare($sql);
-		$sql_data = array($agency,$bidList,$certList,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$description,$iavaList,$msftList,$osvdbList,$plugin_output,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$secuniaList,$see_alsoList,$service,$severity,$solution,$synopsis,$tagID[0]);
+		$sql_data = array($agency,$bidList,$certList,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$description,$iavaList,$msftList,$osvdbList,$plugin_output,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$secuniaList,$see_alsoList,$service,$severity,$solution,$synopsis,$tagID[0]);
 		$results = $db->execute($sth, $sql_data);ifDBError($results);	
 	}
 
+}
 
+$unique_notInIndex = array_unique($notInIndex);
+if(!empty($unique_notInIndex)){
+	echo "<p>This parse script found Nessus pluginIDs that are not in the pluginID.to.Family.csv.  This CSV file exists because version 1 of the Nessus XML files does not include the Plugin Family.</p>";
+	echo "<p>I parsed all nasl files to create an index of plugin ID to plugin Family.  Some plugins are closed binary files so those will have to manually added to the index.</p>";
+	echo "<p>Visit the links below to identify the plugin family and manually add it to the csv file in the nessus folder.  And if you like you can let the software author know at projectrf@jedge.com</p>";
+	foreach($unique_notInIndex as $nI){
+			echo "<a href=\"http://www.tenable.com/plugins/index.php?view=single&id=$nI\" target=\"_blank\">http://www.tenable.com/plugins/index.php?view=single&id=$nI</a><br>";
+	}
 }
 ?>
 </td></tr></table>
