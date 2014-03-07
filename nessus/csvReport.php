@@ -1,8 +1,7 @@
 <?php
 include('../main/config.php');
 require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
+$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );ifError($db);
 
 $hostPost = $_POST["host"];
 foreach($hostPost as $key => $value) {
@@ -48,23 +47,7 @@ $agency = $_POST["agency"];
 $report_name = $_POST["report_name"];
 $scan_start = $_POST["scan_start"];
 $scan_end = $_POST["scan_end"];
-
-switch ($isSort) {
-	case "risk":
-		$sortOrder = "`nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	case "family":
-		$sortOrder = "`nessus_results`.`pluginFamily` ASC, `nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	case "exploit":
-		$sortOrder = "`nessus_results`.`exploit_available` DESC, `nessus_results`.`exploit_framework_metasploit` DESC";
-		break;
-	case "vuln_age":
-		$sortOrder = "`nessus_results`.`vuln_publication_date` ASC, `nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	default: /* We shall default to sorting by CVSS score */
-		$sortOrder = "`nessus_results`.`cvss_base_score` DESC";
-}
+$isVulnDB = $_POST["isVulnDB"];
 date_default_timezone_set('UTC');
 $myDir = "/var/www/projectRF/nessus/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
@@ -94,12 +77,15 @@ $sql = "SELECT DISTINCT
 	nessus_results.metasploit_name,
 	nessus_results.msftList,
 	nessus_results.osvdbList,
+	nessus_results.plugin_output,
 	nessus_results.patch_publication_date,
 	nessus_results.pluginFamily,
 	nessus_results.pluginID,
 	nessus_results.plugin_modification_date,
 	nessus_results.pluginName,
 	nessus_results.plugin_publication_date,
+	nessus_results.port,
+	nessus_results.protocol,
 	nessus_results.risk_factor,
 	nessus_results.script_version,
 	nessus_results.secuniaList,
@@ -107,7 +93,12 @@ $sql = "SELECT DISTINCT
 	nessus_results.severity,
 	nessus_results.solution,
 	nessus_results.synopsis,
-	nessus_results.vuln_publication_date
+	nessus_results.vuln_publication_date,
+	nessus_tags.fqdn,
+	nessus_tags.ip_addr,
+	nessus_tags.mac_addr,
+	nessus_tags.netbios,
+	nessus_tags.operating_system
 FROM
 	nessus_results
 INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
@@ -119,14 +110,14 @@ WHERE
 	nessus_results.report_name =  ? AND
 	nessus_results.scan_start =  ? AND
 	nessus_results.scan_end =  ?
-ORDER BY $sortOrder
 ";
 
 $sth = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
 $results = $db->execute($sth, $data);ifError($results);
-fwrite($fh, "\"CVE\",\"CVSS\",\"Risk\",\"Host\",\"Protocol\",\"Port\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\"\n");
-/*CVE
+fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\"\n");
+/*
+CVE or BID
 CVSS
 Risk
 Host
@@ -140,18 +131,66 @@ See Also
 Plugin Output
 */
 while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
-	$ip_address = $row[ip_addr];
-	$os = $row[operating_system];
-	$cvss = $row[cvss_base_score];
-	$risk_factor = $row[risk_factor];
-	$pluginName = $row[pluginName];
-	$pluginName = str_replace("&lt;", "<", $pluginName);
-	if($risk_factor == "Critical"){$allCriticalCVEs = $allCriticalCVEs . $row[cveList];}
-	if($risk_factor == "High"){$allHighCVEs = $allHighCVEs . $row[cveList];}
-	if($risk_factor == "Medium"){$allMediumCVEs = $allMediumCVEs . $row[cveList];}
-	$cveArray = explode(",",$row[cveList]);
+
+	//not all of this will end up in the CSV file but it may someday...
+	//or i'll keep adding options when creating the CSV.
 	
-	fwrite($fh, "\"$ip_address\",\"$os\",\"$cvss\",\"$risk_factor\",\"$cveArray[1]\n$cveArray[2]\n$cveArray[3]\n$cveArray[4]\n$cveArray[5]\",\"$pluginName\"\n");
+	$canvas_package = $row["canvas_package"];
+    $bidList = explode(",", $row["bidList"]);
+    $certList = explode(",", $row["certList"]);
+    $cveList = explode(",", trim($row["cveList"], ","));
+    $cvss_base_score = $row["cvss_base_score"];
+    $cvss_vector = $row["cvss_vector"];
+    $cweList = explode(",", $row["cweList"]);
+	$d2_elliot_name = $row["d2_elliot_name"];
+    $description = str_replace("\n\n","<br>", $row["description"]);
+    $edbList = explode(",", $row["edbList"]);
+    $exploitability_ease = $row["exploitability_ease"];
+    $exploit_framework_canvas = $row["exploit_framework_canvas"];
+	$exploit_framework_core = $row["exploit_framework_core"];
+	$exploit_framework_d2_elliot = $row["exploit_framework_d2_elliot"];
+	$exploit_framework_metasploit = $row["exploit_framework_metasploit"];
+    $iavaList = explode(",", $row["iavaList"]);
+	$iavbList = explode(",", $row["iavbList"]);
+    $metasploit_name = $row["metasploit_name"];
+    $msftList = explode(",", $row["msftList"]);
+    $osvdbList = explode(",", $row["osvdbList"]);
+    $patch_publication_date = $row["patch_publication_date"];
+    $pluginFamily = $row["pluginFamily"];
+    $pluginID = $row["pluginID"];
+    $plugin_modification_date = $row["plugin_modification_date"];
+    $pluginName = str_replace("&lt;", "<", $row["pluginName"]);
+    $plugin_output = $row["plugin_output"];
+    $plugin_publication_date = $row["plugin_publication_date"];
+    $port = $row["port"];
+    $protocol = $row["protocol"];
+    $risk_factor = $row["risk_factor"];
+    $script_version = str_replace("$", "", $row["script_version"]);
+    $secuniaList = explode(",", $row["secuniaList"]);
+    //$see_alsoList = explode("\n", $row["see_also"]);
+	$see_also = $row["see_also"];
+    $service = $row["service"];
+    $severity = $row["severity"];
+    $solution = nl2br($row["solution"]);
+    $synopsis = str_replace("\n\n","<br>", $row["synopsis"]);
+    $vuln_publication_date = $row["vuln_publication_date"];
+
+	$fqdn = $row["$fqdn"];
+	$ip_addr = $row["ip_addr"];
+	$mac_addr = $row["mac_addr"];
+	$netbios = $row["netbios"];
+	$operating_system = $row["operating_system"];
+
+	$vulnIDListArray = array();
+	if($isVulnDB == "CVE"){
+		$vulnDBList = $cveList;
+	} elseif ($isVulnDB == "BID") {
+		$vulnDBList = $bidList;
+	}
+	
+	foreach($vulnDBList as $vDB){
+		fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+	}
 }
 
 ?>

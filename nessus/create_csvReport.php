@@ -83,6 +83,8 @@ select {font-family: courier new}
 <table style="text-align: left; width: 850px;" border="0" cellpadding="0" cellspacing="0">
     <tr>
       <td style="width: 600px;">
+	  <p>The standard Comma Delimited (CSV) file produced by Nessus leaves me wanting more.  This script provides way more information and as I continue to improve it even more information and options will be provided</p>
+	  <p>As of right now you can choose to list all vulnerabilities by CVE or BID.</p>
 	  <form name="f1"  action="" method="post">
 	  <p align="center">[ Nessus Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nessus Family of Plugins you want to include.</p>
@@ -208,31 +210,19 @@ select {font-family: courier new}
             <td style="width: 174px;">Information Only</td>
           </tr>
 		  <tr>
-            <td colspan="2" rowspan="1" style="width: 30px;">Sort Order</td>
+            <td colspan="2" rowspan="1" style="width: 30px;">Vuln Database Choice</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="radio" value="risk" name="isSort" checked>
+				<input type="radio" value="CVE" name="isVulnDB" checked>
 			</td>
-            <td style="width: 174px;">Risk</td>
+            <td style="width: 174px;">CVE</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="radio" value="family" name="isSort">
+				<input type="radio" value="BID" name="isVulnDB">
 			</td>
-            <td style="width: 174px;">Plugin Family</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="exploit" name="isSort">
-			</td>
-            <td style="width: 174px;">Exploitability</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="vuln_age" name="isSort">
-			</td>
-            <td style="width: 174px;">Vulnerability Age</td>
+            <td style="width: 174px;">BID</td>
           </tr>
       </table>
       </td>
