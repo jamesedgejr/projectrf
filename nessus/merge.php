@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $report = $_POST["report"];
 $newAgencyName = $_POST["newAgencyName"];
@@ -35,7 +34,8 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 					nessus_results.scan_start = '$scanStartArray[$x]' AND
 					nessus_results.scan_end = '$scanEndArray[$x]'
 				";
-		$result = $db->query($sql);ifError($result);
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array($newAgencyName, $newReportName, $sortedStart[0], $sortedEnd, $agencyArray[$x], $reportNameArray[$x], $scanStartArray[$x], $scanEndArray[$x]));
 	}
 }
 
@@ -47,7 +47,8 @@ $merge_sql = 	"SELECT DISTINCT
 				FROM 
 					nessus_results
 				";
-$merge_result = $db->query($merge_sql);ifError($merge_result);
+$merge_stmt = $db->prepare($merge_sql);
+$merge_stmt->execute();
 ?>
 
 <HTML>
@@ -89,7 +90,7 @@ select {font-family: courier new}
   	  <select MULTIPLE NAME="report[]" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" id="reportselectall">
 		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
 			<?php
-			while($merge_row = $merge_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($merge_row = $merge_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($merge_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($merge_row["report_name"], 20));
 				$formatedDate = date("D M d H:i:s Y", $merge_row["scan_end"]);

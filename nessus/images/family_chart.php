@@ -3,10 +3,7 @@ include('../../main/config.php');
 include("../../pChart/class/pData.class.php");
 include("../../pChart/class/pDraw.class.php");
 include("../../pChart/class/pImage.class.php");
-require_once( 'DB.php' );
-
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency = $_GET["agency"];
 $report_name = $_GET["report_name"];
 $scan_start = $_GET["scan_start"];
@@ -19,13 +16,11 @@ $fam_sql = "SELECT
 FROM
 	nessus_results
 INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
-INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 WHERE
-	nessus_results.agency = '$agency' AND 
-	nessus_results.report_name = '$report_name' AND
-	nessus_results.scan_start = '$scan_start' AND
-	nessus_results.scan_end = '$scan_end' AND
+	nessus_results.agency = ? AND 
+	nessus_results.report_name = ? AND
+	nessus_results.scan_start = ? AND
+	nessus_results.scan_end = ? AND
 	nessus_results.pluginID != '0' AND 	
 	nessus_results.severity != '0'
 GROUP BY
@@ -34,8 +29,9 @@ ORDER BY
 	sevCount DESC
 LIMIT 0, 3
 ";
-$fam_result = $db->query($fam_sql);ifError($fam_result);
-while ($fam_row = $fam_result->fetchRow(DB_FETCHMODE_ASSOC)){
+$fam_stmt = $db->prepare($fam_sql);
+$fam_stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
+while ($fam_row = $fam_stmt->fetch(PDO::FETCH_ASSOC)){
 	$pluginFamily = $fam_row["pluginFamily"];
 	$exec_fam[$pluginFamily] = array(critical => "0", high => "0", medium => "0", low => "0");
 	
@@ -46,17 +42,16 @@ while ($fam_row = $fam_result->fetchRow(DB_FETCHMODE_ASSOC)){
 	FROM
 		nessus_results
 	INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
-	INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
 	WHERE
-		nessus_results.agency = '$agency' AND 
-		nessus_results.report_name = '$report_name' AND
-		nessus_results.scan_start = '$scan_start' AND
-		nessus_results.scan_end = '$scan_end' AND
-		nessus_results.pluginFamily = '$pluginFamily'
+		nessus_results.agency = ? AND 
+		nessus_results.report_name = ? AND
+		nessus_results.scan_start = ? AND
+		nessus_results.scan_end = ? AND
+		nessus_results.pluginFamily = ?
 	";
-	$result = $db->query($sql);ifError($result);
-	while ($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($agency, $report_name, $scan_start, $scan_end, $pluginFamily));
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 		$severity = $row["severity"];
 		$pluginFamily = $row["pluginFamily"];
 		//$famArray[]  = preg_replace($patterns, $replacements, $fam_row["pluginFamily"]);
@@ -96,68 +91,6 @@ while ($fam_row = $fam_result->fetchRow(DB_FETCHMODE_ASSOC)){
 		}
 	}
 }
-/*
-$fam_sql = "SELECT
-	nessus_results.pluginFamily,
-	Count(nessus_results.severity) AS sevCount
-FROM
-	nessus_results
-INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
-INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
-WHERE
-	nessus_results.agency = '$agency' AND 
-	nessus_results.report_name = '$report_name' AND
-	nessus_results.scan_start = '$scan_start' AND
-	nessus_results.scan_end = '$scan_end' AND
-	nessus_results.pluginID != '0' AND
-	nessus_results.severity != '0'
-GROUP BY
-	nessus_results.pluginFamily
-ORDER BY
-	sevCount DESC
-LIMIT 0, 3
-";
-$fam_result = $db->query($fam_sql);
-ifError($fam_result);
-while ($fam_row = $fam_result->fetchRow(DB_FETCHMODE_ASSOC)){
-	$pluginFamily = $fam_row["pluginFamily"];
-	$famArray[]  = preg_replace($patterns, $replacements, $fam_row["pluginFamily"]);
-	$sql = "SELECT
-		nessus_results.severity,
-		COUNT(*) AS sevCount
-	FROM
-		nessus_results
-	INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_results.host_name
-	INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
-	WHERE
-		nessus_results.agency = '$agency' AND 
-		nessus_results.report_name = '$report_name' AND
-		nessus_results.scan_start = '$scan_start' AND
-		nessus_results.scan_end = '$scan_end' AND
-		nessus_results.pluginFamily = '$pluginFamily'
-	GROUP BY nessus_results.severity
-	";
-	$result = $db->query($sql);
-	ifError($result);
-	while ($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
-		switch ($row["severity"]) {
-			case "4":
-				$criticalArray[] = $row["sevCount"];
-				break;
-			case "3":
-				$highArray[] = $row["sevCount"];
-				break;
-			case "2":
-				$mediumArray[] = $row["sevCount"];
-				break;
-			case "1":
-				$lowArray[] = $row["sevCount"];
-				break;
-		}
-	}
-
-}
-*/
 
 uasort($exec_fam, 'sortByHigh');
 
@@ -261,14 +194,4 @@ function sortByHigh($a, $b) {
 	return strnatcmp($b['critical'], $a['critical']); 
 } // sort alphabetically by name 
 
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
 ?>

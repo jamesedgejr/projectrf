@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $agency_sql = 	"SELECT DISTINCT 
 					nessus_results.agency, 
@@ -11,7 +10,8 @@ $agency_sql = 	"SELECT DISTINCT
 				FROM 
 					nessus_results
 				";
-$agency_result = $db->query($agency_sql);ifError($plugin_result);
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 
 ?>
 
@@ -36,7 +36,7 @@ select {font-family: courier new}
   	  <select NAME="agency_report" SIZE="10"  style="width:600px;margin:5px 0 5px 0;">
 		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 20));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["scan_end"]);
@@ -73,15 +73,3 @@ select {font-family: courier new}
 </td></tr></table>
 </body>
 </html>
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

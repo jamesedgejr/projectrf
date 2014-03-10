@@ -24,7 +24,7 @@ foreach ($family as $f){
 	$sth = $db->prepare($sql);
 	$results = $db->execute($sth, $f);ifError($results);	
 }
-
+$justVulnDB = $_POST["justVulnDB"];
 $critical = $_POST["critical"];
 $high = $_POST["high"];
 $medium = $_POST["medium"];
@@ -141,20 +141,20 @@ while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
     $cveList = explode(",", trim($row["cveList"], ","));
     $cvss_base_score = $row["cvss_base_score"];
     $cvss_vector = $row["cvss_vector"];
-    $cweList = explode(",", $row["cweList"]);
+    $cweList = explode(",", trim($row["cweList"], ","));
 	$d2_elliot_name = $row["d2_elliot_name"];
-    $description = str_replace("\n\n","<br>", $row["description"]);
-    $edbList = explode(",", $row["edbList"]);
+    $description = $row["description"];
+    $edbList = explode(",", trim($row["edbList"], ","));
     $exploitability_ease = $row["exploitability_ease"];
     $exploit_framework_canvas = $row["exploit_framework_canvas"];
 	$exploit_framework_core = $row["exploit_framework_core"];
 	$exploit_framework_d2_elliot = $row["exploit_framework_d2_elliot"];
 	$exploit_framework_metasploit = $row["exploit_framework_metasploit"];
-    $iavaList = explode(",", $row["iavaList"]);
-	$iavbList = explode(",", $row["iavbList"]);
+    $iavaList = explode(",", trim($row["iavaList"], ","));
+	$iavbList = explode(",", trim($row["iavbList"], ","));
     $metasploit_name = $row["metasploit_name"];
-    $msftList = explode(",", $row["msftList"]);
-    $osvdbList = explode(",", $row["osvdbList"]);
+    $msftList = explode(",", trim($row["msftList"], ","));
+    $osvdbList = explode(",", trim($row["osvdbList"], ","));
     $patch_publication_date = $row["patch_publication_date"];
     $pluginFamily = $row["pluginFamily"];
     $pluginID = $row["pluginID"];
@@ -166,7 +166,7 @@ while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
     $protocol = $row["protocol"];
     $risk_factor = $row["risk_factor"];
     $script_version = str_replace("$", "", $row["script_version"]);
-    $secuniaList = explode(",", $row["secuniaList"]);
+    $secuniaList = explode(",", trim($row["secuniaList"], ","));
     //$see_alsoList = explode("\n", $row["see_also"]);
 	$see_also = $row["see_also"];
     $service = $row["service"];
@@ -186,10 +186,23 @@ while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
 		$vulnDBList = $cveList;
 	} elseif ($isVulnDB == "BID") {
 		$vulnDBList = $bidList;
-	}
-	
-	foreach($vulnDBList as $vDB){
-		fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+	} elseif ($isVulnDB == "OSVDB") {
+		$vulnDBList = $osvdbList;
+	} elseif ($isVulnDB == "MSFT") {
+		$vulnDBList = $msftList;
+	} elseif ($isVulnDB == "CWE") {
+		$vulnDBList = $cweList;
+	} elseif ($isVulnDB == "Secunia") {
+		$vulnDBList = $secuniaList;
+	} 
+	if($justVulnDB == "true" && !empty($vulnDBList[0])){
+		foreach($vulnDBList as $vDB){
+			fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+		}
+	} elseif ($justVulnDB != "true") {
+		foreach($vulnDBList as $vDB){
+			fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+		}	
 	}
 }
 

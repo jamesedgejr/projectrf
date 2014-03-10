@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 
 $report = $_POST["report"];
@@ -16,22 +15,28 @@ if(isset($report)){
 		$scan_start = $temp[2];
 		$scan_end = $temp[3];
 
-		$tagid_sql = "SELECT DISTINCT tagID FROM nessus_results WHERE nessus_results.agency = '$agency' AND nessus_results.report_name = '$report_name' AND nessus_results.scan_start = '$scan_start' AND nessus_results.scan_end = '$scan_end'";
-		$tagid_result = $db->query($tagid_sql);ifError($tagid_result);
-		while($tagid_row = $tagid_result->fetchRow(DB_FETCHMODE_ASSOC)){
+		$tagid_sql = "SELECT DISTINCT tagID FROM nessus_results WHERE nessus_results.agency = ? AND nessus_results.report_name = ? AND nessus_results.scan_start = ? AND nessus_results.scan_end = ?";
+		$tagid_data = array($agency, $report_name, $scan_start, $scan_end);
+		$tagid_stmt = $db->prepare($tagid_sql);
+		$tagid_stmt->execute($tagid_data);
+		while($tagid_row = $tagid_stmt->fetch(PDO::FETCH_ASSOC)){
 			$tagID = $tagid_row["tagID"];
-			$delete_sql = "DELETE FROM nessus_tags WHERE nessus_tags.tagID = '$tagID'";
-			$delete_result = $db->query($delete_sql);ifError($delete_result);
+			$delete_tagID_sql = "DELETE FROM nessus_tags WHERE nessus_tags.tagID = ?";
+			$delete_tagID_data = array($tagID);
+			$delete_tagID_stmt = $db->prepare($delete_tagID_sql);
+			$delete_tagID_stmt->execute($delete_tagID_data);
 		}
 		
-		$delete_sql = "DELETE FROM nessus_results
+		$delete_results_sql = "DELETE FROM nessus_results
 						WHERE
 							nessus_results.agency = '$agency' AND 
 							nessus_results.report_name = '$report_name' AND
 							nessus_results.scan_start = '$scan_start' AND
 							nessus_results.scan_end = '$scan_end'
 						";
-		$delete_result = $db->query($delete_sql);ifError($delete_result);
+		$delete_results_data = array($agency, $report_name, $scan_start, $scan_end);
+		$delete_results_stmt = $db->prepare($delete_results_sql);
+		$delete_results_stmt->execute($delete_results_data);
 	
 	}
 }
@@ -44,7 +49,9 @@ $agency_sql = 	"SELECT DISTINCT
 				FROM 
 					nessus_results
 				";
-$agency_result = $db->query($agency_sql);ifError($plugin_result);
+
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 
 ?>
 
@@ -85,7 +92,7 @@ select {font-family: courier new}
   	  <select MULTIPLE NAME="report[]" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" id="reportselectall">
 		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 20));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["scan_end"]);
@@ -122,15 +129,3 @@ select {font-family: courier new}
 </td></tr></table>
 </body>
 </html>
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

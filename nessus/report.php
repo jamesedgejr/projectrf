@@ -1,45 +1,44 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$hostPost = $_POST["host"];
-foreach($hostPost as $key => $value) {
-	if ($value == "REMOVE") unset($hostPost[$key]);
+$hostArray = $_POST["host"];
+foreach($hostArray as $key => $value) {
+	if ($value == "REMOVE") unset($hostArray[$key]);
 }
 $sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
-foreach ($hostPost as $hP){
+$stmt = $db->prepare($sql);
+$stmt->execute();
+
+foreach ($hostArray as $hA){
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
-	$sth = $db->prepare($sql);
-	$results = $db->execute($sth, $hP);ifError($results);
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($hA));
 }
 $family = $_POST["family"];
 $sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($family as $f){
 	$sql="INSERT INTO nessus_tmp_family (pluginFamily) VALUES (?)";
-	$sth = $db->prepare($sql);
-	$results = $db->execute($sth, $f);ifError($results);	
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($f));
 }
-$critical = $_POST["critical"];
+
+$critical = $_POST["critical"];	
 $high = $_POST["high"];
 $medium = $_POST["medium"];
 $low  = $_POST["low"];
 $info = $_POST["info"];
 $sArray = array($critical, $high, $medium, $low, $info);
 $sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
-
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($sArray as $s){
 	if($s != ""){
 		$sql="INSERT INTO nessus_tmp_severity (severity) VALUES (?)";
-		$sth = $db->prepare($sql);
-		$results = $db->execute($sth, $s);ifError($results);	
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array($s));
 	}
 }
 
@@ -79,23 +78,6 @@ $cover = $_POST["cover"];
 $whocreated = str_replace("\n","<br>", $_POST["w1"]);
 $whofor = str_replace("\n","<br>", $_POST["w2"]);
 
-$isSort = $_POST["isSort"];
-switch ($isSort) {
-	case "risk":
-		$sortOrder = "`nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	case "family":
-		$sortOrder = "`nessus_results`.`pluginFamily` ASC, `nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	case "exploit":
-		$sortOrder = "`nessus_results`.`exploit_available` DESC, `nessus_results`.`exploit_framework_metasploit` DESC";
-		break;
-	case "vuln_age":
-		$sortOrder = "`nessus_results`.`vuln_publication_date` ASC, `nessus_results`.`severity` DESC, `nessus_results`.`cvss_base_score` DESC";
-		break;
-	default: /* We shall default to sorting by CVSS score */
-		$sortOrder = "`nessus_results`.`cvss_score` DESC";
-}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -411,16 +393,15 @@ WHERE
 	nessus_results.report_name = ? AND
 	nessus_results.scan_start = ? AND
 	nessus_results.scan_end = ?
-ORDER BY $sortOrder
 ";
-$sth = $db->prepare($main_sql);
-$data = array($agency, $report_name, $scan_start, $scan_end);
-$main_results = $db->execute($sth, $data);ifError($main_results);
 
-if(!$main_results->numRows()){
+$where_data = array($agency, $report_name, $scan_start, $scan_end);
+$main_stmt = $db->prepare($main_sql);
+$main_stmt->execute($where_data);
+if(!$main_stmt->rowCount();){
 	echo "<hr><p align=\"center\"><b>No Rows were returned.  You may have not selected any hosts or there are no hosts with the severity of vulnerability or Nessus Plugin Family you chose to display.</b></p><hr>";
 }
-while($row = $main_results->fetchRow(DB_FETCHMODE_ASSOC)){
+while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
 
 	$canvas_package = $row["canvas_package"];
     $bidList = explode(",", $row["bidList"]);
@@ -795,7 +776,7 @@ if($isEdb == "y" && $listCount > 1) {
 <?php if($isAffected == "y"){ ?>
 <?php
 
-$hostSQL = 	"
+$host_sql = 	"
 SELECT DISTINCT
 nessus_tags.host_name,
 nessus_results.plugin_output,
@@ -821,11 +802,12 @@ WHERE
 	nessus_results.scan_start = ? AND
 	nessus_results.scan_end = ?
 ";
-$sth = $db->prepare($hostSQL);
-$data = array($pluginID, $agency, $report_name, $scan_start, $scan_end);
-$host_results = $db->execute($sth, $data);ifError($host_results);
 
-$num_returned_hosts = $host_results->numRows();
+$data = array($pluginID, $agency, $report_name, $scan_start, $scan_end);
+$host_stmt = $db->prepare($host_sql);
+$host_stmt->execute($data);
+$num_returned_hosts = host_stmt->rowCount();
+
 
 ?>
 <table width="100%" class="main">
@@ -845,7 +827,7 @@ $num_returned_hosts = $host_results->numRows();
 		  <?php } ?>
 		</tr>						
 		<?php
-		while($host_row = $host_results->fetchRow(DB_FETCHMODE_ASSOC)) {
+		while($host_row = $host_stmt->fetch(PDO::FETCH_ASSOC)) {
             $fqdn = $host_row["fqdn"];
             $host_name = $host_row["host_name"];
             $ip_addr = $host_row["ip_addr"];
@@ -910,18 +892,5 @@ $num_returned_hosts = $host_results->numRows();
 ?>
 </body>
 </html>
-<?php
-
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>
 
 

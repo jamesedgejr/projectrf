@@ -1,9 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
-
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_report_array = explode(":", $_POST["agency_report"]);
 $agency = $agency_report_array[0];
 $report_name = $agency_report_array[1];
@@ -48,14 +45,14 @@ ORDER BY
 	nessus_results.pluginName ASC
 ";
 
-$sth = $db->prepare($sql);
+$stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
-$results = $db->execute($sth, $data);ifError($results);
+$stmt->execute($data);
 fwrite($fh, "\"IP Address\",\"OS\",\"CVSS\",\"Risk\",\"CVE\",\"Name\"\n");
 
 $cveStats = array();
 $cveStatsTotals = array();
-while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$ip_address = $row[ip_addr];
 	$os = $row[operating_system];
 	$os = str_replace("Enterprise", "Ent", $os);
@@ -99,7 +96,7 @@ fwrite($fh, "\"Total\",\"$criticalTotal\",\"$highTotal\",\"$mediumTotal\",\"$low
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>NESSUS CSV FILE</title>
+  <title>NESSUS REPORT FOR TECHNICAL</title>
 <style type="text/css">
 p {font-size: 90%}
 a {text-decoration: none}
@@ -119,16 +116,3 @@ a:hover {text-decoration: underline}
 </tr></table>
 </body>
 </html>
-<?php
-
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

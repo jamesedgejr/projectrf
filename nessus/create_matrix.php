@@ -222,33 +222,6 @@ select {font-family: courier new}
 			</td>
             <td style="width: 174px;">Information Only</td>
           </tr>
-		  <tr>
-            <td colspan="2" rowspan="1" style="width: 30px;">Sort Order</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="risk" name="isSort" checked>
-			</td>
-            <td style="width: 174px;">Risk</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="family" name="isSort">
-			</td>
-            <td style="width: 174px;">Plugin Family</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="exploit" name="isSort">
-			</td>
-            <td style="width: 174px;">Exploitability</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="radio" value="vuln_age" name="isSort">
-			</td>
-            <td style="width: 174px;">Vulnerability Age</td>
-          </tr>
           <tr>
             <td colspan="2" rowspan="1" style="width: 30px;">Table Pivot</td>
           </tr>

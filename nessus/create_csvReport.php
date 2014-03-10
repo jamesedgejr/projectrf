@@ -224,6 +224,36 @@ select {font-family: courier new}
 			</td>
             <td style="width: 174px;">BID</td>
           </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="radio" value="OSVDB" name="isVulnDB">
+			</td>
+            <td style="width: 174px;">OSVDB</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="radio" value="MSFT" name="isVulnDB">
+			</td>
+            <td style="width: 174px;">MS Bulletins</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="radio" value="CWE" name="isVulnDB">
+			</td>
+            <td style="width: 174px;">CWE</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="radio" value="Secunia" name="isVulnDB">
+			</td>
+            <td style="width: 174px;">Secunia</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="checkbox" value="true" name="justVulnDB" checked>
+			</td>
+            <td style="width: 174px;">Only Vulnerabilities from Database Selected</td>
+          </tr>
       </table>
       </td>
     </tr>

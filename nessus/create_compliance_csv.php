@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
 $agency = $agency_temp[0];
 $report_name = $agency_temp[1];
@@ -15,7 +14,8 @@ $agency_sql = 	"SELECT DISTINCT
 				FROM 
 					nessus_compliance_results
 				";
-$agency_result = $db->query($agency_sql);ifError($compliance_result);
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 
 if($agency != ""){
 	$host_sql = "SELECT DISTINCT 
@@ -34,7 +34,9 @@ if($agency != ""){
 					nessus_compliance_results.host_name
 				";
 
-	$host_result = $db->query($host_sql);ifError($host_result);
+	$host_data = array($agency, $report_name, $scan_start, $scan_end);
+	$host_stmt = $db->prepare($host_sql);
+	$host_stmt->execute($host_data);
 	$compliance_sql = 	"SELECT DISTINCT
 						nessus_audit_file.custom_item_type
 					FROM
@@ -48,7 +50,9 @@ if($agency != ""){
 					ORDER BY
 						nessus_audit_file.custom_item_type ASC
 					";
-	$compliance_result = $db->query($compliance_sql);ifError($compliance_result);
+	$compliance_data = array($agency, $report_name, $scan_start, $scan_end);
+	$compliance_stmt = $db->prepare($compliance_sql);
+	$compliance_stmt->execute($compliance_data);
 }//end if
 
 ?>
@@ -84,11 +88,11 @@ select {font-family: courier new}
       <td style="width: 600px;">
 	  <form name="f1"  action="" method="post">
 	  <p align="center">[ Nessus Reports ]</p>
-	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nessus Family of Plugins you want to include.</p>
+	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nessus Compliance Types you want to include.</p>
   	  <select NAME="agency" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
 		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]]</option>
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 20));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["scan_end"]);
@@ -115,7 +119,7 @@ select {font-family: courier new}
 			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:600px;margin:5px 0 5px 0;" id="hostselectall">
 			<option value='REMOVE'>[Host Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[IP Address]&nbsp;&nbsp;&nbsp;&nbsp;[FQDN]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[NetBIOS]</option>
 		<?php
-			while($host_row = $host_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($host_row = $host_stmt->fetch(PDO::FETCH_ASSOC)){
 			/*
 			Nessus host_name can be an IP address or domain name depending on what was used to start the scan.  This is a pain in the ass.  Just saying :-)
 			FQDN for host names mess up my nice neat columns so I'm going to just pull the host name from the FQDN.  How to tell between FQDN and IP?  Some pretty shitty code :-)
@@ -147,7 +151,7 @@ select {font-family: courier new}
 			<p align="center">[ Compliance Types ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('complianceselectall',true)" />
 			<SELECT MULTIPLE NAME="itemType[]" SIZE="15" style="width:600px;margin:5px 0 5px 0;" id="complianceselectall">
 		<?php
-			while($compliance_row = $compliance_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($compliance_row = $compliance_stmt->fetch(PDO::FETCH_ASSOC)){
 					echo "<OPTION value='" . $compliance_row["custom_item_type"] . "'>" . $compliance_row["custom_item_type"] . "</OPTION>\n";
 			}//end while
 		?>

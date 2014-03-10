@@ -3,10 +3,7 @@ include('../../main/config.php');
 include("../../pChart/class/pData.class.php");
 include("../../pChart/class/pDraw.class.php");
 include("../../pChart/class/pImage.class.php");
-require_once( 'DB.php' );
-
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency = $_GET["agency"];
 $report_name = $_GET["report_name"];
 $scan_start = $_GET["scan_start"];
@@ -18,17 +15,15 @@ $os_sql = "SELECT DISTINCT
 		  FROM
 			nessus_results
 		  INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-		  INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-		  INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 		  WHERE
-			nessus_results.agency = '$agency' AND 
-			nessus_results.report_name = '$report_name' AND
-			nessus_results.scan_start = '$scan_start' AND
-			nessus_results.scan_end = '$scan_end'
+			nessus_results.agency = ? AND 
+			nessus_results.report_name = ? AND
+			nessus_results.scan_start = ? AND
+			nessus_results.scan_end = ?
 		  ";
-$os_result = $db->query($os_sql);
-ifError($os_result);
-while ($os_row = $os_result->fetchRow(DB_FETCHMODE_ASSOC)){
+$os_stmt = $db->prepare($os_sql);
+$os_stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
+while ($os_row = $os_stmt->fetch(PDO::FETCH_ASSOC)){
 	$operating_system = $os_row["operating_system"];
 	$exec_os[$operating_system] = array(critical => "0", high => "0", medium => "0", low => "0", info => "0");
 }
@@ -39,18 +34,16 @@ $sql = "SELECT
 		  FROM
 			nessus_results
 		  INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-		  INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-		  INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
 		  WHERE
-			nessus_results.agency = '$agency' AND 
-			nessus_results.report_name = '$report_name' AND
-			nessus_results.scan_start = '$scan_start' AND
-			nessus_results.scan_end = '$scan_end'
+			nessus_results.agency = ? AND 
+			nessus_results.report_name = ? AND
+			nessus_results.scan_start = ? AND
+			nessus_results.scan_end = ?
 		  ";
-$result = $db->query($sql);
-ifError($result);
+$stmt = $db->prepare($sql);
+$stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
 
-while($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$severity = $row["severity"];
 	$operating_system = $row["operating_system"];
 	$cveList = explode(",", $row["cveList"]);
@@ -202,14 +195,4 @@ function sortByHigh($a, $b) {
 	return strnatcmp($b['critical'], $a['critical']); 
 } // sort alphabetically by name 
 
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
 ?>
