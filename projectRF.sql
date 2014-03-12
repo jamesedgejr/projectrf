@@ -1,3 +1,11 @@
+/*
+MySQL Data Transfer
+Source Host: 192.168.0.109
+Source Database: projectRF
+Target Host: 192.168.0.109
+Target Database: projectRF
+Date: 3/12/2014 1:31:47 PM
+*/
 
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
@@ -549,7 +557,7 @@ CREATE TABLE `nessus_results` (
   KEY `nessus_pluginID_index` (`pluginID`) USING HASH,
   KEY `nessus_host_index` (`agency`,`scan_start`,`scan_end`,`report_name`,`port`,`service`,`protocol`) USING HASH,
   FULLTEXT KEY `nessus_plugin_index` (`pluginName`,`pluginFamily`,`severity`,`cvss_vector`,`risk_factor`,`description`,`synopsis`,`see_also`,`plugin_output`,`solution`,`cveList`,`bidList`,`msftList`)
-) ENGINE=MyISAM AUTO_INCREMENT=743966 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=817630 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nessus_tags
@@ -558,13 +566,13 @@ DROP TABLE IF EXISTS `nessus_tags`;
 CREATE TABLE `nessus_tags` (
   `tagID` int(10) NOT NULL AUTO_INCREMENT,
   `bios_uuid` varchar(50) DEFAULT NULL,
-  `fqdn` varchar(100) DEFAULT NULL,  
-  `host_end` varchar(10) DEFAULT NULL, 
-  `host_name` varchar(50) NOT NULL,  
-  `host_start` varchar(10) DEFAULT NULL, 
+  `fqdn` varchar(100) DEFAULT NULL,
+  `host_end` varchar(10) DEFAULT NULL,
+  `host_name` varchar(50) NOT NULL,
+  `host_start` varchar(10) DEFAULT NULL,
   `ip_addr` varchar(15) DEFAULT NULL,
   `local_checks_proto` varchar(255) DEFAULT NULL,
-  `mac_addr` varchar(17) DEFAULT NULL,  
+  `mac_addr` varchar(17) DEFAULT NULL,
   `netbios` varchar(16) DEFAULT NULL,
   `operating_system` varchar(100) DEFAULT NULL,
   `operating_system_unsupported` varchar(5) DEFAULT NULL,
@@ -586,7 +594,7 @@ CREATE TABLE `nessus_tags` (
   `system_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tagID`),
   KEY `compliance_index` (`ip_addr`,`mac_addr`,`fqdn`,`netbios`,`operating_system`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=220321 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=221326 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for nessus_temp_severity
@@ -621,6 +629,19 @@ CREATE TABLE `nessus_tmp_itemType` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- ----------------------------
+-- Table structure for nmap_host_nse_xml
+-- ----------------------------
+DROP TABLE IF EXISTS `nmap_host_nse_xml`;
+CREATE TABLE `nmap_host_nse_xml` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `host_id` int(11) unsigned NOT NULL,
+  `script_id` varchar(255) NOT NULL,
+  `script_output` text,
+  PRIMARY KEY (`id`),
+  KEY `nse_xml` (`id`,`host_id`,`script_id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=142095 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
 -- Table structure for nmap_host_trace_xml
 -- ----------------------------
 DROP TABLE IF EXISTS `nmap_host_trace_xml`;
@@ -634,7 +655,7 @@ CREATE TABLE `nmap_host_trace_xml` (
   `hop_rtt` varchar(10) DEFAULT NULL,
   `hop_host` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=186 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=630 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_hosts_xml
@@ -643,25 +664,14 @@ DROP TABLE IF EXISTS `nmap_hosts_xml`;
 CREATE TABLE `nmap_hosts_xml` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `runstats_id` int(11) unsigned DEFAULT NULL,
-  `status_state` enum('') DEFAULT NULL,
-  `status_reason` enum('') DEFAULT NULL,
+  `status_state` varchar(10) DEFAULT NULL,
+  `status_reason` varchar(10) DEFAULT NULL,
   `address_addr` varchar(15) DEFAULT '',
-  `address_addrtype` enum('') DEFAULT '',
+  `address_addrtype` varchar(255) DEFAULT '',
   `hostname_name` varchar(255) DEFAULT NULL,
-  `hostname_type` enum('') DEFAULT NULL,
+  `hostname_type` varchar(255) DEFAULT NULL,
   `extraports_state` varchar(25) DEFAULT NULL,
   `extraports_count` varchar(5) DEFAULT NULL,
-  `os_portused_state` text,
-  `os_portused_proto` text,
-  `os_portused_portid` text,
-  `os_osclass_type` text,
-  `os_osclass_vendor` text,
-  `os_osclass_osfamily` text,
-  `os_osclass_accuracy` text,
-  `os_osmatch_name` text,
-  `os_osmatch_accuracy` text,
-  `os_osmatch_line` text,
-  `os_osfingerprint` text,
   `uptime_seconds` text,
   `uptime_lastboot` text,
   `tcpsequence_index` text,
@@ -676,22 +686,58 @@ CREATE TABLE `nmap_hosts_xml` (
   `times_rttvar` varchar(5) DEFAULT NULL,
   `times_to` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `hosts_xml` (`id`,`runstats_id`,`status_state`) USING HASH
-) ENGINE=MyISAM AUTO_INCREMENT=53925 DEFAULT CHARSET=latin1;
+  KEY `hosts_xml` (`id`,`runstats_id`,`status_state`(1)) USING HASH
+) ENGINE=MyISAM AUTO_INCREMENT=72554 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Table structure for nmap_nse_xml
+-- Table structure for nmap_osclass_xml
 -- ----------------------------
-DROP TABLE IF EXISTS `nmap_nse_xml`;
-CREATE TABLE `nmap_nse_xml` (
+DROP TABLE IF EXISTS `nmap_osclass_xml`;
+CREATE TABLE `nmap_osclass_xml` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `host_or_port_id` int(11) unsigned NOT NULL,
-  `script_type` enum('') NOT NULL,
+  `runstats_id` int(11) unsigned DEFAULT NULL,
+  `host_id` int(11) unsigned DEFAULT NULL,
+  `osmatch_id` int(11) unsigned DEFAULT NULL,
+  `os_osclass_type` varchar(50) DEFAULT NULL,
+  `os_osclass_vendor` varchar(50) DEFAULT NULL,
+  `os_osclass_osfamily` varchar(50) DEFAULT NULL,
+  `os_osclass_osgen` varchar(10) DEFAULT NULL,
+  `os_osclass_accuracy` varchar(3) DEFAULT NULL,
+  `os_osclass_cpe` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=64121 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Table structure for nmap_osmatch_xml
+-- ----------------------------
+DROP TABLE IF EXISTS `nmap_osmatch_xml`;
+CREATE TABLE `nmap_osmatch_xml` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `runstats_id` int(11) unsigned DEFAULT NULL,
+  `host_id` int(11) unsigned DEFAULT NULL,
+  `os_portused_state` varchar(100) DEFAULT NULL,
+  `os_portused_proto` varchar(50) DEFAULT NULL,
+  `os_portused_portid` varchar(25) DEFAULT NULL,
+  `os_osmatch_name` varchar(50) DEFAULT NULL,
+  `os_osmatch_accuracy` varchar(3) DEFAULT NULL,
+  `os_osmatch_line` varchar(10) DEFAULT NULL,
+  `os_osfingerprint` text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=64018 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Table structure for nmap_port_nse_xml
+-- ----------------------------
+DROP TABLE IF EXISTS `nmap_port_nse_xml`;
+CREATE TABLE `nmap_port_nse_xml` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `host_id` int(11) unsigned NOT NULL,
+  `port_id` int(11) NOT NULL,
   `script_id` varchar(255) NOT NULL,
-  `script_output` tinytext NOT NULL,
+  `script_output` text,
   PRIMARY KEY (`id`),
-  KEY `nse_xml` (`id`,`host_or_port_id`,`script_type`,`script_id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=141542 DEFAULT CHARSET=utf8;
+  KEY `nse_xml` (`id`,`host_id`,`script_id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=142127 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_ports_xml
@@ -700,18 +746,20 @@ DROP TABLE IF EXISTS `nmap_ports_xml`;
 CREATE TABLE `nmap_ports_xml` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `host_id` int(11) unsigned NOT NULL,
-  `port_protocol` enum('') DEFAULT NULL,
+  `port_protocol` varchar(5) DEFAULT NULL,
   `port_portid` int(5) DEFAULT NULL,
-  `port_state` enum('') DEFAULT NULL,
+  `port_state` varchar(10) DEFAULT NULL,
   `port_service_name` varchar(100) DEFAULT NULL,
   `port_service_product` varchar(255) DEFAULT NULL,
+  `port_service_tunnel` varchar(10) DEFAULT NULL,
   `port_service_version` varchar(100) DEFAULT NULL,
+  `port_service_extrainfo` varchar(100) DEFAULT NULL,
   `port_service_servicefp` varchar(255) DEFAULT NULL,
   `port_service_method` varchar(255) DEFAULT NULL,
   `port_service_conf` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ports_xml` (`id`,`host_id`,`port_portid`,`port_state`,`port_service_name`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=215131 DEFAULT CHARSET=latin1;
+  KEY `ports_xml` (`id`,`host_id`,`port_portid`,`port_state`(1),`port_service_name`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=225151 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nmap_runstats_xml
@@ -740,7 +788,7 @@ CREATE TABLE `nmap_runstats_xml` (
   `hosts_total` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `runstats` (`id`,`agency`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_temp_hosts

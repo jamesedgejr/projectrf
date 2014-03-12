@@ -38,11 +38,6 @@ if(file_exists($uploadfile)) {
 else { 
 	exit('Failed to open the xml file');
 } 
-
-include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-
 ?>
 
 <form action="parse_v1_step2.php" method="POST">

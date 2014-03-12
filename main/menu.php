@@ -87,14 +87,6 @@
 		<td></td>
 		<td width="95%"><a href="../nmap/create_matrix.php">Create Matrix</a></td>
 	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nmap/create_jp_csv.php">Create JP CSV</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><a href="../nmap/delete.php">Delete Nmap Reports</a></td>
-	</tr>
 	<tr><td colspan="2"><hr></td></tr>
 	<tr>
 		<td colspan="2" width="150">Kismet</td>

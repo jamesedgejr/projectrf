@@ -32,10 +32,9 @@ if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
 
 
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $data = file_get_contents($uploadfile);
-$new_variables = array(); //for debugging these insane .audit file.  What new values will the come up with???
+$new_variables = array(); //for debugging these insane .audit file.  What new values will they come up with???
 /*
 <item>
 	name: "Minimum password age"

@@ -1,8 +1,7 @@
 <?php
+//total work in progress...this shit is sooooo broken.
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $report = $_POST["report"];
 if(isset($report)){
@@ -29,6 +28,9 @@ if(isset($report)){
 								nmap_runstats_xml.nmaprun_start = '$nmaprun_start' AND
 								nmap_runstats_xml.finished_time = '$finish_time'
 							";
+		$nmapid_port_stmt = $db->prepare($nmapid_port_sql);
+		$data = array($agency, $filename, $nmaprun_start, $finish_time);
+		$nmapid_port_stmt->execute($data);
 		$nmapid__port_result =& $db->getAll($nmapid_port_sql, array(), DB_FETCHMODE_ORDERED | DB_FETCHMODE_FLIPPED);
 		$nmapid_portNSE_sql = "SELECT
 						nmap_nse_xml.id as nsePortID

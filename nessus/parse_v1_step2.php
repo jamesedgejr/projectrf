@@ -38,8 +38,7 @@ else {
 } 
 
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 /*
 <ReportName>test2</ReportName>
@@ -84,11 +83,11 @@ foreach($xml->Report->ReportHost as $ReportHost){
 			VALUES 
 				(?,?,?,?,?,?,?,?)
 			";	
-	$sth = $db->prepare($sql);
+	$stmt = $db->prepare($sql);
 	$sql_data = array($fqdn,$host_end,$host_name,$host_start,$ip_addr,$mac_addr,$netbios,$operating_system);
-	$results = $db->execute($sth, $sql_data);ifDBError($results);
-	$sql = "SELECT LAST_INSERT_ID()";
-	$tagID = $db->getRow($sql);
+	$db->execute($sql_data);
+	//$sql = "SELECT LAST_INSERT_ID()";
+	$tagID = $db->lastInsertId();
 	foreach ($ReportHost->ReportItem as $ReportItem){
 		/*
 		<ReportItem>
@@ -221,9 +220,9 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					) 
 				VALUES 
 					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		$sth = $db->prepare($sql);
+		$stmt = $db->prepare($sql);
 		$sql_data = array($agency,$bidList,$certList,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$description,$iavaList,$msftList,$osvdbList,$plugin_output,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$secuniaList,$see_alsoList,$service,$severity,$solution,$synopsis,$tagID[0]);
-		$results = $db->execute($sth, $sql_data);ifDBError($results);	
+		$stmt->execute($sql_data);
 	}
 
 }
@@ -241,16 +240,4 @@ if(!empty($unique_notInIndex)){
 </td></tr></table>
 </body>
 </html>
-<?php 
 
-function ifDBError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

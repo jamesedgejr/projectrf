@@ -39,8 +39,7 @@ else {
 } 
 
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $randValue = rand();
 $startScanArray = array();
 $endScanArray = array();
@@ -182,11 +181,12 @@ foreach($xml->Report->ReportHost as $ReportHost){
 			VALUES 
 				(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 			";
-	$sth = $db->prepare($sql);
+	$stmt = $db->prepare($sql);
 	$sql_data = array($bios_uuid,$fqdn,$host_end,$host_name,$host_start,$ip_addr,$local_checks_proto,$mac_addr,$netbios,$operating_system,$operating_system_unsupported,$pcidss_compliance,$pcidss_compliance_failed,$pcidss_deprecated_ssl,$pcidss_directory_browsing,$pcidss_expired_ssl_certificate,$pcidss_high_risk_flaw,$pcidss_low_risk_flaw,$pcidss_medium_risk_flaw,$pcidss_obsolete_operating_system,$pcidss_reachable_db,$pcidss_www_header_injection,$pcidss_www_xss,$smb_login_used,$ssh_auth_meth,$ssh_login_used,$system_type);
-	$results = $db->execute($sth, $sql_data);ifDBError($results);	
-	$sql = "SELECT LAST_INSERT_ID()";
-	$tagID = $db->getRow($sql);ifDBError($result);
+	$stmt->execute($sql_data);
+	//$sql = "SELECT LAST_INSERT_ID()";
+	$tagID = $db->lastInsertId();
+	echo $tagID . "<br>";
 
 	foreach ($ReportHost->ReportItem as $ReportItem){
 		
@@ -364,9 +364,9 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				VALUES 
 					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 		";
-		$sth = $db->prepare($sql);
+		$stmt = $db->prepare($sql);
 		$sql_data = array($agency,$bidList,$canvas_package,$certList,$cpe,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$d2_elliot_name,$description,$edbList,$exploit_available,$exploit_framework_canvas,$exploit_framework_core,$exploit_framework_d2_elliot,$exploit_framework_metasploit,$exploitability_ease,$fname,$icsaList,$iavaList,$iavbList,$metasploit_name,$msftList,$osvdbList,$patch_publication_date,$plugin_modification_date,$plugin_output,$plugin_publication_date,$plugin_type,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$script_version,$secuniaList,$see_alsoList,$service,$severity,$solution,$stig_severity,$synopsis,$tagID[0],$vuln_publication_date);
-		$results = $db->execute($sth, $sql_data);ifDBError($results);		
+		$stmt->execute($sql_data);
 	}
 }
 /*
@@ -377,9 +377,9 @@ $scan_start = $startScanArray[0];
 rsort($endScanArray);
 $scan_end = $endScanArray[0];
 $sql_update_nessus_results = "UPDATE nessus_results SET scan_start = ?, scan_end = ? WHERE scan_start = ? AND scan_end = ?";
-$sth = $db->prepare($sql_update_nessus_results);
+$stmt = $db->prepare($sql_update_nessus_results);
 $sql_data = array($scan_start,$scan_end,$randValue,$randValue);
-$results = $db->execute($sth, $sql_data);ifDBError($results);	
+$stmt->execute($sql_update_nessus_results);
 
 //process and display any Nesses <tag> elements that the developer has not seen before
 $newTags = array_unique($newTag);
@@ -396,16 +396,3 @@ if(!empty($newTags)){
 </td></tr></table>
 </body>
 </html>
-<?php 
-
-function ifDBError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

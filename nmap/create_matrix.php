@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $agency_temp = explode(":", $_POST["agency"]);
 $agency = $agency_temp[0];
@@ -16,7 +15,8 @@ $agency_sql = 	"SELECT DISTINCT
 				FROM
 					nmap_runstats_xml
 				";
-$agency_result = $db->query($agency_sql);ifError($agency_result);
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 
 if($agency != ""){
 	$host_sql = "SELECT DISTINCT
@@ -27,15 +27,16 @@ if($agency != ""){
 				INNER JOIN nmap_hosts_xml ON nmap_hosts_xml.runstats_id = nmap_runstats_xml.id
 				WHERE
 					nmap_hosts_xml.status_state = 'up' AND
-					nmap_runstats_xml.agency = '$agency' AND
-					nmap_runstats_xml.filename = '$filename' AND
-					nmap_runstats_xml.nmaprun_start = '$nmaprun_start' AND
-					nmap_runstats_xml.finished_time = '$finished_time'
+					nmap_runstats_xml.agency = ? AND
+					nmap_runstats_xml.filename = ? AND
+					nmap_runstats_xml.nmaprun_start = ? AND
+					nmap_runstats_xml.finished_time = ?
 				ORDER BY
 					nmap_hosts_xml.address_addr ASC
 				";
-
-	$host_result = $db->query($host_sql);ifError($host_result);
+	$data = array($agency, $filename, $nmaprun_start, $finished_time);
+	$host_stmt = $db->prepare($host_sql);
+	$host_stmt->execute($data);
 	$port_sql = "SELECT DISTINCT
 					nmap_ports_xml.port_portid,
 					nmap_ports_xml.port_service_name
@@ -45,15 +46,15 @@ if($agency != ""){
 				INNER JOIN nmap_ports_xml ON nmap_ports_xml.host_id = nmap_hosts_xml.id
 				WHERE
 					nmap_hosts_xml.status_state = 'up' AND
-					nmap_runstats_xml.agency = '$agency' AND
-					nmap_runstats_xml.filename = '$filename' AND
-					nmap_runstats_xml.nmaprun_start = '$nmaprun_start' AND
-					nmap_runstats_xml.finished_time = '$finished_time'
+					nmap_runstats_xml.agency = ? AND
+					nmap_runstats_xml.filename = ? AND
+					nmap_runstats_xml.nmaprun_start = ? AND
+					nmap_runstats_xml.finished_time = ?
 				ORDER BY
 					nmap_ports_xml.port_service_name ASC
 				";
-
-	$port_result = $db->query($port_sql);ifError($port_result);
+	$port_stmt = $db->prepare($port_sql);
+	$port_stmt->execute($data);
 	$nse_port_sql = 	"SELECT DISTINCT
 					nmap_nse_xml.script_type,
 					nmap_nse_xml.script_id
@@ -64,14 +65,15 @@ if($agency != ""){
 				INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_ports_xml.id
 				WHERE
 					nmap_hosts_xml.status_state = 'up' AND
-					nmap_runstats_xml.agency = '$agency' AND
-					nmap_runstats_xml.filename = '$filename' AND
-					nmap_runstats_xml.nmaprun_start = '$nmaprun_start' AND
-					nmap_runstats_xml.finished_time = '$finished_time'
+					nmap_runstats_xml.agency = ? AND
+					nmap_runstats_xml.filename = ? AND
+					nmap_runstats_xml.nmaprun_start = ? AND
+					nmap_runstats_xml.finished_time = ?
 				ORDER BY
 					nmap_nse_xml.script_id ASC
 				";
-	$nse_port_result = $db->query($nse_port_sql);ifError($nse_port_result);
+	$nse_port_stmt = $db->prepare($nse_port_sql);
+	$nse_port_stmt->execute($data);
 	$nse_host_sql = "SELECT DISTINCT
 						nmap_nse_xml.script_type,
 						nmap_nse_xml.script_id
@@ -81,14 +83,15 @@ if($agency != ""){
 					INNER JOIN nmap_nse_xml ON nmap_nse_xml.host_or_port_id = nmap_hosts_xml.id
 					WHERE
 						nmap_hosts_xml.status_state = 'up' AND
-						nmap_runstats_xml.agency = '$agency' AND
-						nmap_runstats_xml.filename = '$filename' AND
-						nmap_runstats_xml.nmaprun_start = '$nmaprun_start' AND
-						nmap_runstats_xml.finished_time = '$finished_time'
+						nmap_runstats_xml.agency = ? AND
+						nmap_runstats_xml.filename = ? AND
+						nmap_runstats_xml.nmaprun_start = ? AND
+						nmap_runstats_xml.finished_time = ?
 					ORDER BY
 						nmap_nse_xml.script_id ASC
 					";
-	$nse_host_result = $db->query($nse_host_sql);ifError($nse_host_result);
+	$nse_host_stmt = $db->prepare($nse_host_sql);
+	$nse_host_stmt->execute($data);
 }//end if
 ?>
 
@@ -128,7 +131,7 @@ select {font-family: courier new}
   	  <select NAME="agency" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
 		<option value="dlskeaAKEJFDAKE" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]]</option>
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($agency_row = $agency_stmt->fetch(DPO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["filename"], 20));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["finished_time"]);
@@ -155,7 +158,7 @@ select {font-family: courier new}
 			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:600px;margin:5px 0 5px 0;" id="hostselectall">
 			<option value='dlskeaAKEJFDAKE'>[Host Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[IP Address]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
-			while($host_row = $host_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($host_row = $host_stmt->fetch(DPO::FETCH_ASSOC)){
 			  $value1 = str_replace(' ','&nbsp;',str_pad($host_row["hostname_name"], 40));
 			  $value2 = str_replace(' ','&nbsp;',str_pad($host_row["address_addr"], 40));
 			  echo "<OPTION value='" . $host_row["address_addr"] . "'>" . $value1 . $value2 . "</OPTION>";
@@ -182,12 +185,12 @@ select {font-family: courier new}
 			<SELECT MULTIPLE NAME="nse[]" SIZE="15" style="width:290px;margin:5px 0 5px 0;" id="nseselectall">
 			<option value='dlskeaAKEJFDAKE'>[Type]&nbsp;&nbsp;&nbsp;&nbsp;[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
-			while($nse_port_row = $nse_port_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($nse_port_row = $nse_port_stmt->fetch(DPO::FETCH_ASSOC)){
 				$value1 = str_replace(' ','&nbsp;',str_pad($nse_port_row["script_type"], 10));
 				$value2 = str_replace(' ','&nbsp;',str_pad($nse_port_row["script_id"], 30));
 				echo "<OPTION value='" . $nse_port_row["script_type"] . ":" . $nse_port_row["script_id"] . "'>" . $value1 . $value2 . "</OPTION>";
 			}//end while
-			while($nse_host_row = $nse_host_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($nse_host_row = $nse_host_stmt->fetch(DPO::FETCH_ASSOC)){
 				$value1 = str_replace(' ','&nbsp;',str_pad($nse_host_row["script_type"], 10));
 				$value2 = str_replace(' ','&nbsp;',str_pad($nse_host_row["script_id"], 30));
 				echo "<OPTION value='" . $nse_host_row["script_type"] . ":" . $nse_host_row["script_id"] . "'>" . $value1 . $value2 . "</OPTION>";
@@ -214,7 +217,7 @@ select {font-family: courier new}
 			<SELECT MULTIPLE NAME="ports[]" SIZE="15" style="width:290px;margin:5px 0 5px 0;" id="portselectall">
 			<option value='dlskeaAKEJFDAKE'>[Num]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Name]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
-			while($port_row = $port_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($port_row = $port_stmt->fetch(DPO::FETCH_ASSOC)){
 				$value1 = str_replace(' ','&nbsp;',str_pad($port_row["port_portid"], 10));
 				$value2 = str_replace(' ','&nbsp;',str_pad($port_row["port_service_name"], 30));
 				echo "<OPTION value='" . $port_row["port_portid"] . ":" . $port_row["port_service_name"] . "'>" . $value1 . $value2 . "</OPTION>";
@@ -291,15 +294,3 @@ select {font-family: courier new}
 </td></tr></table>
 </body>
 </html>
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>
