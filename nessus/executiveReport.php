@@ -2,27 +2,20 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$agency = $_POST["agency"];
-$report_name = $_POST["report_name"];
-$scan_start = $_POST["scan_start"];
-$scan_end = $_POST["scan_end"];
-$byVuln = $_POST["byVuln"];
-
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
 }
-$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
-
 foreach ($hostArray as $hA){
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
 }
 $family = $_POST["family"];
-$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), INDEX ndx_pluginFamily (pluginFamily))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
@@ -30,6 +23,12 @@ foreach ($family as $f){
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($f));
 }
+
+$agency = $_POST["agency"];
+$report_name = $_POST["report_name"];
+$scan_start = $_POST["scan_start"];
+$scan_end = $_POST["scan_end"];
+$byVuln = $_POST["byVuln"];
 
 $diff_seconds = $scan_end - $scan_start;
 $diff_hours = floor($diff_seconds/3600);

@@ -306,8 +306,10 @@ foreach($xml->host as $host){
 		$stmt = $db->prepare($sql);
 		$data = array($runstats_id,$address_addr,$status_state,$status_reason,$address_addrtype,$hostname_name,$hostname_type);
 		$stmt->execute($data);
+	}
 }//end host foreach
 
 ?>
+
 </td></tr></table>
 </body></html>

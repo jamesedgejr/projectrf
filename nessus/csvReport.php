@@ -1,48 +1,48 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$hostPost = $_POST["host"];
-foreach($hostPost as $key => $value) {
-	if ($value == "REMOVE") unset($hostPost[$key]);
+$hostArray = $_POST["host"];
+foreach($hostArray as $key => $value) {
+	if ($value == "REMOVE") unset($hostArray[$key]);
 }
-$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
-foreach ($hostPost as $hP){
+$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+
+foreach ($hostArray as $hA){
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
-	$sth = $db->prepare($sql);
-	$results = $db->execute($sth, $hP);ifError($results);
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($hA));
 }
 $family = $_POST["family"];
-$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
+$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), INDEX ndx_pluginFamily (pluginFamily))";
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($family as $f){
 	$sql="INSERT INTO nessus_tmp_family (pluginFamily) VALUES (?)";
-	$sth = $db->prepare($sql);
-	$results = $db->execute($sth, $f);ifError($results);	
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($f));
 }
-$justVulnDB = $_POST["justVulnDB"];
-$critical = $_POST["critical"];
+
+$critical = $_POST["critical"];	
 $high = $_POST["high"];
 $medium = $_POST["medium"];
 $low  = $_POST["low"];
 $info = $_POST["info"];
 $sArray = array($critical, $high, $medium, $low, $info);
-$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255))";
-$sth = $db->prepare($sql);
-$results = $db->execute($sth);ifError($results);
-
+$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255), INDEX ndx_severity (severity))";
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($sArray as $s){
 	if($s != ""){
 		$sql="INSERT INTO nessus_tmp_severity (severity) VALUES (?)";
-		$sth = $db->prepare($sql);
-		$results = $db->execute($sth, $s);ifError($results);	
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array($s));
 	}
 }
 
+$justVulnDB = $_POST["justVulnDB"];
 $agency = $_POST["agency"];
 $report_name = $_POST["report_name"];
 $scan_start = $_POST["scan_start"];
@@ -112,9 +112,9 @@ WHERE
 	nessus_results.scan_end =  ?
 ";
 
-$sth = $db->prepare($sql);
+$stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
-$results = $db->execute($sth, $data);ifError($results);
+$stmt->execute($data);
 fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\"\n");
 /*
 CVE or BID
@@ -130,7 +130,7 @@ Solution
 See Also
 Plugin Output
 */
-while($row = $results->fetchRow(DB_FETCHMODE_ASSOC)){
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
 	//not all of this will end up in the CSV file but it may someday...
 	//or i'll keep adding options when creating the CSV.
@@ -232,16 +232,3 @@ a:hover {text-decoration: underline}
 </tr></table>
 </body>
 </html>
-<?php
-
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );ifDBError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 #create temporary table a(a int primary key, b char(1)) engine=innodb;
 #create index b on a (b);
@@ -11,32 +10,51 @@ foreach($host as $key => $value) {
 	if ($value == "dlskeaAKEJFDAKE") unset($host[$key]);
 }
 $sql = "CREATE temporary TABLE nmap_tmp_hosts (address_addr VARCHAR(15))";
-$result = $db->query($sql);ifDBError($result);
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($host as $h){
-	$sql="INSERT INTO nmap_tmp_hosts (address_addr) VALUES ('$h')";
-	$result = $db->query($sql);ifDBError($result);
+	$sql="INSERT INTO nmap_tmp_hosts (address_addr) VALUES (?)";
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($h));
 }
 $nse = $_POST["nse"];
 foreach($nse as $key => $value) {
 	if ($value == "dlskeaAKEJFDAKE") unset($nse[$key]);
 }
-$sql = "CREATE temporary TABLE nmap_tmp_nse (script_type VARCHAR(255), script_id VARCHAR(255) )";
-$result = $db->query($sql);ifDBError($result);
+$sql = "CREATE temporary TABLE nmap_tmp_port_nse (script_id VARCHAR(255) )";
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($nse as $n){
 	$nseArray = explode(":", $n);
-	$sql="INSERT INTO nmap_tmp_nse (script_type, script_id) VALUES ('$nseArray[0]', '$nseArray[1]')";
-	$result = $db->query($sql);ifDBError($result);	
+	if($nseArray[0] == "Port"){
+		$sql="INSERT INTO nmap_tmp_port_nse (script_id) VALUES (?)";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array($nseArray[1]));
+	}
+}
+$sql = "CREATE temporary TABLE nmap_tmp_host_nse (script_id VARCHAR(255) )";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+foreach ($nse as $n){
+	$nseArray = explode(":", $n);
+	if($nseArray[0] == "Host"){
+		$sql="INSERT INTO nmap_tmp_host_nse (script_id) VALUES (?)";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array($nseArray[1]));
+	}
 }
 $ports = $_POST["ports"];
 foreach($ports as $key => $value) {
 	if ($value == "dlskeaAKEJFDAKE") unset($ports[$key]);
 }
 $sql = "CREATE temporary TABLE nmap_tmp_ports (port_portid VARCHAR(255), port_service_name VARCHAR(255) )";
-$result = $db->query($sql);ifDBError($result);
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($ports as $p){
 	$portsArray = explode(":", $p);
-	$sql="INSERT INTO nmap_tmp_ports (port_portid, port_service_name) VALUES ('$portsArray[0]', '$portsArray[1]')";
-	$result = $db->query($sql);ifDBError($result);	
+	$sql="INSERT INTO nmap_tmp_ports (port_portid, port_service_name) VALUES (?,?)";
+	$stmt = $db->prepare($sql);
+	$stmt->execute($portsArray[0],$portsArray[1]);
 }
 $agency = $_POST["agency"];
 $filename = $_POST["filename"];
@@ -49,10 +67,12 @@ $closed = $_POST["isClosed"];
 $filtered  = $_POST["isFiltered"];
 $sArray = array($open, $closed, $filtered);
 $sql = "CREATE temporary TABLE nmap_tmp_portState (portState VARCHAR(255))";
-$result = $db->query($sql);ifDBError($result);
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($sArray as $sA){
-	$sql="INSERT INTO nmap_tmp_portState (portState) VALUES ('$sA')";
-	$result = $db->query($sql);ifDBError($result);	
+	$sql="INSERT INTO nmap_tmp_portState (portState) VALUES (?)";
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($sA));
 }
 
 date_default_timezone_set('UTC');
@@ -125,16 +145,3 @@ a:hover {text-decoration: underline}
 </tr></table>
 </body>
 </html>
-<?php
-
-function ifDBError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

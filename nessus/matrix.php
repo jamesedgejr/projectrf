@@ -3,20 +3,19 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $hostArray = $_POST["host"];
-foreach($hostPost as $key => $value) {
+foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
 }
-$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
-
 foreach ($hostArray as $hA){
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
 }
 $family = $_POST["family"];
-$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), INDEX ndx_pluginFamily (pluginFamily))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
@@ -25,21 +24,13 @@ foreach ($family as $f){
 	$stmt->execute(array($f));
 }
 
-$agency = $_POST["agency"];
-$report_name = $_POST["report_name"];
-$scan_start = $_POST["scan_start"];
-$scan_end = $_POST["scan_end"];
-$isPlugName = ($_POST["isPlugName"] == "y") ? "y" : "n";
-$isPlugFam = ($_POST["isPlugFam"] == "y") ? "y" : "n";
-$pivot = $_POST["pivot"];
-
 $critical = $_POST["critical"];	
 $high = $_POST["high"];
 $medium = $_POST["medium"];
 $low  = $_POST["low"];
 $info = $_POST["info"];
 $sArray = array($critical, $high, $medium, $low, $info);
-$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255), INDEX ndx_severity (severity))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($sArray as $s){
@@ -49,6 +40,14 @@ foreach ($sArray as $s){
 		$stmt->execute(array($s));
 	}
 }
+
+$agency = $_POST["agency"];
+$report_name = $_POST["report_name"];
+$scan_start = $_POST["scan_start"];
+$scan_end = $_POST["scan_end"];
+$isPlugName = ($_POST["isPlugName"] == "y") ? "y" : "n";
+$isPlugFam = ($_POST["isPlugFam"] == "y") ? "y" : "n";
+$pivot = $_POST["pivot"];
 
 date_default_timezone_set('UTC');
 $myDir = "/var/www/projectRF/nessus/csvfiles/";

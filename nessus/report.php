@@ -6,17 +6,16 @@ $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
 }
-$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
-
 foreach ($hostArray as $hA){
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
 }
 $family = $_POST["family"];
-$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), INDEX ndx_pluginFamily (pluginFamily))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
@@ -31,7 +30,7 @@ $medium = $_POST["medium"];
 $low  = $_POST["low"];
 $info = $_POST["info"];
 $sArray = array($critical, $high, $medium, $low, $info);
-$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_severity (severity VARCHAR(255), INDEX ndx_severity (severity))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($sArray as $s){
@@ -333,9 +332,9 @@ $diff_seconds -= $diff_minutes * 60;
 	<?php  
 		$lineCount = 1;
 		echo "<table><tr>";
-		foreach($hostPost as $hP){ 
+		foreach($hostArray as $hA){ 
 			if($lineCount%10 == 1) {	echo "<tr>"; }
-			echo "<td class=right><p>" . $hP . "</p></td>";
+			echo "<td class=right><p>" . $hA . "</p></td>";
 			if($lineCount%10 == 0) {	echo "</tr>"; }
 			$lineCount++;
 		}
@@ -398,7 +397,9 @@ WHERE
 $where_data = array($agency, $report_name, $scan_start, $scan_end);
 $main_stmt = $db->prepare($main_sql);
 $main_stmt->execute($where_data);
-if(!$main_stmt->rowCount();){
+$test = $main_stmt->rowCount();
+echo $test . "<br>";
+if(!$main_stmt->rowCount()){
 	echo "<hr><p align=\"center\"><b>No Rows were returned.  You may have not selected any hosts or there are no hosts with the severity of vulnerability or Nessus Plugin Family you chose to display.</b></p><hr>";
 }
 while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
@@ -806,7 +807,7 @@ WHERE
 $data = array($pluginID, $agency, $report_name, $scan_start, $scan_end);
 $host_stmt = $db->prepare($host_sql);
 $host_stmt->execute($data);
-$num_returned_hosts = host_stmt->rowCount();
+$num_returned_hosts = $host_stmt->rowCount();
 
 
 ?>

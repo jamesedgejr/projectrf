@@ -9,14 +9,14 @@ include('../main/config.php');
 require_once( 'DB.php' );
 $db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );ifError($db);
 
-$hostPost = $_POST["host"];
-foreach($hostPost as $key => $value) {
-	if ($value == "REMOVE") unset($hostPost[$key]);
+$hostArray = $_POST["host"];
+foreach($hostArray as $key => $value) {
+	if ($value == "REMOVE") unset($hostArray[$key]);
 }
-$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255))";
+$sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
 $result = $db->query($sql);ifError($result);
-foreach ($hostPost as $hP){
-	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES ('$hP')";
+foreach ($hostArray as $hA){
+	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES ('$hA')";
 	$result = $db->query($sql);ifError($result);	
 }
 
