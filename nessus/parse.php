@@ -57,84 +57,84 @@ foreach($xml->Report->ReportHost as $ReportHost){
 	foreach($ReportHost->HostProperties->tag as $tag){
 		switch ($tag[name]) {
 			case "bios-uuid":
-				$bios_uuid = $tag;
+				$bios_uuid = mysql_real_escape_string($tag);
 				break;
 			case "host-fqdn":
-				$fqdn = $tag;
+				$fqdn = mysql_real_escape_string($tag);
 				break;
 			case "HOST_END":
-				$host_end = $tag;
+				$host_end = mysql_real_escape_string($tag);
 				break;
 			case "HOST_START":
-				$host_start = $tag;
+				$host_start = mysql_real_escape_string($tag);
 				break;
 			case "host-ip":
-				$ip_addr = $tag;
+				$ip_addr = mysql_real_escape_string($tag);
 				break;
 			case "local-checks-proto":
-				$local_checks_proto = $tag;
+				$local_checks_proto = mysql_real_escape_string($tag);
 				break;
 			case "mac-address":
-				$mac_addr = $tag;
+				$mac_addr = mysql_real_escape_string($tag);
 				break;
 			case "netbios-name":
-				$netbios = $tag;
+				$netbios = mysql_real_escape_string($tag);
 				break;
 			case "operating-system":
-				$operating_system = $tag;
+				$operating_system = mysql_real_escape_string($tag);
 				break;
 			case "operating-system-unsupported":
-				$operating_system_unsupported = $tag;
+				$operating_system_unsupported = mysql_real_escape_string($tag);
 				break;
 /*-----PCI DSS COMPLIANCE -------------------------------------------------*/
 			case "pcidss:compliance:failed":
-				$pcidss_compliance_failed = $tag;
+				$pcidss_compliance_failed = mysql_real_escape_string($tag);
 				break;
 			case "pci-dss-compliance":
-				$pcidss_compliance = $tag;
+				$pcidss_compliance = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:low_risk_flaw":
-				$pcidss_low_risk_flaw = $tag;
+				$pcidss_low_risk_flaw = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:medium_risk_flaw":
-				$pcidss_medium_risk_flaw = $tag;
+				$pcidss_medium_risk_flaw = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:high_risk_flaw":
-				$pcidss_high_risk_flaw = $tag;
+				$pcidss_high_risk_flaw = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:www:xss":
-				$pcidss_www_xss = $tag;
+				$pcidss_www_xss = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:www:header_injection":
-				$pcidss_www_header_injection = $tag;
+				$pcidss_www_header_injection = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:directory_browsing":
-				$pcidss_directory_browsing = $tag;
+				$pcidss_directory_browsing = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:obsolete_operating_system":
-				$pcidss_obsolete_operating_system = $tag;
+				$pcidss_obsolete_operating_system = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:deprecated_ssl":
-				$pcidss_deprecated_ssl = $tag;
+				$pcidss_deprecated_ssl = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:reachable_db":
-				$pcidss_reachable_db = $tag;
+				$pcidss_reachable_db = mysql_real_escape_string($tag);
 				break;
 			case "pcidss:expired_ssl_certificate":
-				$pcidss_expired_ssl_certificate = $tag;
+				$pcidss_expired_ssl_certificate = mysql_real_escape_string($tag);
 				break;
 /*-----PCI DSS COMPLIANCE -------------------------------------------------*/
 			case "smb-login-used":
-				$smb_login_used = $tag;
+				$smb_login_used = mysql_real_escape_string($tag);
 				break;
 			case "ssh-auth-meth":
-				$ssh_auth_meth = $tag;
+				$ssh_auth_meth = mysql_real_escape_string($tag);
 				break;
 			case "ssh-login-used":
-				$ssh_login_used = $tag;
+				$ssh_login_used = mysql_real_escape_string($tag);
 				break;
 			case "system-type":
-				$system_type = $tag;
+				$system_type = mysql_real_escape_string($tag);
 				break;
 			default:  //who knows all the wonderful tags nessus has created.  I specifically ignore MSxx-xxx, netstat-XXXX, patch-summary-XXXX, and traceroute tags.
 					if(!preg_match("/MS\d+-\d+/i", $tag[name])){
@@ -184,7 +184,6 @@ foreach($xml->Report->ReportHost as $ReportHost){
 	$stmt = $db->prepare($sql);
 	$sql_data = array($bios_uuid,$fqdn,$host_end,$host_name,$host_start,$ip_addr,$local_checks_proto,$mac_addr,$netbios,$operating_system,$operating_system_unsupported,$pcidss_compliance,$pcidss_compliance_failed,$pcidss_deprecated_ssl,$pcidss_directory_browsing,$pcidss_expired_ssl_certificate,$pcidss_high_risk_flaw,$pcidss_low_risk_flaw,$pcidss_medium_risk_flaw,$pcidss_obsolete_operating_system,$pcidss_reachable_db,$pcidss_www_header_injection,$pcidss_www_xss,$smb_login_used,$ssh_auth_meth,$ssh_login_used,$system_type);
 	$stmt->execute($sql_data);
-	//$sql = "SELECT LAST_INSERT_ID()";
 	$tagID = $db->lastInsertId();
 	echo $tagID . "<br>";
 
@@ -222,7 +221,7 @@ foreach($xml->Report->ReportHost as $ReportHost){
 		}
 		$d2_elliot_name = htmlspecialchars($ReportItem->d2_elliot_name, ENT_QUOTES);
 		$description = htmlspecialchars($ReportItem->description, ENT_QUOTES);
-		foreach ($ReportItem->edb-id as $edb) {
+		foreach ($ReportItem->{'edb-id'} as $edb) {
 			$edbList = $edbList . "," . htmlspecialchars($edb);
 		}
 		$exploit_available = htmlspecialchars($ReportItem->exploit_available, ENT_QUOTES);
