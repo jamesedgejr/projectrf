@@ -1,8 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
 $agency = $agency_temp[0];
 $report_name = $agency_temp[1];
@@ -16,8 +14,8 @@ $agency_sql = 	"SELECT DISTINCT
 				FROM 
 					nessus_results
 				";
-$agency_result = $db->query($agency_sql);ifError($plugin_result);
-
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 if($agency != ""){
 	$host_sql = "SELECT DISTINCT
 					nessus_tags.host_name,
@@ -28,28 +26,31 @@ if($agency != ""){
 					nessus_results
 				INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
 				WHERE 
-					nessus_results.agency='$agency' AND
-					nessus_results.report_name='$report_name' AND
-					nessus_results.scan_start='$scan_start' AND
-					nessus_results.scan_end='$scan_end'
+					nessus_results.agency = ? AND
+					nessus_results.report_name = ? AND
+					nessus_results.scan_start = ? AND
+					nessus_results.scan_end = ?
 				ORDER BY 
 					nessus_tags.host_name
 				";
-
-	$host_result = $db->query($host_sql);ifError($host_result);
+	$host_data = array($agency, $report_name, $scan_start, $scan_end);
+	$host_stmt = $db->prepare($host_sql);
+	$host_stmt->execute($host_data);
 	$plugin_sql = 	"SELECT DISTINCT 
 						nessus_results.pluginFamily 
 					FROM 
 						nessus_results 
-					WHERE 
-						nessus_results.agency='$agency' AND 
-						nessus_results.report_name='$report_name' AND
-						nessus_results.scan_start='$scan_start' AND
-						nessus_results.scan_end='$scan_end'
+				WHERE 
+					nessus_results.agency = ? AND
+					nessus_results.report_name = ? AND
+					nessus_results.scan_start = ? AND
+					nessus_results.scan_end = ?
 					ORDER BY 
 						nessus_results.pluginFamily
 					";
-	$plugin_result = $db->query($plugin_sql);ifError($plugin_result);
+	$plugin_data = array($agency, $report_name, $scan_start, $scan_end);
+	$plugin_stmt = $db->prepare($plugin_sql);
+	$plugin_stmt->execute($plugin_data);
 }//end if
 ?>
 
@@ -79,21 +80,19 @@ select {font-family: courier new}
 </head>
 <BODY>
 <table width="100%"><tr><td width="200px" valign="top"><?php include '../main/menu.php'; ?></td>
-<td>
-<table style="text-align: left; width: 850px;" border="0" cellpadding="0" cellspacing="0">
+<td valign="top">
+<table style="text-align: left; width: 950px;" border="0" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width: 600px;">
-	  <p>The standard Comma Delimited (CSV) file produced by Nessus leaves me wanting more.  This script provides way more information and as I continue to improve it even more information and options will be provided</p>
-	  <p>As of right now you can choose to list all vulnerabilities by CVE or BID.</p>
+      <td colspan="2">
 	  <form name="f1"  action="" method="post">
 	  <p align="center">[ Nessus Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nessus Family of Plugins you want to include.</p>
-  	  <select NAME="agency" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
-		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
+  	  <select NAME="agency" SIZE="10"  style="width:950px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Report Name]",70)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
+			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
-			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 20));
+			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 70));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["scan_end"]);
 				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $agency_row["agency"] . ":" . $agency_row["report_name"] . ":" . $agency_row["scan_start"] . ":" . $agency_row["scan_end"] . "'>" . $value1 . $value2 . $value3 . "</option>";
@@ -101,6 +100,10 @@ select {font-family: courier new}
 			?>
 	  </select>
 	  </form>
+	  </td>
+	</tr>  
+	<tr>
+	  <td style="width: 700px;" valign="top"> 
 	<form name="f2" action="csvReport.php" method="post">
 		<?php
 		//host list
@@ -115,10 +118,10 @@ select {font-family: courier new}
 		else {
 		?>
 			<p align="center">[ Hosts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('hostselectall',true)" />
-			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:600px;margin:5px 0 5px 0;" id="hostselectall">
-			<option value='REMOVE'>[Host Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[IP Address]&nbsp;&nbsp;&nbsp;&nbsp;[FQDN]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[NetBIOS]</option>
+			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:700px;margin:5px 0 5px 0;" id="hostselectall">
 		<?php
-			while($host_row = $host_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			echo "<option value=\"REMOTE\">".str_replace(' ','&nbsp;',str_pad("[Host Name]", 16)).str_replace(' ','&nbsp;',str_pad("[IP Address]", 16)).str_replace(' ','&nbsp;',str_pad("[FQDN]", 35)).str_replace(' ','&nbsp;',str_pad("[NetBIOS]", 16))."</option>";
+			while($host_row = $host_stmt->fetch(PDO::FETCH_ASSOC)){
 			/*
 			Nessus host_name can be an IP address or domain name depending on what was used to start the scan.  This is a pain in the ass.  Just saying :-)
 			FQDN for host names mess up my nice neat columns so I'm going to just pull the host name from the FQDN.  How to tell between FQDN and IP?  Some pretty shitty code :-)
@@ -127,7 +130,7 @@ select {font-family: courier new}
 			  if(strlen($host_check[0] < 3)){ $host_name = $host_check[0];} else { $host_name = $host_row["host_name"]; }
 			  $value1 = str_replace(' ','&nbsp;',str_pad($host_name, 16));
 			  $value2 = str_replace(' ','&nbsp;',str_pad($host_row["ip_addr"], 16));
-			  $value3 = str_replace(' ','&nbsp;',str_pad($host_row["fqdn"], 25));
+			  $value3 = str_replace(' ','&nbsp;',str_pad($host_row["fqdn"], 35));
 			  $value4 = str_replace(' ','&nbsp;',str_pad($host_row["netbios"], 16));
 			  echo "<OPTION value='" . $host_row["host_name"] . "'>" . $value1 . $value2 . $value3 . $value4 . "</OPTION>";
 			}//end while
@@ -148,9 +151,9 @@ select {font-family: courier new}
 		else {
 		?>
 			<p align="center">[ Plugin Families ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('familyselectall',true)" />
-			<SELECT MULTIPLE NAME="family[]" SIZE="15" style="width:600px;margin:5px 0 5px 0;" id="familyselectall">
+			<SELECT MULTIPLE NAME="family[]" SIZE="15" style="width:700px;margin:5px 0 5px 0;" id="familyselectall">
 		<?php
-			while($plugin_row = $plugin_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($plugin_row = $plugin_stmt->fetch(PDO::FETCH_ASSOC)){
 				if($plugin_row["pluginFamily"] == ""){
 					echo "<OPTION value='" . $plugin_row["pluginFamily"] . "'>Information Only</OPTION>";
 				} else {
@@ -268,15 +271,3 @@ select {font-family: courier new}
 </td></tr></table>
 </body>
 </html>
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

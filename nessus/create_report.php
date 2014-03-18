@@ -34,10 +34,8 @@ if($agency != ""){
 					nessus_tags.host_name
 				";
 	$host_data = array($agency, $report_name, $scan_start, $scan_end);
-	print_r($host_data);
 	$host_stmt = $db->prepare($host_sql);
 	$host_stmt->execute($host_data);
-	$test = $host_stmt->rowCount();echo $test . "<hr>";
 	$plugin_sql = 	"SELECT DISTINCT 
 						nessus_results.pluginFamily 
 					FROM 
@@ -174,17 +172,11 @@ select {font-family: courier new}
 	  <tr>
 	  <td>
 		<p>Who created this report?</p>
-<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w1">
-Mainstream Security
-James Edge
-Attack & Penetration Testing Practice Manager
-james@mainstreamsecurity.com
-</textarea></p>
+		<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w1"></textarea></p>
 	  </td>
 	  <td>
 		<p>Who is this report for?</p>
-<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w2">
-</textarea></p>
+		<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w2"></textarea></p>
 	  </td>
 	  </tr>
 	</table>  

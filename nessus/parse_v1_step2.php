@@ -84,9 +84,8 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				(?,?,?,?,?,?,?,?)
 			";	
 	$stmt = $db->prepare($sql);
-	$sql_data = array($fqdn,$host_end,$host_name,$host_start,$ip_addr,$mac_addr,$netbios,$operating_system);
-	$db->execute($sql_data);
-	//$sql = "SELECT LAST_INSERT_ID()";
+	$data = array($fqdn,$host_end,$host_name,$host_start,$ip_addr,$mac_addr,$netbios,$operating_system);
+	$stmt->execute($data);
 	$tagID = $db->lastInsertId();
 	foreach ($ReportHost->ReportItem as $ReportItem){
 		/*
@@ -157,7 +156,7 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					$cvss_temporal_score = $cvss_temporal_vector = "";
 			}
 			if($dataArray[$x] == 'Plugin output :'){
-				$plugin_output = htmlspecialchars($dataArray[$x+1]);
+				$plugin_output = htmlspecialchars($dataArray[$x+1]);echo $plugin_output . "<hr>";
 			}
 			//CVE : CVE-2009-4074,CVE-2010-0027,CVE-2010-0244,CVE-2010-0245,CVE-2010-0246,CVE-2010-0247,CVE-2010-0248,CVE-2010-0249\nBID : 37815,37883,37884,37891,37892,37893,37894,37895\nOther references : OSVDB:60660,OSVDB:61697,OSVDB:61909,OSVDB:61910,OSVDB:61911,OSVDB:61912,OSVDB:61913,OSVDB:61914,MSFT:MS10-002,Secunia:38209,CWE:399\n
 			if(preg_match("/CVE : ([CVE,-\d]+)/", $dataArray[$x], $cveArray)){
@@ -221,8 +220,8 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				VALUES 
 					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		$stmt = $db->prepare($sql);
-		$sql_data = array($agency,$bidList,$certList,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$description,$iavaList,$msftList,$osvdbList,$plugin_output,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$secuniaList,$see_alsoList,$service,$severity,$solution,$synopsis,$tagID[0]);
-		$stmt->execute($sql_data);
+		$data = array($agency,$bidList,$certList,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$description,$iavaList,$msftList,$osvdbList,$plugin_output,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$secuniaList,$see_alsoList,$service,$severity,$solution,$synopsis,$tagID);
+		$stmt->execute($data);
 	}
 
 }
