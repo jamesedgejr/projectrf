@@ -63,10 +63,12 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				$fqdn = mysql_real_escape_string($tag);
 				break;
 			case "HOST_END":
-				$host_end = mysql_real_escape_string($tag);
+				$host_end = strtotime($tag);
+				$endScanArray[] = $host_end;
 				break;
 			case "HOST_START":
-				$host_start = mysql_real_escape_string($tag);
+				$host_start = strtotime($tag);
+				$startScanArray[] = $host_start;
 				break;
 			case "host-ip":
 				$ip_addr = mysql_real_escape_string($tag);
@@ -185,7 +187,6 @@ foreach($xml->Report->ReportHost as $ReportHost){
 	$sql_data = array($bios_uuid,$fqdn,$host_end,$host_name,$host_start,$ip_addr,$local_checks_proto,$mac_addr,$netbios,$operating_system,$operating_system_unsupported,$pcidss_compliance,$pcidss_compliance_failed,$pcidss_deprecated_ssl,$pcidss_directory_browsing,$pcidss_expired_ssl_certificate,$pcidss_high_risk_flaw,$pcidss_low_risk_flaw,$pcidss_medium_risk_flaw,$pcidss_obsolete_operating_system,$pcidss_reachable_db,$pcidss_www_header_injection,$pcidss_www_xss,$smb_login_used,$ssh_auth_meth,$ssh_login_used,$system_type);
 	$stmt->execute($sql_data);
 	$tagID = $db->lastInsertId();
-	echo $tagID . "<br>";
 
 	foreach ($ReportHost->ReportItem as $ReportItem){
 		
@@ -301,11 +302,6 @@ foreach($xml->Report->ReportHost as $ReportHost){
 			}	
 		}
 		*/
-		$startEpoch = strtotime($host_start);
-		$endEpoch = strtotime($host_end);
-		$startScanArray[] = $startEpoch;
-		$endScanArray[] = $endEpoch;
-		
 		$sql = "INSERT INTO nessus_results 	
 					(
 					agency, 
@@ -375,10 +371,10 @@ sort($startScanArray);
 $scan_start = $startScanArray[0];
 rsort($endScanArray);
 $scan_end = $endScanArray[0];
-$sql_update_nessus_results = "UPDATE nessus_results SET scan_start = ?, scan_end = ? WHERE scan_start = ? AND scan_end = ?";
+$sql_update_nessus_results = "UPDATE nessus_results SET scan_start = ?, scan_end = ? WHERE scan_start = $randValue AND scan_end = $randValue";
 $stmt = $db->prepare($sql_update_nessus_results);
-$sql_data = array($scan_start,$scan_end,$randValue,$randValue);
-$stmt->execute($sql_update_nessus_results);
+$sql_data = array($scan_start,$scan_end);
+$stmt->execute($sql_data);
 
 //process and display any Nesses <tag> elements that the developer has not seen before
 $newTags = array_unique($newTag);

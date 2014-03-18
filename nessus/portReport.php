@@ -1,23 +1,24 @@
 <?php
 
-#Database Report
-#plugins:  
-# MSSQL 11217, 10674
-# MySQL 10719
+//Database Report
+//plugins:  
+// MSSQL 11217, 10674
+// MySQL 10719
 
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
 }
 $sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX ndx_host_name (host_name))";
-$result = $db->query($sql);ifError($result);
+$stmt = $db->prepare($sql);
+$stmt->execute();
 foreach ($hostArray as $hA){
-	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES ('$hA')";
-	$result = $db->query($sql);ifError($result);	
+	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($hA));
 }
 
 $agency = $_POST["agency"];
@@ -48,17 +49,16 @@ nessus_results
 Inner Join nessus_tags ON nessus_tags.tagID = nessus_results.tagID
 Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
 WHERE
-nessus_results.pluginID =  '10719' AND
-nessus_results.agency = '$agency' AND
-nessus_results.report_name = '$report_name' AND
-nessus_results.scan_start = '$scan_start' AND
-nessus_results.scan_end = '$scan_end'
+nessus_results.pluginID =  '11217' AND
+nessus_results.agency = ? AND
+nessus_results.report_name = ? AND
+nessus_results.scan_start = ? AND
+nessus_results.scan_end = ?
 ";
-echo $sql . "<br>";
-
-$result = $db->query($sql);ifError($result);
-
-while($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
+$stmt = $db->prepare($sql);
+$data = array($agency, $report_name, $scan_start, $scan_end);
+$stmt->execute($data);
+while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
 	$pluginID = $row['pluginID'];
 	$pluginName = $row['pluginName'];
@@ -83,21 +83,7 @@ while($row = $result->fetchRow(DB_FETCHMODE_ASSOC)){
 	//write to text file
 }//end while
 
-?>
 
-
-<?php
-
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
 
 function processPluginOutput($plugin_output, $pluginID) 
 {
