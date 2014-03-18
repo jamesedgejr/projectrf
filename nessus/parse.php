@@ -360,7 +360,7 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 		";
 		$stmt = $db->prepare($sql);
-		$sql_data = array($agency,$bidList,$canvas_package,$certList,$cpe,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$d2_elliot_name,$description,$edbList,$exploit_available,$exploit_framework_canvas,$exploit_framework_core,$exploit_framework_d2_elliot,$exploit_framework_metasploit,$exploitability_ease,$fname,$icsaList,$iavaList,$iavbList,$metasploit_name,$msftList,$osvdbList,$patch_publication_date,$plugin_modification_date,$plugin_output,$plugin_publication_date,$plugin_type,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$script_version,$secuniaList,$see_alsoList,$service,$severity,$solution,$stig_severity,$synopsis,$tagID[0],$vuln_publication_date);
+		$sql_data = array($agency,$bidList,$canvas_package,$certList,$cpe,$cveList,$cvss_base_score,$cvss_temporal_score,$cvss_temporal_vector,$cvss_vector,$cweList,$d2_elliot_name,$description,$edbList,$exploit_available,$exploit_framework_canvas,$exploit_framework_core,$exploit_framework_d2_elliot,$exploit_framework_metasploit,$exploitability_ease,$fname,$icsaList,$iavaList,$iavbList,$metasploit_name,$msftList,$osvdbList,$patch_publication_date,$plugin_modification_date,$plugin_output,$plugin_publication_date,$plugin_type,$pluginFamily,$pluginID,$pluginName,$port,$protocol,$report_name,$risk_factor,$scan_end,$scan_start,$script_version,$secuniaList,$see_alsoList,$service,$severity,$solution,$stig_severity,$synopsis,$tagID,$vuln_publication_date);
 		$stmt->execute($sql_data);
 	}
 }

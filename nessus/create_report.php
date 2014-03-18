@@ -34,17 +34,19 @@ if($agency != ""){
 					nessus_tags.host_name
 				";
 	$host_data = array($agency, $report_name, $scan_start, $scan_end);
+	print_r($host_data);
 	$host_stmt = $db->prepare($host_sql);
 	$host_stmt->execute($host_data);
+	$test = $host_stmt->rowCount();echo $test . "<hr>";
 	$plugin_sql = 	"SELECT DISTINCT 
 						nessus_results.pluginFamily 
 					FROM 
 						nessus_results 
-					WHERE 
-						nessus_results.agency='$agency' AND 
-						nessus_results.report_name='$report_name' AND
-						nessus_results.scan_start='$scan_start' AND
-						nessus_results.scan_end='$scan_end'
+				WHERE 
+					nessus_results.agency = ? AND
+					nessus_results.report_name = ? AND
+					nessus_results.scan_start = ? AND
+					nessus_results.scan_end = ?
 					ORDER BY 
 						nessus_results.pluginFamily
 					";
