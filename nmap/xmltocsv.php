@@ -12,6 +12,14 @@ a:hover {text-decoration: underline}
 	</td>
 	<td valign="top">
 <?php
+$isUp = $_POST["isUp"];
+$isDown = $_POST["isDown"];
+$isOpen = $_POST["isOpen"];
+$isClosed = $_POST["isClosed"];
+$isFiltered = $_POST["isFiltered"];
+$isOpenFiltered = $_POST["isOpenFiltered"];
+
+
 $uploaddir = sys_get_temp_dir();
 $uploadfile = tempnam(sys_get_temp_dir(), basename($_FILES['userfile']['name']));
 if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
@@ -41,20 +49,22 @@ $myFileName = "nmap_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
 
-fwrite($fh, "\"HOSTNAME\",\"IP\",\"MAC\",\"VENDOR\",\"OS\",\"PROTOCOL\",\"PORT\",\"SERVICE\",\"PRODUCT\",\"VERSION\",\"PORT STATE\"\n");
+fwrite($fh, "\"HOSTNAME\",\"IP\",\"MAC\",\"VENDOR\",\"OS\",\"PROTOCOL\",\"PORT\",\"SERVICE\",\"PRODUCT\",\"VERSION\",\"PORT STATE\",\"HOST STATE\"\n");
 foreach($xml->host as $host){
 	$status = $host->status["state"];
-	if($status == "up"){
-	  foreach($host->address as $address){
-		  if($address["addrtype"] == "ipv4"){
-			  $ipv4_address = $address["addr"];
-		  }
-		  if($address["addrtype"] == "mac"){
-			  $mac_address = $address["addr"];
-			  $mac_vendor = $address["vendor"];
-		  }
+	foreach($host->address as $address){
+	  if($address["addrtype"] == "ipv4"){
+		  $ipv4_address = $address["addr"];
 	  }
-	  $hostname_name = $host->hostnames->hostname[name];
+	  if($address["addrtype"] == "mac"){
+		  $mac_address = $address["addr"];
+		  $mac_vendor = $address["vendor"];
+	  }
+	}		  
+	if($isDown && $status == "down"){
+		fwrite($fh, "\"\",\"$ipv4_address\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$status\"\n");
+	}
+	$hostname_name = $host->hostnames->hostname[name];
 	  $os = $host->os->osmatch["name"];
 	  foreach($host->ports->port as $port){
 		  $port_protocol = $port[protocol];
@@ -63,11 +73,21 @@ foreach($xml->host as $host){
 		  $port_service_name = $port->service[name];
 		  $port_service_product = $port->service[product];
 		  $port_service_version = $port->service[version];
-		  if($status == "up"){
-			  fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\"\n");
+		  if($isUp && $status == "up"){
+			if($isOpen && $port_state =="open"){
+				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+			}
+			if($isClosed && $port_state =="closed"){
+				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+			}
+			if($isFiltered && $port_state =="filtered"){
+				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+			}
+			if($isOpenFiltered && $port_state =="open|filtered"){
+				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+			}
 		  }
 	  }//end port foreach
-	}//end status up if
 }
 ?>
 <table width="100%">

@@ -60,7 +60,7 @@ foreach($xml->host as $host){
 		  if($address["addrtype"] == "ipv4"){
 			  $ipv4_address = $address["addr"];
 		  }
-	  }
+	  } 
 	  $hostname_name = "(nmap)" . $host->hostnames->hostname[name];
 	  if($hostname_name == "(nmap)"){
 		$nessusSQL = "SELECT DISTINCT 

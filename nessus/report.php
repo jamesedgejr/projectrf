@@ -392,13 +392,14 @@ WHERE
 	nessus_results.report_name = ? AND
 	nessus_results.scan_start = ? AND
 	nessus_results.scan_end = ?
+ORDER BY
+nessus_results.cvss_base_score DESC,
+nessus_results.pluginName ASC
 ";
 
 $where_data = array($agency, $report_name, $scan_start, $scan_end);
 $main_stmt = $db->prepare($main_sql);
 $main_stmt->execute($where_data);
-$test = $main_stmt->rowCount();
-echo $test . "<br>";
 if(!$main_stmt->rowCount()){
 	echo "<hr><p align=\"center\"><b>No Rows were returned.  You may have not selected any hosts or there are no hosts with the severity of vulnerability or Nessus Plugin Family you chose to display.</b></p><hr>";
 }
@@ -429,7 +430,6 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
     $pluginID = $row["pluginID"];
     $plugin_modification_date = $row["plugin_modification_date"];
     $pluginName = $row["pluginName"];
-    $plugin_output = $row["plugin_output"];
     $plugin_publication_date = $row["plugin_publication_date"];
     $port = $row["port"];
     $protocol = $row["protocol"];

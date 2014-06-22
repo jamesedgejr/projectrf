@@ -144,6 +144,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $cweList = explode(",", trim($row["cweList"], ","));
 	$d2_elliot_name = $row["d2_elliot_name"];
     $description = $row["description"];
+	$description = str_replace("&#039;", "'", $description);
     $edbList = explode(",", trim($row["edbList"], ","));
     $exploitability_ease = $row["exploitability_ease"];
     $exploit_framework_canvas = $row["exploit_framework_canvas"];
@@ -197,11 +198,11 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	} 
 	if($justVulnDB == "true" && !empty($vulnDBList[0])){
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
 		}
 	} elseif ($justVulnDB != "true") {
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
 		}	
 	}
 }

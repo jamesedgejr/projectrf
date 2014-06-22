@@ -38,13 +38,13 @@ WHERE
 	nessus_results.agency =  ? AND
 	nessus_results.report_name =  ? AND
 	nessus_results.scan_start =  ? AND
-	nessus_results.scan_end =  ? AND
-	nessus_results.cvss_base_score >  '0'
+	nessus_results.scan_end =  ? 
+
 ORDER BY
 	nessus_results.cvss_base_score DESC,
 	nessus_results.pluginName ASC
 ";
-
+// removed this from WHERE 	nessus_results.cvss_base_score >  '0'
 $stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
 $stmt->execute($data);
@@ -77,19 +77,22 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	
 	fwrite($fh, "\"$ip_address\",\"$os\",\"$cvss\",\"$risk_factor\",\"$cveArray[1]\n$cveArray[2]\n$cveArray[3]\n$cveArray[4]\n$cveArray[5]\",\"$pluginName\"\n");
 }
-fwrite($fh, "\"IP Address\",\"Critical\",\"High\",\"Medium\"\n");
+fwrite($fh, "\"IP Address\",\"Critical\",\"High\",\"Medium\",\"Low\",\"Informational\"\n");
 foreach($cveStats as $ip_addr => $subarray){
 	$criticalTotal = count($subarray[Critical]);
 	$highTotal = count($subarray[High]);
 	$mediumTotal = count($subarray[Medium]);
+	$mediumTotal = count($subarray[Medium]);
 	$lowTotal = count($subarray[Low]);
-	fwrite($fh, "\"$ip_addr\",\"$criticalTotal\",\"$highTotal\",\"$mediumTotal\",\"$lowTotal\"\n");
+	$noneTotal = count($subarray[None]);
+	fwrite($fh, "\"$ip_addr\",\"$criticalTotal\",\"$highTotal\",\"$mediumTotal\",\"$lowTotal\",\"$noneTotal\"\n");
 }
 $criticalTotal = count($cveStatsTotals[Total][Critical]);
 $highTotal = count($cveStatsTotals[Total][High]);
 $mediumTotal = count($cveStatsTotals[Total][Medium]);
 $lowTotal = count($cveStatsTotals[Total][Low]);
-fwrite($fh, "\"Total\",\"$criticalTotal\",\"$highTotal\",\"$mediumTotal\",\"$lowTotal\"\n");
+$noneTotal = count($cveStatsTotals[Total][None]);
+fwrite($fh, "\"Total\",\"$criticalTotal\",\"$highTotal\",\"$mediumTotal\",\"$lowTotal\",\"$noneTotal\"\n");
 
 ?>
 <html>

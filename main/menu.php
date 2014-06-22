@@ -67,26 +67,31 @@
 	<tr>
 		<td colspan="2" width="150">Nmap</td>
 	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nmap/upload_mysql.php">Import XML</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nmap/upload_xmltohtml.php">XML to HTML</a></td>
-	</tr>
+        <tr>
+                <td></td>
+                <td width="95%"><a href="../nmap/upload_mysql.php">Import XML</a></td>
+        </tr>
+        <tr>
+                <td></td>
+                <td width="95%"><a href="../nmap/upload_xmltohtml.php">XML to HTML</a></td>
+        </tr>
         <tr>
                 <td></td>
                 <td width="95%"><a href="../nmap/upload_xmltocsv_with_nessus.php">XML to CSV (w/Nessus)</a></td>
         </tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nmap/upload_xmltocsv.php">XML to CSV</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nmap/create_matrix.php">Create Matrix</a></td>
-	</tr>
+        <tr>
+                <td></td>
+                <td width="95%"><a href="../nmap/upload_xmltocsv.php">XML to CSV</a></td>
+        </tr>
+        <tr>
+                <td></td>
+                <td width="95%"><a href="../nmap/create_matrix.php">Create Matrix</a></td>
+        </tr>
+        <tr>
+                <td></td>
+                <td><a href="../nmap/delete.php">Delete Nmap Reports</a></td>
+        </tr>
+
 	<tr><td colspan="2"><hr></td></tr>
 	<tr>
 		<td colspan="2" width="150">Kismet</td>

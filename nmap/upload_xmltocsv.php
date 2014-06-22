@@ -20,12 +20,19 @@ a:hover {text-decoration: underline}
 				<input type="hidden" name="MAX_FILE_SIZE" value="2000000000" />
 				<img src="images/nmap_logo.png"></img>
 				<p>The NMAP XML file will be parsed and converted to a comma delimited format for further analysis in your favorite spreadsheet application.</p>
-				<p>The output only shows hosts found to be up with open ports.</p>
 			</td>
 		</tr>
 		<tr>
 			<td><p>Select NMAP XML file: </p></td><td><input name="userfile" type="file" /></td>
 		</tr>
+		<tr><td colspan="2">
+		<table>
+			<tr><td width="100px">Host State:</td><td><input type="checkbox" value="up" name="isUp" checked>Up</td><td><input type="checkbox" value="down" name="isDown">Down</td></tr>
+		</table>
+		<table>
+			<tr><td width="100px">Port State:</td><td><input type="checkbox" value="open" name="isOpen" checked>Open</td><td><input type="checkbox" value="closed" name="isClosed">Closed</td><td><input type="checkbox" value="filtered" name="isFiltered">Filtered</td><td><input type="checkbox" value="openfiltered" name="isOpenFiltered">Open|Filtered</td></tr>
+		</table>
+		</td></tr>
 		<tr>
 			<td></td>
 			<td>
