@@ -176,7 +176,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
     $synopsis = str_replace("\n\n","<br>", $row["synopsis"]);
     $vuln_publication_date = $row["vuln_publication_date"];
 
-	$fqdn = $row["$fqdn"];
+	$fqdn = $row["fqdn"];
 	$ip_addr = $row["ip_addr"];
 	$mac_addr = $row["mac_addr"];
 	$netbios = $row["netbios"];
