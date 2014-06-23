@@ -748,7 +748,7 @@ CREATE TABLE `nmap_ports_xml` (
   `host_id` int(11) unsigned NOT NULL,
   `port_protocol` varchar(5) DEFAULT NULL,
   `port_portid` int(5) DEFAULT NULL,
-  `port_state` varchar(10) DEFAULT NULL,
+  `port_state` varchar(15) DEFAULT NULL,
   `port_service_name` varchar(100) DEFAULT NULL,
   `port_service_product` varchar(255) DEFAULT NULL,
   `port_service_tunnel` varchar(10) DEFAULT NULL,

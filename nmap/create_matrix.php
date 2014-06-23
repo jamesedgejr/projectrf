@@ -142,7 +142,7 @@ select {font-family: courier new}
 			?>
 	  </select>
 	  </form>
-	<form name="f2" action="test_matrix.php" method="post">
+	<form name="f2" action="matrix.php" method="post">
 		<?php
 		//host list
 		if($agency == ""){
@@ -182,19 +182,23 @@ select {font-family: courier new}
 		}//end if
 		else {
 		?>
-			<p align="center">[ NSE Scripts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('nseselectall',true)" />
-			<SELECT MULTIPLE NAME="nse[]" SIZE="15" style="width:290px;margin:5px 0 5px 0;" id="nseselectall">
-			<option value='dlskeaAKEJFDAKE'>[Type]&nbsp;&nbsp;&nbsp;&nbsp;[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
+			<p align="center">[ NSE Port Scripts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('nseportselectall',true)" />
+			<SELECT MULTIPLE NAME="nsePort[]" SIZE="10" style="width:290px;margin:5px 0 5px 0;" id="nseportselectall">
+			<option value='dlskeaAKEJFDAKE'>[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
 			while($nse_port_row = $nse_port_stmt->fetch(PDO::FETCH_ASSOC)){
-				$value1 = str_replace(' ','&nbsp;',str_pad("Port", 10));
-				$value2 = str_replace(' ','&nbsp;',str_pad($nse_port_row["script_id"], 30));
-				echo "<OPTION value='Port:" . $nse_port_row["script_id"] . "'>" . $value1 . $value2 . "</OPTION>";
+				$script_id = str_replace(' ','&nbsp;',str_pad($nse_port_row["script_id"], 30));
+				echo "<OPTION value='" . $nse_port_row["script_id"] . "'>" . $script_id . "</OPTION>";
 			}//end while
+		?>
+			</SELECT>
+			<p align="center">[ NSE Host Scripts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('nsehostselectall',true)" />
+			<SELECT MULTIPLE NAME="nseHost[]" SIZE="10" style="width:290px;margin:5px 0 5px 0;" id="nsehostselectall">
+			<option value='dlskeaAKEJFDAKE'>[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
+		<?php
 			while($nse_host_row = $nse_host_stmt->fetch(PDO::FETCH_ASSOC)){
-				$value1 = str_replace(' ','&nbsp;',str_pad("Host", 10));
-				$value2 = str_replace(' ','&nbsp;',str_pad($nse_host_row["script_id"], 30));
-				echo "<OPTION value='Host:" . $nse_host_row["script_id"] . "'>" . $value1 . $value2 . "</OPTION>";
+				$script_id = str_replace(' ','&nbsp;',str_pad($nse_host_row["script_id"], 30));
+				echo "<OPTION value='" . $nse_host_row["script_id"] . "'>" . $script_id . "</OPTION>";
 			}//end while
 		?>
 			</SELECT>				
@@ -202,12 +206,12 @@ select {font-family: courier new}
 		}//end else
 		?>
 		</td>
-		<td width="50%" align="right">
+		<td width="50%" align="right" valign="top">
 		<?php
 		if($agency == ""){
 		?>
 			<p align="center">[ Ports ]</p>
-			<SELECT MULTIPLE NAME="nse" SIZE="15" style="width:290px;margin:5px 0 5px 0;">
+			<SELECT MULTIPLE NAME="nse" SIZE="25" style="width:290px;margin:5px 0 5px 0;">
 			  <OPTION>[no agency selected]</OPTION>
 			</SELECT>
 		<?php
@@ -215,7 +219,7 @@ select {font-family: courier new}
 		else {
 		?>
 			<p align="center">[ Ports ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('portselectall',true)" />
-			<SELECT MULTIPLE NAME="ports[]" SIZE="15" style="width:290px;margin:5px 0 5px 0;" id="portselectall">
+			<SELECT MULTIPLE NAME="ports[]" SIZE="25" style="width:290px;margin:5px 0 5px 0;" id="portselectall">
 			<option value='dlskeaAKEJFDAKE'>[Num]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Name]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
 			while($port_row = $port_stmt->fetch(PDO::FETCH_ASSOC)){
@@ -246,6 +250,21 @@ select {font-family: courier new}
       <td style="width: 250px;" valign="top" align="right">
       <table style="text-align: left; width: 225px;" border="0" cellpadding="2" cellspacing="2">
           <tr>
+            <td colspan="2" rowspan="1" style="width: 30px;">Host State</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="checkbox" value="up" name="isUp" checked>
+			</td>
+            <td style="width: 174px;">Up</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
+				<input type="checkbox" value="down" name="isDown">
+			</td>
+            <td style="width: 174px;">Down</td>
+          </tr>
+          <tr>
             <td colspan="2" rowspan="1" style="width: 30px;">Port State</td>
           </tr>
           <tr>
@@ -266,20 +285,29 @@ select {font-family: courier new}
 			</td>
             <td style="width: 174px;">Filtered</td>
           </tr>
+         <tr>
+            <td style="width: 30px;">
+				<input type="checkbox" value="open|filtered" name="isOpenFiltered">
+			</td>
+            <td style="width: 174px;">Open|Filtered</td>
+          </tr>
           <tr>
-            <td colspan="2" rowspan="1" style="width: 30px;">Table Pivot</td>
+            <td colspan="2" rowspan="1" style="width: 30px;">NSE Script</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="radio" value="left" name="pivot" checked>
+				<input type="radio" value="port" name="nsescript" checked>
 			</td>
-            <td style="width: 174px;">Hosts Along the Left</td>
+            <td style="width: 174px;">NSE Port Scripts</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="radio" value="top" name="pivot">
+				<input type="radio" value="host" name="nsescript">
 			</td>
-            <td style="width: 174px;">Hosts Along the Top</td>
+            <td style="width: 174px;">NSE Host Scripts</td>
+          </tr>
+          <tr>
+            <td colspan=2><p>I can do baby (NSE Port), or I can do geezer murder mystery (NSE Host), but I can't do both!</p></td>
           </tr>
       </table>
       </td>
