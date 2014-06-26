@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-
 $agency_temp = explode(":", $_POST["agency"]);
 $agency = $agency_temp[0];
 $report_name = $agency_temp[1];
@@ -37,27 +36,12 @@ if($agency != ""){
 	$host_data = array($agency, $report_name, $scan_start, $scan_end);
 	$host_stmt = $db->prepare($host_sql);
 	$host_stmt->execute($host_data);
-	$plugin_sql = 	"SELECT DISTINCT 
-						nessus_results.pluginFamily 
-					FROM 
-						nessus_results 
-					WHERE 
-						nessus_results.agency='$agency' AND 
-						nessus_results.report_name='$report_name' AND
-						nessus_results.scan_start='$scan_start' AND
-						nessus_results.scan_end='$scan_end'
-					ORDER BY 
-						nessus_results.pluginFamily
-					";
-	$plugin_data = array($agency, $report_name, $scan_start, $scan_end);
-	$plugin_stmt = $db->prepare($plugin_sql);
-	$plugin_stmt->execute($plugin_data);
 }//end if
 ?>
 
 <HTML>
 <head>
-<title>CREATE NESSUS VULNERABILITY PORT REPORT</title>
+<title>CREATE NESSUS PORT REPORT</title>
 <script>
 function selectAll(selectBox,selectAll) {
     // have we been passed an ID
@@ -81,19 +65,19 @@ select {font-family: courier new}
 </head>
 <BODY>
 <table width="100%"><tr><td width="200px" valign="top"><?php include '../main/menu.php'; ?></td>
-<td>
-<table style="text-align: left; width: 850px;" border="0" cellpadding="0" cellspacing="0">
+<td valign="top">
+<table style="text-align: left; width: 950px;" border="0" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width: 600px;">
+      <td colspan="2">
 	  <form name="f1"  action="" method="post">
 	  <p align="center">[ Nessus Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nessus Family of Plugins you want to include.</p>
-  	  <select NAME="agency" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
-		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
+  	  <select NAME="agency" SIZE="10"  style="width:950px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
 			<?php
+			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Report Name]",70)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
 			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
-			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 20));
+			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["report_name"], 70));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["scan_end"]);
 				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $agency_row["agency"] . ":" . $agency_row["report_name"] . ":" . $agency_row["scan_start"] . ":" . $agency_row["scan_end"] . "'>" . $value1 . $value2 . $value3 . "</option>";
@@ -101,13 +85,17 @@ select {font-family: courier new}
 			?>
 	  </select>
 	  </form>
+	  </td>
+	</tr>  
+	<tr>
+	  <td style="width: 700px;" valign="top"> 
 	<form name="f2" action="portReport.php" method="post">
 		<?php
 		//host list
 		if($agency == ""){
 		?>
 			<p align="center">[ Hosts ]</p>
-			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:600px;margin:5px 0 5px 0;">
+			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:700px;margin:5px 0 5px 0;">
 			  <OPTION>[no agency selected]</OPTION>
 			</SELECT>
 		<?php
@@ -115,9 +103,9 @@ select {font-family: courier new}
 		else {
 		?>
 			<p align="center">[ Hosts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('hostselectall',true)" />
-			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:600px;margin:5px 0 5px 0;" id="hostselectall">
-			<option value='REMOVE'>[Host Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[IP Address]&nbsp;&nbsp;&nbsp;&nbsp;[FQDN]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[NetBIOS]</option>
+			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:700px;margin:5px 0 5px 0;" id="hostselectall">
 		<?php
+			echo "<option value=\"REMOVE\">".str_replace(' ','&nbsp;',str_pad("[Host Name]", 16)).str_replace(' ','&nbsp;',str_pad("[IP Address]", 16)).str_replace(' ','&nbsp;',str_pad("[FQDN]", 35)).str_replace(' ','&nbsp;',str_pad("[NetBIOS]", 16))."</option>";
 			while($host_row = $host_stmt->fetch(PDO::FETCH_ASSOC)){
 			/*
 			Nessus host_name can be an IP address or domain name depending on what was used to start the scan.  This is a pain in the ass.  Just saying :-)
@@ -127,7 +115,7 @@ select {font-family: courier new}
 			  if(strlen($host_check[0] < 3)){ $host_name = $host_check[0];} else { $host_name = $host_row["host_name"]; }
 			  $value1 = str_replace(' ','&nbsp;',str_pad($host_name, 16));
 			  $value2 = str_replace(' ','&nbsp;',str_pad($host_row["ip_addr"], 16));
-			  $value3 = str_replace(' ','&nbsp;',str_pad($host_row["fqdn"], 25));
+			  $value3 = str_replace(' ','&nbsp;',str_pad($host_row["fqdn"], 35));
 			  $value4 = str_replace(' ','&nbsp;',str_pad($host_row["netbios"], 16));
 			  echo "<OPTION value='" . $host_row["host_name"] . "'>" . $value1 . $value2 . $value3 . $value4 . "</OPTION>";
 			}//end while
@@ -150,53 +138,38 @@ select {font-family: courier new}
 	  </td>
       <td style="width: 250px;" valign="top" align="right">
       <table style="text-align: left; width: 225px;" border="0" cellpadding="2" cellspacing="2">
-          <tr>
-            <td colspan="2" rowspan="1" style="width: 30px;">Plugin Information</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugName" checked>
-			</td>
-            <td style="width: 174px;">Include Name</td>
-          </tr>
-          <tr>
-            <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugFam">
-			</td>
-            <td style="width: 174px;">Include Family</td>
-          </tr>
            <tr>
-            <td colspan="2" rowspan="1" style="width: 30px;">Severity</td>
+            <td colspan="2" rowspan="1" style="width: 30px;">Port Categories</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="4" name="critical" checked>
+				<input type="checkbox" value="HTTP" name="isHTTP" checked>
 			</td>
-            <td style="width: 174px;">Critical Risk</td>
+            <td style="width: 174px;">HTTP/HTTPS</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="3" name="high" checked>
+				<input type="checkbox" value="MSSQL" name="isMSSQL" checked>
 			</td>
-            <td style="width: 174px;">High Risk</td>
+            <td style="width: 174px;">Database (MSSQL)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="2" name="medium">
+				<input type="checkbox" value="DNS" name="isDNS" checked>
 			</td>
-            <td style="width: 174px;">Medium Risk</td>
+            <td style="width: 174px;">DNS</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="1" name="low">
+				<input type="checkbox" value="SNMP" name="isSNMP" checked>
 			</td>
-            <td style="width: 174px;">Low Risk</td>
+            <td style="width: 174px;">SNMP</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="0" name="info">
+				<input type="checkbox" value="SSH" name="isSSH" checked>
 			</td>
-            <td style="width: 174px;">Information Only</td>
+            <td style="width: 174px;">SSH</td>
           </tr>
       </table>
       </td>

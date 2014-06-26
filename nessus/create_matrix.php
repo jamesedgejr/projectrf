@@ -52,7 +52,7 @@ if($agency != ""){
 	$plugin_stmt = $db->prepare($plugin_sql);
 	$plugin_stmt->execute($plugin_data);
 }//end if
-
+?>
 <HTML>
 <head>
 <title>CREATE NESSUS VULNERABILITY MATRIX</title>
@@ -99,6 +99,10 @@ select {font-family: courier new}
 			?>
 	  </select>
 	  </form>
+	  </td>
+	</tr>  
+	<tr>
+	  <td style="width: 700px;" valign="top"> 
 	<form name="f2" action="matrix.php" method="post">
 		<?php
 		//host list
@@ -135,7 +139,6 @@ select {font-family: courier new}
 		}//end else
 		?>
 		<?php
-		//nessus plugin families
 		if($agency == ""){
 		?>
 			<p align="center">[ Plugin Families ]</p>

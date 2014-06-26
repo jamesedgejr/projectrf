@@ -110,7 +110,7 @@ select {font-family: courier new}
 		if($agency == ""){
 		?>
 			<p align="center">[ Hosts ]</p>
-			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:600px;margin:5px 0 5px 0;">
+			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:700px;margin:5px 0 5px 0;">
 			  <OPTION>[no agency selected]</OPTION>
 			</SELECT>
 		<?php

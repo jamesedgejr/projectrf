@@ -28,6 +28,10 @@
 	</tr>
 	<tr>
 		<td></td>
+		<td><a href="../nessus/create_portReport.php">Nessus Port Report</a></td>
+	</tr>
+	<tr>
+		<td></td>
 		<td width="95%"><a href="../nessus/uploadCompliance.php">Import Nessus .nessus (v2) (Compliance)</a></td>
 	</tr>
 	<tr>
