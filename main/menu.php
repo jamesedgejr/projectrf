@@ -91,9 +91,13 @@
                 <td></td>
                 <td width="95%"><a href="../nmap/create_matrix.php">Create Matrix</a></td>
         </tr>
+		<tr>
+				<td></td>
+				<td><a href="../nmap/merge.php">Merge Nmap Scans</a></td>
+		</tr>
         <tr>
                 <td></td>
-                <td><a href="../nmap/delete.php">Delete Nmap Reports</a></td>
+                <td width="95%"><a href="../nmap/delete.php">Delete Nmap Reports</a></td>
         </tr>
 
 	<tr><td colspan="2"><hr></td></tr>
