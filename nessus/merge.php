@@ -24,15 +24,15 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 	for($x=0;$x<count($agencyArray);$x++){
 		$sql = "UPDATE nessus_results
 				SET
-					nessus_results.agency = '$newAgencyName',
-					nessus_results.report_name = '$newReportName',
-					nessus_results.scan_start = '$sortedStart[0]',
-					nessus_results.scan_end = '$sortedEnd[0]'
+					nessus_results.agency = ?,
+					nessus_results.report_name = ?,
+					nessus_results.scan_start = ?,
+					nessus_results.scan_end = ?
 				WHERE
-					nessus_results.agency = '$agencyArray[$x]' AND
-					nessus_results.report_name = '$reportNameArray[$x]' AND
-					nessus_results.scan_start = '$scanStartArray[$x]' AND
-					nessus_results.scan_end = '$scanEndArray[$x]'
+					nessus_results.agency = ? AND
+					nessus_results.report_name = ? AND
+					nessus_results.scan_start = ? AND
+					nessus_results.scan_end = ?
 				";
 		$stmt = $db->prepare($sql);
 		$stmt->execute(array($newAgencyName, $newReportName, $sortedStart[0], $sortedEnd, $agencyArray[$x], $reportNameArray[$x], $scanStartArray[$x], $scanEndArray[$x]));
@@ -78,21 +78,21 @@ select {font-family: courier new}
 <BODY>
 <table width="100%"><tr><td width="200px" valign="top"><?php include '../main/menu.php'; ?></td>
 <td>
-<table style="text-align: left; width: 850px;" border="0" cellpadding="0" cellspacing="0" valign="top">
+<table style="text-align: left; width: 950px;" border="0" cellpadding="0" cellspacing="0" valign="top">
     <tr>
-      <td style="width: 600px;text-align: center;">
+      <td style="width: 950px;text-align: center;">
 	  <form action="merge.php" method="post">
 	  <p align="center">[ Merge Nessus Reports ]</p>
 	  <p align="center">From the list select Agency/Report name that you wish to merge/combine.  
 	  <br>The combined results will take the earliest start time and the latest end time.
 	  <br>Enter the Agency/Company/Report Title you want to call the merged data.</p>
 	  <p><input type="button" name="Button" value="Select All" onclick="selectAll('reportselectall',true)" /></p>
-  	  <select MULTIPLE NAME="report[]" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" id="reportselectall">
-		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]</option>
+  	  <select MULTIPLE NAME="report[]" SIZE="10"  style="width:900px;margin:5px 0 5px 0;" id="reportselectall">
 			<?php
+			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Report Name]",70)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
 			while($merge_row = $merge_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($merge_row["agency"], 20));
-			    $value2 = str_replace(' ','&nbsp;',str_pad($merge_row["report_name"], 20));
+			    $value2 = str_replace(' ','&nbsp;',str_pad($merge_row["report_name"], 70));
 				$formatedDate = date("D M d H:i:s Y", $merge_row["scan_end"]);
 				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $merge_row["agency"] . ":" . $merge_row["report_name"] . ":" . $merge_row["scan_start"] . ":" . $merge_row["scan_end"] . "'>" . $value1 . $value2 . $value3 . "</option>";
@@ -129,17 +129,4 @@ select {font-family: courier new}
 </table>
 </td></tr></table>
 </body>
-</html>	  
-	  
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>
+</html>

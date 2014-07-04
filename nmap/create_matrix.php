@@ -129,12 +129,12 @@ select {font-family: courier new}
 	  <form name="f1"  action="" method="post">
 	  <p align="center">[ Nmap Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.  <br>Then select the hosts and the Nmap NSE Scripts you want to include.</p>
-  	  <select NAME="agency" SIZE="10"  style="width:600px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
-		<option value="dlskeaAKEJFDAKE" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Report Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]]</option>
+  	  <select NAME="agency" SIZE="10"  style="width:700px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()" >
 			<?php
+			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Report Name]",40)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
 			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 20));
-			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["filename"], 20));
+			    $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["filename"], 40));
 				$formatedDate = date("D M d H:i:s Y", $agency_row["finished_time"]);
 				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $agency_row["agency"] . ":" . $agency_row["filename"] . ":" . $agency_row["nmaprun_start"] . ":" . $agency_row["finished_time"] . "'>" . $value1 . $value2 . $value3 . "</option>";
@@ -148,7 +148,7 @@ select {font-family: courier new}
 		if($agency == ""){
 		?>
 			<p align="center">[ Hosts ]</p>
-			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:600px;margin:5px 0 5px 0;">
+			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:700px;margin:5px 0 5px 0;">
 			  <OPTION>[no agency selected]</OPTION>
 			</SELECT>
 		<?php
@@ -156,9 +156,9 @@ select {font-family: courier new}
 		else {
 		?>
 			<p align="center">[ Hosts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('hostselectall',true)" /><br>
-			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:600px;margin:5px 0 5px 0;" id="hostselectall">
-			<option value='dlskeaAKEJFDAKE'>[Host Name]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[IP Address]&nbsp;&nbsp;&nbsp;&nbsp;</option>
+			<SELECT MULTIPLE NAME="host[]" SIZE="20" style="width:700px;margin:5px 0 5px 0;" id="hostselectall">
 		<?php
+			echo "<option value=\"dlskeaAKEJFDAKE\">".str_replace(' ','&nbsp;',str_pad("[Host Name]", 40)).str_replace(' ','&nbsp;',str_pad("[IP Address]", 40))."</option>";
 			while($host_row = $host_stmt->fetch(PDO::FETCH_ASSOC)){
 			  $value1 = str_replace(' ','&nbsp;',str_pad($host_row["hostname_name"], 40));
 			  $value2 = str_replace(' ','&nbsp;',str_pad($host_row["address_addr"], 40));
@@ -184,8 +184,8 @@ select {font-family: courier new}
 		?>
 			<p align="center">[ NSE Port Scripts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('nseportselectall',true)" />
 			<SELECT MULTIPLE NAME="nsePort[]" SIZE="10" style="width:290px;margin:5px 0 5px 0;" id="nseportselectall">
-			<option value='dlskeaAKEJFDAKE'>[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
+			echo "<option value=\"dlskeaAKEJFDAKE\">".str_replace(' ','&nbsp;',str_pad("[Script ID]", 4))."</option>";
 			while($nse_port_row = $nse_port_stmt->fetch(PDO::FETCH_ASSOC)){
 				$script_id = str_replace(' ','&nbsp;',str_pad($nse_port_row["script_id"], 30));
 				echo "<OPTION value='" . $nse_port_row["script_id"] . "'>" . $script_id . "</OPTION>";
@@ -194,8 +194,8 @@ select {font-family: courier new}
 			</SELECT>
 			<p align="center">[ NSE Host Scripts ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('nsehostselectall',true)" />
 			<SELECT MULTIPLE NAME="nseHost[]" SIZE="10" style="width:290px;margin:5px 0 5px 0;" id="nsehostselectall">
-			<option value='dlskeaAKEJFDAKE'>[Script ID]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
+			echo "<option value=\"dlskeaAKEJFDAKE\">".str_replace(' ','&nbsp;',str_pad("[Script ID]", 4))."</option>";
 			while($nse_host_row = $nse_host_stmt->fetch(PDO::FETCH_ASSOC)){
 				$script_id = str_replace(' ','&nbsp;',str_pad($nse_host_row["script_id"], 30));
 				echo "<OPTION value='" . $nse_host_row["script_id"] . "'>" . $script_id . "</OPTION>";
@@ -220,8 +220,8 @@ select {font-family: courier new}
 		?>
 			<p align="center">[ Ports ]</p><input type="button" name="Button" value="Select All" onclick="selectAll('portselectall',true)" />
 			<SELECT MULTIPLE NAME="ports[]" SIZE="25" style="width:290px;margin:5px 0 5px 0;" id="portselectall">
-			<option value='dlskeaAKEJFDAKE'>[Num]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Name]&nbsp;&nbsp;&nbsp;&nbsp;</option>
 		<?php
+			echo "<option value=\"dlskeaAKEJFDAKE\">".str_replace(' ','&nbsp;',str_pad("[Num]", 5)).str_replace(' ','&nbsp;',str_pad("[Name]", 4))."</option>";
 			while($port_row = $port_stmt->fetch(PDO::FETCH_ASSOC)){
 				$value1 = str_replace(' ','&nbsp;',str_pad($port_row["port_portid"], 10));
 				$value2 = str_replace(' ','&nbsp;',str_pad($port_row["port_service_name"], 30));

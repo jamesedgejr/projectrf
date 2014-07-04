@@ -87,7 +87,7 @@ $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
 
 
-fwrite($fh, "\"HOST STATE\",\"IP\",\"DOMAIN NAME\",\"PORT/PROTOCOL\",\"SERVICE\",\"PRODUCT\",\"VERSION\",\"PORT STATE\",\"SCRIPT ID\",\"SCRIPT OUTPUT\",\n");
+fwrite($fh, "\"HOST STATE\",\"IP\",\"DOMAIN NAME\",\"PRODUCT/VERSION\",\"SERVICE\",\"PORT/PROTOCOL\",\"PORT STATE\",\"SCRIPT ID\",\"SCRIPT OUTPUT\",\n");
 if($isOpen && $isUp){
 	$main_sql = "SELECT
 		nmap_runstats_xml.agency,
@@ -160,7 +160,7 @@ if($isOpen && $isUp){
 		$script_id = $row["script_id"];
 		$script_output = $row["script_output"];
 	
-		fwrite($fh, "\"$status_state\",\"$address_addr\",\"$hostname_name\",\"$port_portid/$port_protocol\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$script_id\",\"$script_output\",\"\",\"\",\n");
+		fwrite($fh, "\"$status_state\",\"$address_addr\",\"$hostname_name\",\"$port_service_product $port_service_version\",\"$port_service_name\",\"$port_portid/$port_protocol\",\"$port_state\",\"$script_id\",\"$script_output\",\"\",\"\",\n");
 	}
 }
 if($isClosed || $isFiltered || $isOpenFiltered){
@@ -231,7 +231,7 @@ if($isClosed || $isFiltered || $isOpenFiltered){
 		$port_portid = $row["port_portid"];
 		$port_state = $row["port_state"];
 	
-		fwrite($fh, "\"$status_state\",\"$address_addr\",\"$hostname_name\",\"$port_portid/$port_protocol\",\"\",\"\",\"\",\"$port_state\",\"\",\"\",\"\",\"\",\n");
+		fwrite($fh, "\"$status_state\",\"$address_addr\",\"$hostname_name\",\"\",\"\",\"\",\"$port_portid/$port_protocol\",\"$port_state\",\"\",\"\",\"\",\"\",\n");
 	}
 }
 

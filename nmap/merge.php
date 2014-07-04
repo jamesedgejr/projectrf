@@ -87,12 +87,12 @@ select {font-family: courier new}
 	  <br>The combined results will take the earliest start time and the latest end time.
 	  <br>Enter the Agency/Company/filename Title you want to call the merged data.</p>
 	  <p><input type="button" name="Button" value="Select All" onclick="selectAll('filenameselectall',true)" /></p>
-  	  <select MULTIPLE NAME="filename[]" SIZE="10"  style="width:700px;margin:5px 0 5px 0;" id="filenameselectall">
+  	  <select MULTIPLE NAME="filename[]" SIZE="10"  style="width:800px;margin:5px 0 5px 0;" id="filenameselectall">
 			<?php
-			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Filename]",30)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
+			echo "<option value=\"none\" selected>".str_replace(' ','&nbsp;',str_pad("[Agency/Company]",20)).str_replace(' ','&nbsp;',str_pad("[Filename]",40)).str_replace(' ','&nbsp;',str_pad("[Date]",20))."</option>";
 			while($merge_row = $merge_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($merge_row["agency"], 20));
-			    $value2 = str_replace(' ','&nbsp;',str_pad($merge_row["filename"], 30));
+			    $value2 = str_replace(' ','&nbsp;',str_pad($merge_row["filename"], 40));
 				$formatedDate = date("D M d H:i:s Y", $merge_row["finished_time"]);
 				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $merge_row["agency"] . ":" . $merge_row["filename"] . ":" . $merge_row["nmaprun_start"] . ":" . $merge_row["finished_time"] . "'>" . $value1 . $value2 . $value3 . "</option>";

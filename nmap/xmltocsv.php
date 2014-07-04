@@ -49,7 +49,7 @@ $myFileName = "nmap_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
 
-fwrite($fh, "\"HOSTNAME\",\"IP\",\"MAC\",\"VENDOR\",\"OS\",\"PROTOCOL\",\"PORT\",\"SERVICE\",\"PRODUCT\",\"VERSION\",\"PORT STATE\",\"HOST STATE\"\n");
+fwrite($fh, "\"IP\",\"HOSTNAME\",\"MAC\",\"VENDOR\",\"OS\",\"PRODUCT/VERSION\",\"SERVICE\",\"PORT/PROTOCOL\",\"PORT STATE\",\"HOST STATE\"\n");
 foreach($xml->host as $host){
 	$status = $host->status["state"];
 	foreach($host->address as $address){
@@ -62,7 +62,7 @@ foreach($xml->host as $host){
 	  }
 	}		  
 	if($isDown && $status == "down"){
-		fwrite($fh, "\"\",\"$ipv4_address\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$status\"\n");
+		fwrite($fh, "\"$ipv4_address\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$status\"\n");
 	}
 	$hostname_name = $host->hostnames->hostname[name];
 	  $os = $host->os->osmatch["name"];
@@ -75,16 +75,16 @@ foreach($xml->host as $host){
 		  $port_service_version = $port->service[version];
 		  if($isUp && $status == "up"){
 			if($isOpen && $port_state =="open"){
-				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+				fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_service_product $port_service_version\",\"$port_service_name\",\"$port_protocol/$port_portid\",\"$port_state\",\"$status\"\n");
 			}
 			if($isClosed && $port_state =="closed"){
-				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+				fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_service_product/$port_service_version\",\"$port_service_name\",\"$port_protocol/$port_portid\",\"$port_state\",\"$status\"\n");
 			}
 			if($isFiltered && $port_state =="filtered"){
-				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+				fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_service_product/$port_service_version\",\"$port_service_name\",\"$port_protocol/$port_portid\",\"$port_state\",\"$status\"\n");
 			}
 			if($isOpenFiltered && $port_state =="open|filtered"){
-				fwrite($fh, "\"$hostname_name\",\"$ipv4_address\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_protocol\",\"$port_portid\",\"$port_service_name\",\"$port_service_product\",\"$port_service_version\",\"$port_state\",\"$status\"\n");
+				fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$mac_address\",\"$mac_vendor\",\"$os\",\"$port_service_product/$port_service_version\",\"$port_service_name\",\"$port_protocol/$port_portid\",\"$port_state\",\"$status\"\n");
 			}
 		  }
 	  }//end port foreach

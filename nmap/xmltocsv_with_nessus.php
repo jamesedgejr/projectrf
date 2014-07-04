@@ -1,8 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
-ifError($db);
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency = $_POST["agency"];
 ?>
 <html>
@@ -69,9 +67,11 @@ foreach($xml->host as $host){
 				FROM 	nessus_results
 					Inner Join nessus_tags ON nessus_tags.tagID = nessus_results.tagID
 				WHERE 
-					nessus_tags.ip_addr = '$ipv4_address' AND nessus_results.agency = '$agency'";
-		$nessusResult = $db->query($nessusSQL);ifError($nessusResult);
-		$nessusRow = $nessusResult->fetchRow(DB_FETCHMODE_ASSOC);
+					nessus_tags.ip_addr = ? AND nessus_results.agency = ?";
+		$stmt = $db->prepare($nessusSQL);
+		$array = array($ipv4_address,$agency);
+		$stmt->execute($array);
+		$nessusRow = $stmt->fetch(PDO::FETCH_ASSOC);
 		$hostname_name = "(nessus)" . strtolower($nessusRow["netbios"]);
 		$hostname_fqdn = "(nessus)" . strtolower($nessusRow["fqdn"]);
 	  }
@@ -82,9 +82,11 @@ foreach($xml->host as $host){
 			 	nessus_results
 				Inner Join nessus_tags On nessus_tags.tagID = nessus_results.tagID
 			WHERE 
-				nessus_tags.ip_addr = '$ipv4_address' AND nessus_results.agency = '$agency'";
-	  $nessusResult = $db->query($nessusSQL);ifError($nessusResult);
-	  $nessusRow = $nessusResult->fetchRow(DB_FETCHMODE_ASSOC);
+				nessus_tags.ip_addr = ? AND nessus_results.agency = ?";
+	  $stmt = $db->prepare($nessusSQL);
+	  $array = array($ipv4_address,$agency);
+	  $stmt->execute($array);
+	  $nessusRow = $stmt->fetch(PDO::FETCH_ASSOC);
 	  $os = "(nessus)" . $nessusRow["operating_system"];
 	  $os = str_replace("Enterprise", "Ent", $os);
 	  $os = str_replace("Standard", "Std", $os);
@@ -125,15 +127,4 @@ foreach($xml->host as $host){
 </td></tr></table>
 </td></tr></table>
 </body></html>
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>
+
