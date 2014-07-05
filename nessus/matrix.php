@@ -76,6 +76,8 @@ if($pivot == "left"){
 				nessus_results.report_name = ? AND
 				nessus_results.scan_start = ? AND
 				nessus_results.scan_end = ?
+			ORDER BY 
+				nessus_results.cvss_base_score DESC
 			";
 	$data = array($agency, $report_name, $scan_start, $scan_end);
 	$stmt = $db->prepare($sql);
@@ -83,7 +85,7 @@ if($pivot == "left"){
 	$pluginData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	//$pluginData =& $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);
 	foreach($pluginData as $pD){
-		$pluginName = $pD["pluginName"];
+		$pluginName = str_replace("&#039;","'",$pD["pluginName"]);
 		if($isPlugName == "y"){
 			fwrite($fh, "\"$pluginName\"");
 		}
@@ -93,7 +95,7 @@ if($pivot == "left"){
 	
 	fwrite($fh, "\"\",\"\",\"\",");
 	foreach($pluginData as $pD){
-		$pluginFamily = $pD["pluginFamily"];
+		$pluginFamily = str_replace("&#039;","'", $pD["pluginFamily"]);
 		if($isPlugFam == "y"){
 			fwrite($fh, "\"$pluginFamily\"");
 		}
@@ -103,69 +105,82 @@ if($pivot == "left"){
 	fwrite($fh, "\"\",\"\",\"\",");
 	foreach($pluginData as $pD){
 		$cvss_base_score = $pD["cvss_base_score"];
-		$risk_factor = $pD["risk_factor"];
-		fwrite($fh, "\"$risk_factor\",");
+		$risk_factor_letter = substr($pD["risk_factor"],0,1);
+		fwrite($fh, "\"$risk_factor_letter ($cvss_base_score)\",");
 	}
-	fwrite($fh, "\n");
 	
+	fwrite($fh, "\n");
 	foreach($hostArray as $hA){
-		fwrite($fh, "\"$h\",");
+		fwrite($fh, "\"$hA\",");
 		//I think having the fqdn and netbios (if available) would be nice!
+		
 		$host_sql = "SELECT DISTINCT
+						nessus_tags.host_name,
 						nessus_tags.fqdn,
-						nessus_tags.operating_system
+						nessus_tags.operating_system,
+						nessus_tags.netbios
 					FROM
-						nessus_results
-					INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-					INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-					INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
+						nessus_tags
+					Inner Join nessus_results ON nessus_results.tagID = nessus_tags.tagID
+					Inner Join nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
+					Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
+					Inner Join nessus_tmp_severity ON nessus_tmp_severity.severity = nessus_results.severity
 					WHERE
-						nessus_results.host_name = ? AND
-						nessus_results.agency = ? AND
-						nessus_results.report_name = ? AND
-						nessus_results.scan_start = ? AND
-						nessus_results.scan_end = ?
-		";
+						nessus_tags.host_name =  ? AND
+						nessus_results.agency =  ? AND
+						nessus_results.report_name =  ? AND
+						nessus_results.scan_start =  ? AND
+						nessus_results.scan_end =  ? 
+						
+					";
 		$host_data = array($hA, $agency, $report_name, $scan_start, $scan_end);
-		$host_stmt = $db->prepare($sql);
-		$host_stmt->execute($data);
+		$host_stmt = $db->prepare($host_sql);
+		$host_stmt->execute($host_data);
 		$host_row = $host_stmt->fetch(PDO::FETCH_ASSOC);
-		$fqdn = $host_row["fqdn"];
-		$operating_system = $host_row["operating_system"];
-		fwrite($fh, "\"$fqdn\",\"$operating_system\",");
+		if($host_row["fqdn"] == ""){
+			$hostname = $host_row["netbios"];
+		} else {
+			$hostname = $host_row["fqdn"];
+		}
+		$os = $host_row["operating_system"];
+		$os = str_replace("Enterprise", "Ent", $os);
+		$os = str_replace("Standard", "Std", $os);
+		$os = str_replace("Service Pack", "SP", $os);
+		$os = str_replace("Microsoft", "", $os);
+		$os = str_replace("Edition", "Ed", $os);
+		$os = str_replace("(English)", "", $os);
+		fwrite($fh, "\"$hostname\",\"$os\",");
 		foreach($pluginData as $pD){
 			$pluginID = $pD["pluginID"];
 			$lookup_sql = "SELECT DISTINCT
-								nessus_results.pluginID
-							FROM
-								nessus_results
-							INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-							INNER JOIN nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
-							INNER JOIN nessus_tmp_severity ON nessus_tmp_severity.severity = nessus_results.severity
-							INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
-							WHERE
-								nessus_results.host_name = ? AND
-								nessus_results.agency = ? AND
-								nessus_results.report_name = ? AND
-								nessus_results.scan_start = ? AND
-								nessus_results.scan_end = ? AND
-								nessus_results.pluginID = ?
-							";
-			$lookup_data = array($h, $agency, $report_name, $scan_start, $scan_end, $pluginID);
-			$lookup_stmt = $db->prepare($sql);
-			$lookup_stmt->execute($data);
-			$num = $lookup_stmt->rowCount();
-			if($num == 0){
-				//If $num = 0 then Nessus did not find this IP vulnerable to this Plugin
-				fwrite($fh, "\"\",");
-			}
-			else {
+							nessus_results.pluginID
+						FROM
+							nessus_tags
+						Inner Join nessus_results ON nessus_results.tagID = nessus_tags.tagID
+						Inner Join nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
+						Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
+						Inner Join nessus_tmp_severity ON nessus_tmp_severity.severity = nessus_results.severity
+						WHERE
+							nessus_tags.host_name = ? AND
+							nessus_results.agency = ? AND
+							nessus_results.report_name = ? AND
+							nessus_results.scan_start = ? AND
+							nessus_results.scan_end = ? AND
+							nessus_results.pluginID = ?
+						";
+			$lookup_data = array($hA, $agency, $report_name, $scan_start, $scan_end, $pluginID);
+			$lookup_stmt = $db->prepare($lookup_sql);
+			$lookup_stmt->execute($lookup_data);
+			$num_rows = count($lookup_stmt->fetchAll());
+			if($num_rows){
 				fwrite($fh, "\"X\",");
+			} else {
+				fwrite($fh, "\"\",");
 			}
 		}//end foreach
 		fwrite($fh, "\n");
 	}//end OF HOST FOREACH
-} else {//end pivot left
+} else {//end pivot left ---------------------------------------------------------------------------------------------------------------------------------------------
 //hosts are across the top and vulnerabilities are along the left side
 
 	if($isPlugFam == "y" && $isPlugName == "y"){
@@ -184,16 +199,18 @@ if($pivot == "left"){
 				nessus_tags.fqdn,
 				nessus_tags.operating_system
 			FROM
-				nessus_results
-			INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID
-			INNER JOIN nessus_tmp_family ON nessus_results.pluginFamily = nessus_tmp_family.pluginFamily
-			INNER JOIN nessus_tmp_hosts ON nessus_tags.host_name = nessus_tmp_hosts.host_name
+				nessus_tags
+			Inner Join nessus_results ON nessus_tags.tagID = nessus_results.tagID
+			Inner Join nessus_tmp_hosts ON nessus_tmp_hosts.host_name = nessus_tags.host_name
+			Inner Join nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.pluginFamily
+			Inner Join nessus_temp_severity ON nessus_temp_severity.severity = nessus_results.severity
 			WHERE
 				nessus_results.agency = '$agency' AND 
 				nessus_results.report_name = '$report_name' AND
 				nessus_results.scan_start = '$scan_start' AND
 				nessus_results.scan_end = '$scan_end'
-			ORDER BY nessus_tags.host_name ASC 
+			ORDER BY 
+				nessus_tags.host_name ASC 
 			";
 	$hostData =& $db->getAll($sql, array(), DB_FETCHMODE_ASSOC);ifError($hostData);
 	fwrite($fh, $spacer);

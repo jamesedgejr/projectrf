@@ -35,7 +35,7 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 					nessus_results.scan_end = ?
 				";
 		$stmt = $db->prepare($sql);
-		$stmt->execute(array($newAgencyName, $newReportName, $sortedStart[0], $sortedEnd, $agencyArray[$x], $reportNameArray[$x], $scanStartArray[$x], $scanEndArray[$x]));
+		$stmt->execute(array($newAgencyName, $newReportName, $sortedStart[0], $sortedEnd[0], $agencyArray[$x], $reportNameArray[$x], $scanStartArray[$x], $scanEndArray[$x]));
 	}
 }
 
