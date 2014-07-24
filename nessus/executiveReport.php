@@ -483,9 +483,9 @@ if($cover == "y"){
 		echo "</tr>\n";
 		$linecount++;
 		$count++;
-		/*if($count == 10){
+		if($count == 10){
 			break;
-		}*/
+		}
 	}
 	
 ?>	

@@ -13,6 +13,14 @@ a:hover {text-decoration: underline}
 	<td valign="top">
 
 <?php
+$v = new Valitron\Validator($_POST);
+$v->rule('slug', 'agency');
+if($v->validate()) {
+
+} else {
+    print_r($v->errors());
+	exit;
+} 
 $agency = $_POST["agency"];
 $uploaddir = sys_get_temp_dir();
 $uploadfile = tempnam(sys_get_temp_dir(), basename($_FILES['userfile']['name']));

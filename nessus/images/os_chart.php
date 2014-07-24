@@ -26,7 +26,9 @@ $os_stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
 while ($os_row = $os_stmt->fetch(PDO::FETCH_ASSOC)){
 	$operating_system = $os_row["operating_system"];
 	$exec_os[$operating_system] = array(critical => "0", high => "0", medium => "0", low => "0", info => "0");
+	
 }
+
 $sql = "SELECT 
 			nessus_tags.operating_system,
 			nessus_results.severity,
@@ -88,7 +90,6 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	}
 }
 uasort($exec_os, 'sortByHigh');
-
 $highArray = array();
 $mediumArray = array();
 $lowArray = array();

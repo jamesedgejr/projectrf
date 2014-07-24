@@ -143,31 +143,31 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="HTTP" name="isHTTP" checked>
+				<input type="checkbox" value="yes" name="isHTTP" checked>
 			</td>
             <td style="width: 174px;">HTTP/HTTPS</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="MSSQL" name="isMSSQL" checked>
+				<input type="checkbox" value="yes" name="isMSSQL" checked>
 			</td>
             <td style="width: 174px;">Database (MSSQL)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="DNS" name="isDNS" checked>
+				<input type="checkbox" value="yes" name="isDNS" checked>
 			</td>
             <td style="width: 174px;">DNS</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="SNMP" name="isSNMP" checked>
+				<input type="checkbox" value="yes" name="isSNMP" checked>
 			</td>
             <td style="width: 174px;">SNMP</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="SSH" name="isSSH" checked>
+				<input type="checkbox" value="yes" name="isSSH" checked>
 			</td>
             <td style="width: 174px;">SSH</td>
           </tr>

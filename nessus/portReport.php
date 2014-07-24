@@ -137,7 +137,16 @@ Remote SMTP server banner :
 
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v = new Valitron\Validator($_POST);
+$v->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL']);
+$v->rule('numeric', ['scan_start', 'scan_end']);
+$v->rule('slug','agency');
+if($v->validate()) {
 
+} else {
+    print_r($v->errors());
+	exit;
+} 
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);

@@ -2,6 +2,17 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
+$v = new Valitron\Validator($agency_temp);
+$v->rule('slug', '0');//validate $agency
+$v->rule('numeric',['2','3']);//validate scan_start and scan_end
+//$v->rule('numeric','1','/[\d]+/');
+if($v->validate()) {
+
+} else {
+    print_r($v->errors());
+	exit;
+} 
+
 $agency = $agency_temp[0];
 $report_name = $agency_temp[1];
 $scan_start = $agency_temp[2];
@@ -200,7 +211,7 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugName" checked>
+				<input type="checkbox" value="yes" name="isPlugName" checked>
 			</td>
             <td style="width: 174px;">Include Name</td>
           </tr>
@@ -212,37 +223,37 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugInfo" checked>
+				<input type="checkbox" value="yes" name="isPlugInfo" checked>
 			</td>
             <td style="width: 174px;">Additional Information</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isSynopsis" checked>
+				<input type="checkbox" value="yes" name="isSynopsis" checked>
 			</td>
             <td style="width: 174px;">Synopsis</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isDescription" checked>
+				<input type="checkbox" value="yes" name="isDescription" checked>
 			</td>
             <td style="width: 174px;">Description</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-                                <input type="checkbox" value="y" name="isSolution" checked>
+                                <input type="checkbox" value="yes" name="isSolution" checked>
                         </td>
             <td style="width: 174px;">Solution</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isSeeAlso" checked>
+				<input type="checkbox" value="yes" name="isSeeAlso" checked>
 			</td>
             <td style="width: 174px;">See Also</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugOut" checked>
+				<input type="checkbox" value="yes" name="isPlugOut" checked>
 			</td>
             <td style="width: 174px;">Include Plugin Output</td>
           </tr>
@@ -251,19 +262,19 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isCvss" checked>
+				<input type="checkbox" value="yes" name="isCvss" checked>
 			</td>
             <td style="width: 174px;">Include Cvss Score</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isVulnPub">
+				<input type="checkbox" value="yes" name="isVulnPub">
 			</td>
             <td style="width: 174px;">Include Vuln Pub Date</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isExploit">
+				<input type="checkbox" value="yes" name="isExploit">
 			</td>
             <td style="width: 174px;">Include Exploit Information</td>
           </tr>
@@ -272,55 +283,55 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isCve" checked>
+				<input type="checkbox" value="yes" name="isCve" checked>
 			</td>
             <td style="width: 174px;">Include CVE</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isBid" checked>
+				<input type="checkbox" value="yes" name="isBid" checked>
             </td>
             <td style="width: 174px;">Include Bugtraq ID</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isOsvdb" checked>
+				<input type="checkbox" value="yes" name="isOsvdb" checked>
 			</td>
             <td style="width: 174px;">Include OSVBD</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isCert" checked>
+				<input type="checkbox" value="yes" name="isCert" checked>
 			</td>
             <td style="width: 174px;">Include Cert</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isIava" checked>
+				<input type="checkbox" value="yes" name="isIava" checked>
 			</td>
             <td style="width: 174px;">Include IAVA</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isCWE" checked>
+				<input type="checkbox" value="yes" name="isCWE" checked>
 			</td>
             <td style="width: 174px;">Include CWE</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isMS" checked>
+				<input type="checkbox" value="yes" name="isMS" checked>
 			</td>
             <td style="width: 174px;">Include MS Bulletin</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isSec" checked>
+				<input type="checkbox" value="yes" name="isSec" checked>
 			</td>
             <td style="width: 174px;">Include Secunia</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isEdb" checked>
+				<input type="checkbox" value="yes" name="isEdb" checked>
 			</td>
             <td style="width: 174px;">Include EDB-ID</td>
           </tr>
@@ -362,25 +373,25 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isNotes">
+				<input type="checkbox" value="yes" name="isNotes">
 			</td>
             <td style="width: 174px;">Include Notes</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isAffected" checked>
+				<input type="checkbox" value="yes" name="isAffected" checked>
 			</td>
             <td style="width: 174px;">Include Host List</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isService" checked>
+				<input type="checkbox" value="yes" name="isService" checked>
 			</td>
             <td style="width: 174px;">Include Service/Protocol</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="cover" checked>
+				<input type="checkbox" value="yes" name="cover" checked>
 			</td>
             <td style="width: 174px;">Include Cover Page</td>
           </tr>
