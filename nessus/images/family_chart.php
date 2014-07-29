@@ -4,6 +4,16 @@ include("../../pChart/class/pData.class.php");
 include("../../pChart/class/pDraw.class.php");
 include("../../pChart/class/pImage.class.php");
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+
+$v = new Valitron\Validator($_GET);
+$v->rule('numeric', ['scan_start', 'scan_end']);
+$v->rule('slug','agency');
+$v->rule('alpha','byVuln');
+if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+}
+
 $agency = $_GET["agency"];
 $report_name = $_GET["report_name"];
 $scan_start = $_GET["scan_start"];
@@ -99,27 +109,30 @@ $mediumArray = array();
 $lowArray = array();
 $osArray = array();
 $patterns = array();
-$patterns[0] = '/Microsoft/i';
-$patterns[1] = '/Service Pack/i';
-$patterns[2] = '/Windows/i';
-$patterns[3] = '/Linux/i';
-$patterns[4] = '/Enterprise/i';
-$patterns[5] = '/Standard/i';
-$patterns[6] = '/2003/i';
-$patterns[7] = '/2008/i';
-$patterns[7] = '/\(English\)/i';
-$patterns[9] = '/\([a-zA-Z]+\)/';
+$patterns[0] = '/Accounts/i';
+$patterns[1] = '/Checks/i';
+$patterns[2] = '/Linux/i';
+$patterns[3] = '/Local/i';
+$patterns[4] = '/management/i';
+$patterns[5] = '/Microsoft/i';
+$patterns[6] = '/Security/i';
+$patterns[7] = '/Servers/i';
+$patterns[8] = '/Service/i';
+$patterns[9] = '/Windows/i';
 $replacements = array();
-$replacements[0] = 'MS';
-$replacements[1] = 'SP';
-$replacements[2] = 'Win';
-$replacements[3] = 'Lnx';
-$replacements[4] = 'Ent';
-$replacements[5] = 'Std';
-$replacements[6] = '03';
-$replacements[7] = '08';
-$replacements[8] = '';
-$replacements[9] = '';
+$replacements[0] = 'Acct';
+$replacements[1] = 'Ch';
+$replacements[2] = 'Lnx';
+$replacements[3] = 'Lcl';
+$replacements[4] = 'Mgmt';
+$replacements[5] = 'MS';
+$replacements[6] = 'Sec';
+$replacements[7] = 'Srv';
+$replacements[8] = 'Svc';
+$replacements[9] = 'Win';
+
+$replacements[12] = '';
+$replacements[13] = '';
 foreach ($exec_fam as $key1 => $value1){
 	$criticalArray[] = $value1["critical"];
 	$highArray[] = $value1["high"];
@@ -186,7 +199,7 @@ $myPicture->drawStackedBarChart($Config);
 $Config = array("FontR"=>0, "FontG"=>0, "FontB"=>0, "FontName"=>"../../pChart/fonts/pf_arma_five.ttf", "FontSize"=>6, "Margin"=>6, "Alpha"=>30, "BoxSize"=>5, "Style"=>LEGEND_NOBORDER
 , "Mode"=>LEGEND_HORIZONTAL
 );
-$myPicture->drawLegend(557,16,$Config);
+$myPicture->drawLegend(535,16,$Config);
 
 $myPicture->stroke();
 

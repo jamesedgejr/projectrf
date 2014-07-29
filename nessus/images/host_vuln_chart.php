@@ -1,4 +1,19 @@
 <?php   
+ 
+ /* pChart library inclusions */
+ include("../../pChart/class/pData.class.php");
+ include("../../pChart/class/pDraw.class.php");
+ include("../../pChart/class/pPie.class.php");
+ include("../../pChart/class/pImage.class.php");
+ include('../../main/config.php');
+ 
+ $v = new Valitron\Validator($_GET);
+ $v->rule('integer',['critical','high','medium','low','info']);
+ if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+ } 
+
  /* CAT:Pie charts */
  $tmp_critical = $_GET["critical"];
  $critical = ($tmp_critical) ? $tmp_critical: 0.001;
@@ -9,12 +24,6 @@
  $tmp_low = $_GET["low"];
  $low = ($tmp_low) ? $tmp_low: 0.001;
  $title = $_GET["title"];
- 
- /* pChart library inclusions */
- include("../../pChart/class/pData.class.php");
- include("../../pChart/class/pDraw.class.php");
- include("../../pChart/class/pPie.class.php");
- include("../../pChart/class/pImage.class.php");
 
  /* Create and populate the pData object */
  $MyData = new pData();   

@@ -4,6 +4,15 @@ include("../../pChart/class/pData.class.php");
 include("../../pChart/class/pDraw.class.php");
 include("../../pChart/class/pImage.class.php");
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+
+$v = new Valitron\Validator($_GET);
+$v->rule('numeric', ['scan_start', 'scan_end']);
+$v->rule('slug','agency');
+$v->rule('alpha','byVuln');
+if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+} 
 $agency = $_GET["agency"];
 $report_name = $_GET["report_name"];
 $scan_start = $_GET["scan_start"];
@@ -25,6 +34,7 @@ $os_stmt = $db->prepare($os_sql);
 $os_stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
 while ($os_row = $os_stmt->fetch(PDO::FETCH_ASSOC)){
 	$operating_system = $os_row["operating_system"];
+	$operating_system = str_replace('\n', " or ", $operating_system);
 	$exec_os[$operating_system] = array(critical => "0", high => "0", medium => "0", low => "0", info => "0");
 	
 }
@@ -48,6 +58,7 @@ $stmt->execute(array($agency, $report_name, $scan_start, $scan_end));
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$severity = $row["severity"];
 	$operating_system = $row["operating_system"];
+	$operating_system = str_replace('\n', " or ", $operating_system);
 	$cveList = explode(",", $row["cveList"]);
 	$cveCount = count($cveList) - 1;
 	if($byVuln == "plugin"){
@@ -103,8 +114,12 @@ $patterns[4] = '/Enterprise/i';
 $patterns[5] = '/Standard/i';
 $patterns[6] = '/2003/i';
 $patterns[7] = '/2008/i';
-$patterns[8] = '/\(English\)/i';
-$patterns[9] = '/\([a-zA-Z]+\)/';
+$patterns[8] = '/Server/i';
+$patterns[9] = '/Kernel/i';
+$patterns[10] = '/Release/i';
+
+$patterns[12] = '/\(English\)/i';
+$patterns[13] = '/\([a-zA-Z]+\)/';
 $replacements = array();
 $replacements[0] = 'MS';
 $replacements[1] = 'SP';
@@ -114,8 +129,12 @@ $replacements[4] = 'Ent';
 $replacements[5] = 'Std';
 $replacements[6] = '03';
 $replacements[7] = '08';
-$replacements[8] = '';
-$replacements[9] = '';
+$replacements[8] = 'Srv';
+$replacements[9] = 'Krnl';
+$replacements[10] = 'Rel';
+
+$replacements[12] = '';
+$replacements[13] = '';
 foreach ($exec_os as $key1 => $value1){
 	$criticalArray[] = $value1["critical"];
 	$highArray[] = $value1["high"];

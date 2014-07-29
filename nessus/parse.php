@@ -152,7 +152,9 @@ foreach($xml->Report->ReportHost as $ReportHost){
 						if(!preg_match("/netstat-.*/i", $tag[name])){
 							if(!preg_match("/patch-summary-.*/i", $tag[name])){
 								if(!preg_match("/traceroute.*/i", $tag[name])){
-									$newTag[] = (string)$tag[name];
+									if(!preg_match("/cpe-\d/i", $tag[name])){
+										$newTag[] = (string)$tag[name];
+									}
 								}
 							}
 						}
@@ -389,7 +391,7 @@ $stmt->execute($sql_data);
 $newTags = array_unique($newTag);
 if(!empty($newTags)){
 	echo "<p>This parse script found Nessus XML tag elements that are new to the developer.  Please send an email to projectRF(at)jedge.com and provide the name of the tag(s) listed below.  The .nesses file would be helpful as well!</p>";
-	echo "<p>Please note that if you are familiar with the HostProperties XML tags in the .nessus file I'm completely ignoring any MSxx-xxx (Microsoft Bulletin), netstat, patch-summer, and tracerout tags.  They are filtered out and not shown to you.</p>";
+	echo "<p>Please note that if you are familiar with the HostProperties XML tags in the .nessus file I'm completely ignoring any MSxx-xxx (Microsoft Bulletin), netstat, patch-summer, cpe, and tracerout tags.  They are filtered out and not shown to you.</p>";
 	foreach ($newTags as $nT){
 			echo $nT . "<br>";
 	}

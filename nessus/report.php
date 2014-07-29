@@ -852,6 +852,7 @@ $num_returned_hosts = $host_stmt->rowCount();
             $mac_addr = $host_row["mac_addr"];
             $netbios = $host_row["netbios"];
             $operating_system = $host_row["operating_system"];
+				$operating_system = str_replace('\n', " or ", $operating_system);
             $plugin_output = filter_var($host_row["plugin_output"], FILTER_SANITIZE_SPECIAL_CHARS);
             #$plugin_output = $host_row["plugin_output"];
             $port = $host_row["port"];

@@ -13,6 +13,9 @@ mysql> create database <db_name>;
 mysql>  grant select,insert,update,delete on projectRF.* to projectRF@localhost identified by 'projectRF';
 */
 
-require '../vendor/autoload.php';
-
+if(file_exists('../vendor/autoload.php')) {
+    require '../vendor/autoload.php';
+} else {
+	require '../../vendor/autoload.php';
+}
 ?>
