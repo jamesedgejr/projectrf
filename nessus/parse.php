@@ -13,6 +13,8 @@ a:hover {text-decoration: underline}
 	<td valign="top">
 
 <?php
+include('../main/config.php');
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $v = new Valitron\Validator($_POST);
 $v->rule('slug', 'agency');
 if($v->validate()) {
@@ -46,8 +48,7 @@ else {
 	exit('Failed to open the xml file');
 } 
 
-include('../main/config.php');
-$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+
 $randValue = rand();
 $startScanArray = array();
 $endScanArray = array();
