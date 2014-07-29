@@ -213,13 +213,13 @@ select {font-family: courier new}
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isPlugName" checked>
 			</td>
-            <td style="width: 174px;">Include Name</td>
+            <td style="width: 174px;">Plugin Name</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input checked="checked" name="default" value="default" type="checkbox">
+				<input type="checkbox" value="yes" name="isPlugFam" checked>
 			</td>
-            <td style="width: 174px;">Include Family</td>
+            <td style="width: 174px;">Plugin Family</td>
           </tr>
           <tr>
             <td style="width: 30px;">
@@ -255,7 +255,7 @@ select {font-family: courier new}
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isPlugOut" checked>
 			</td>
-            <td style="width: 174px;">Include Plugin Output</td>
+            <td style="width: 174px;">Plugin Output</td>
           </tr>
           <tr>
             <td colspan="2" rowspan="1" style="width: 30px;">Risk Information</td>
@@ -264,19 +264,19 @@ select {font-family: courier new}
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isCvss" checked>
 			</td>
-            <td style="width: 174px;">Include Cvss Score</td>
+            <td style="width: 174px;">Cvss Score</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isVulnPub">
 			</td>
-            <td style="width: 174px;">Include Vuln Pub Date</td>
+            <td style="width: 174px;">Vuln Pub Date</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isExploit">
 			</td>
-            <td style="width: 174px;">Include Exploit Information</td>
+            <td style="width: 174px;">Exploit Information</td>
           </tr>
           <tr>
             <td colspan="2" rowspan="1" style="width: 30px;">Additional Research Links</td>
@@ -285,55 +285,55 @@ select {font-family: courier new}
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isCve" checked>
 			</td>
-            <td style="width: 174px;">Include CVE</td>
+            <td style="width: 174px;">Common Vuln Exposer (CVE)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isBid" checked>
             </td>
-            <td style="width: 174px;">Include Bugtraq ID</td>
+            <td style="width: 174px;">Bugtraq ID (BID)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isOsvdb" checked>
 			</td>
-            <td style="width: 174px;">Include OSVBD</td>
+            <td style="width: 174px;">Open Source Vuln DB (OSVBD)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isCert" checked>
 			</td>
-            <td style="width: 174px;">Include Cert</td>
+            <td style="width: 174px;">Cert</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isIava" checked>
 			</td>
-            <td style="width: 174px;">Include IAVA</td>
+            <td style="width: 174px;">IAVA</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isCWE" checked>
 			</td>
-            <td style="width: 174px;">Include CWE</td>
+            <td style="width: 174px;">Common Weakness Enum (CWE)</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isMS" checked>
 			</td>
-            <td style="width: 174px;">Include MS Bulletin</td>
+            <td style="width: 174px;">Microsoft Bulletin</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isSec" checked>
 			</td>
-            <td style="width: 174px;">Include Secunia</td>
+            <td style="width: 174px;">Secunia</td>
           </tr>
           <tr>
             <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isEdb" checked>
 			</td>
-            <td style="width: 174px;">Include EDB-ID</td>
+            <td style="width: 174px;">Exploit DB (EDB-ID)</td>
           </tr>
           <tr>
             <td colspan="2" rowspan="1" style="width: 30px;">Severity</td>

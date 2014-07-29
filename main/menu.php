@@ -54,6 +54,14 @@
 		<td></td>
 		<td><a href="../nessus/merge.php">Merge Nessus Reports</a></td>
 	</tr>
+	<tr>
+		<td></td>
+		<td><a href="../nessus/create_compare_report.php">Compare Nessus Reports</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><a href="../nessus/create_compare_matrix.php">Compare Nessus Matrix</a></td>
+	</tr>
 	<tr><td colspan="2"><hr></td></tr>
 	<tr>
 		<td colspan="2" width="150">DumpSec</td>

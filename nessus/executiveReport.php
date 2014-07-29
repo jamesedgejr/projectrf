@@ -417,12 +417,15 @@ if($cover == "y"){
 	<tr><td class="left">Selected Hosts</td></tr>
 	<tr><td class="right">
 	<?php  
-		$printHost = "";
+		$lineCount = 1;
+		echo "<table><tr>";
 		foreach($hostArray as $hA){ 
-			$printHost .= "| $hA ";
+			if($lineCount%10 == 1) {	echo "<tr>"; }
+			echo "<td class=right><p>" . $hA . "</p></td>";
+			if($lineCount%10 == 0) {	echo "</tr>"; }
+			$lineCount++;
 		}
-		$printHost .= "|";
-		echo "$printHost";	
+		if($lineCount%10 != 0) { echo "</tr></table>"; } else { echo "</table>";};
 	?>
 	</td></tr>
 </table>

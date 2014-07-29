@@ -6,7 +6,7 @@ $v = new Valitron\Validator($_POST);
 $v->rule('accepted', ['isPlugName','isPlugFam','isPlugInfo','isPlugOut','isService','isCvss','isVulnPub','isExploit','isSynopsis','isDescription','isSolution','isSeeAlso','isCve','isBid','isOsvdb','isCert','isIava','isCWE','isMS','isSec','isEdb','isAffected','isNotes','cover']);
 $v->rule('numeric', ['scan_start', 'scan_end']);
 $v->rule('slug','agency');
-$v->rule('regex','report_name','/[a-zA-Z]+/');
+//$v->rule('regex','report_name','/[a-zA-Z]+/');
 $v->rule('length',1,['critical','high','medium','low','info']);
 $v->rule('integer',['critical','high','medium','low','info']);
 if(!$v->validate()) {
@@ -471,17 +471,6 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
     $synopsis = str_replace("\n\n","<br>", $row["synopsis"]);
     $vuln_publication_date = $row["vuln_publication_date"];
 
-	if ($severity == "4"){
-		$risk = "Critical";
-	} else if ($severity == "3") {
-		$risk = "High";
-	} else if ($severity == "2") {
-		$risk = "Medium";
-	} else if ($severity == "1") {
-		$risk = "Low";
-	} else if($severity == "0"){
-		$risk = "Information";
-	}
 ?>
 
 
@@ -504,7 +493,7 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
 <?php if($isCvss == "yes"){ ?>
  <tr>
 	<td class="top" align="center" width="16%"><p>Risk</p></td>
-	<td class="right" align="center" width="16%"><p><?php echo "$risk"; ?></p></td>
+	<td class="right" align="center" width="16%"><p><?php echo "$risk_factor"; ?></p></td>
 	<td class="top" align="center" width="16%"><p>CVSS Score</p></td>
 	<td class="right" align="center" width="16%"><p><?php echo "$cvss_base_score"; ?></p></td>
 	<td class="top" align="center" width="16%"><p>Vector</p></td>
