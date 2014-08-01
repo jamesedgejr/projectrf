@@ -160,6 +160,7 @@ $os_stmt = $db->prepare($os_sql);
 $os_stmt->execute($whereArray);
 while ($os_row = $os_stmt->fetch(PDO::FETCH_ASSOC)){
 	$operating_system = $os_row["operating_system"];
+	$operating_system = str_replace('\n', " or<br>", $operating_system);
 	$exec_os[$operating_system] = array(critical => "0", high => "0", medium => "0", low => "0", info => "0");
 }
 $sql = "SELECT
@@ -182,6 +183,7 @@ $stmt->execute($whereArray);
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$severity = $row["severity"];
 	$operating_system = $row["operating_system"];
+	$operating_system = str_replace('\n', " or<br>", $operating_system);
 	$cveList = explode(",", $row["cveList"]);
 	$cveCount = count($cveList) - 1;	
 	if($byVuln == "plugin"){
@@ -625,3 +627,4 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 function sortByHigh($a, $b) { 
 	return strnatcmp($b['critical'], $a['critical']); 
 } // sort alphabetically by name 
+

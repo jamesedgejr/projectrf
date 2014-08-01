@@ -212,7 +212,7 @@ $myPicture->stroke();
 
 
 function sortByHigh($a, $b) { 
-	return strnatcmp($b['critical'], $a['critical']); 
+	return strnatcmp($b['medium'], $a['medium']); 
 } // sort alphabetically by name 
 
 ?>

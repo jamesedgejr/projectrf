@@ -853,7 +853,7 @@ $num_returned_hosts = $host_stmt->rowCount();
             $netbios = $host_row["netbios"];
             $operating_system = $host_row["operating_system"];
 				$operating_system = str_replace('\n', " or ", $operating_system);
-            $plugin_output = filter_var($host_row["plugin_output"], FILTER_SANITIZE_SPECIAL_CHARS);
+            $plugin_output = filter_var($host_row["plugin_output"], FILTER_SANITIZE_SPECIAL_CHARS);echo $plugin_output;
             #$plugin_output = $host_row["plugin_output"];
             $port = $host_row["port"];
             $protocol = $host_row["protocol"];
@@ -870,7 +870,7 @@ $num_returned_hosts = $host_stmt->rowCount();
 		  <td class="right"><p><?php echo"$protocol";?></p></td>
 		  <?php } ?>
 		</tr>
-		<?php if($isPlugOut == "y" && $plugin_output != ""){ 
+		<?php if($isPlugOut == "yes" && $plugin_output != ""){ 
 			echo "<tr><td class=\"right\" colspan=\"";
 				$number = (isService == "yes") ? 5:7;
 				echo "$number";
