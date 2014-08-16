@@ -535,7 +535,7 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
   </tr>
 <?php }	?>
 
-<?php if($isSeeAlso == "y" && $see_alsoList[1] != ""){ ?>
+<?php if($isSeeAlso == "yes" && $see_alsoList[1] != ""){ ?>
   <tr>
 	<td class="left"><p>Also See:</p></td>
 	<td class="right">
@@ -588,7 +588,7 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
 <table width="100%" class="main">
 <?php 
 $listCount = count($cveList);
-if($isCve == "y" && $listCount > 1) { 
+if($isCve == "yes" && $listCount > 1) { 
 ?>
   <tr>
 	<td class="left" width="15%"><p>CVE:</p></td>
@@ -608,7 +608,7 @@ if($isCve == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($bidList);
-if($isBid == "y" && $listCount > 1) {	
+if($isBid == "yes" && $listCount > 1) {	
 ?>
   <tr>
 	<td class="left"><p>BugtraqID:</p></td>
@@ -628,7 +628,7 @@ if($isBid == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($osvdbList);
-if($isOsvdb == "y" && $listCount > 1) {
+if($isOsvdb == "yes" && $listCount > 1) {
 ?>
   <tr>
 	<td class="left"><p>OSVDB:</p></td>
@@ -648,7 +648,7 @@ if($isOsvdb == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($certList);
-if($isCert == "y" && $listCount > 1) {
+if($isCert == "yes" && $listCount > 1) {
 ?>
   <tr>
 	<td class="left"><p>US Cert:</p></td>
@@ -668,7 +668,7 @@ if($isCert == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($iavaList);
-if($isIava == "y" && $listCount > 1) { 
+if($isIava == "yes" && $listCount > 1) { 
 #Information_Assurance_Vulnerability_Alert
 ?>
   <tr>
@@ -689,7 +689,7 @@ if($isIava == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($iavbList);
-if($isIavb == "y" && $listCount > 1) { 
+if($isIavb == "yes" && $listCount > 1) { 
 ?>
   <tr>
 	<td class="left"><p>IAVB:</p></td>
@@ -709,7 +709,7 @@ if($isIavb == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($cweList);
-if($isCwe == "y" && $listCount > 1) {
+if($isCwe == "yes" && $listCount > 1) {
 #common weaknesses enumeration
 ?>
   <tr>
@@ -730,7 +730,7 @@ if($isCwe == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($msftList);
-if($isMS == "y" && $listCount > 1) {
+if($isMS == "yes" && $listCount > 1) {
 ?>
   <tr>
 	<td class="left"><p>Microsoft Bulletin:</p></td>
@@ -750,7 +750,7 @@ if($isMS == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($secuniaList);
-if($isSec == "y" && $listCount > 1) {
+if($isSec == "yes" && $listCount > 1) {
 ?>
   <tr>
 	<td class="left"><p>Secunia:</p></td>
@@ -770,7 +770,7 @@ if($isSec == "y" && $listCount > 1) {
 
 <?php 
 $listCount = count($edbList);
-if($isEdb == "y" && $listCount > 1) {
+if($isEdb == "yes" && $listCount > 1) {
 ?>
   <tr>
 	<td class="left"><p>Exploit DB:</p></td>

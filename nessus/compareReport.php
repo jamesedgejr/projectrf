@@ -76,7 +76,8 @@ $scan_end2 = $report2_temp[3];
 
 $sql = "SELECT DISTINCT
 			nessus_tags.host_name, 
-			nessus_results.pluginID 
+			nessus_results.pluginID,
+			nessus_results.pluginName
 		FROM 
 			nessus_results
 		INNER JOIN nessus_tags ON nessus_results.tagID = nessus_tags.tagID 
@@ -89,34 +90,33 @@ $sql = "SELECT DISTINCT
 $data1 = array($agency1, $report_name1, $scan_start1, $scan_end1);
 $stmt1 = $db->prepare($sql);
 $stmt1->execute($data1);
-$array1_byHost = array();
-$array1_byPluginID = array();
+$array1 = array();
 while($row1 = $stmt1->fetch(PDO::FETCH_ASSOC)){
-	$array1_byHost[$row1["host_name"]] = $row1["pluginID"];
-	$array1_byPluginID[$row1["pluginID"]] = $row1["host_name"];
+	$hostPlugin1 = $row1["pluginID"] . "#" . $row1["host_name"];
+	$array1[] = $hostPlugin1;
 }
 
 $data2 = array($agency2, $report_name2, $scan_start2, $scan_end2);
 $stmt2 = $db->prepare($sql);
 $stmt2->execute($data2);
-$array2_byHost = array();
-$array2_byPluginID = array();
+$array2 = array();
 while($row2 = $stmt2->fetch(PDO::FETCH_ASSOC)){
-	$array2_byHost[$row2["host_name"]] = $row2["pluginID"];
-	$array2_byPluginID[$row2["pluginID"]] = $row2["host_name"];
+	$hostPlugin2 = $row2["pluginID"] . "#" . $row2["host_name"];
+	$array2[] = $hostPlugin2;
 }
+print_r($array1);
+print_r($array2);
 
 //Diff first scan with second scan.  What is in first but not second are vulns that are not fixed
-$result_notFixed_byHost = array_diff_assoc($array1_byHost, $array2_byHost);
-$result_notFixed_byPluginID = array_diff_assoc($array1_byPluginID, $array2_byPluginID);
-
+$result_notFixed = array_intersect($array1, $array2);
+$result_fixed = array_diff($array1, $array2);
+echo "notFixed_byHost<br>";
+print_r($result_fixed);
 //Diff the notFixed with first scan.  The result is what isFixed.
-$result_isFixed_byHost = array_diff_assoc($array1_byHost, $result_notFixed_byHost);
-$result_isFixed_byPluginID = array_diff_assoc($array1_byPluginID, $result_notFixed_byPluginID);
+//$result_isFixed_byHost = array_diff_assoc($array1_byHost, $result_notFixed_byHost);
 
 //Diff the second scan with the first scan.  What is in the second scan but not the first are new vulnerabilities.
-$result_newVulns_byHost = array_diff_assoc($array2_byHost, $array1_byHost);
-$result_newVulns_byPluginID = array_diff_assoc($array2_byPluginID, $array1_byPluginID);
+//$result_newVulns_byHost = array_diff_assoc($array2_byHost, $array1_byHost);
 
 /*
 pull all host:plugins from both report
@@ -866,7 +866,7 @@ $num_returned_hosts = $host_stmt->rowCount();
 		  <td class="right"><p><?php echo"$protocol";?></p></td>
 		  <?php } ?>
 		</tr>
-		<?php if($isPlugOut == "y" && $plugin_output != ""){ 
+		<?php if($isPlugOut == "yes" && $plugin_output != ""){ 
 			echo "<tr><td class=\"right\" colspan=\"";
 				$number = (isService == "yes") ? 5:7;
 				echo "$number";
@@ -923,7 +923,6 @@ $('#<?php echo $pluginID?>').bind('input propertychange', function() {
 
 <?php
 function KeyValueLookup($array, $key, $val) {
-	print_r($array);
     foreach ($array as $item)
         if (isset($item[$key]) && $item[$key] == $val)
             return true;
