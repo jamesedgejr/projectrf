@@ -105,15 +105,15 @@ if($isOpen && $isUp){
 		nmap_ports_xml.port_service_version,
 		nmap_ports_xml.port_service_extrainfo";
 
-	if($nsescript == "port"){
+	if($nsescript == "port" && !empty($nsePort)){
 		$main_sql .= ",
 			nmap_port_nse_xml.script_id,
 			nmap_port_nse_xml.script_output";
-	} else {
+	} elseif ($nsescript == "host" && !empty($nseHost)) {
 		$main_sql .= ",
 			nmap_host_nse_xml.script_id,
 			nmap_host_nse_xml.script_output";
-	}
+	} 
 	$main_sql .= "
 		FROM
 			nmap_runstats_xml
@@ -122,20 +122,20 @@ if($isOpen && $isUp){
 		Inner Join nmap_tmp_hosts ON nmap_tmp_hosts.address_addr = nmap_hosts_xml.address_addr
 		Inner Join nmap_tmp_ports ON nmap_tmp_ports.port_portid = nmap_ports_xml.port_portid AND nmap_tmp_ports.port_service_name = nmap_ports_xml.port_service_name
 	";
-	if($nsescript == "port"){
+
+	if($nsescript == "port"  && !empty($nsePort)){
 		$main_sql .= "	Left Join nmap_port_nse_xml ON nmap_ports_xml.id = nmap_port_nse_xml.port_id
 						Inner Join nmap_tmp_port_nse ON nmap_tmp_port_nse.script_id = nmap_port_nse_xml.script_id";
-	} else {
+	} elseif ($nsescript == "host" && !empty($nseHost)){
 		$main_sql .= "	Left Join nmap_host_nse_xml ON nmap_ports_xml.host_id = nmap_host_nse_xml.host_id
 						Inner Join nmap_tmp_host_nse ON nmap_tmp_host_nse.script_id = nmap_host_nse_xml.script_id";
-	}
+	} 
 	$main_sql .= "
 		WHERE
 			nmap_runstats_xml.agency =  ? AND
 			nmap_runstats_xml.filename =  ? AND
 			nmap_runstats_xml.nmaprun_start =  ? AND
 			nmap_runstats_xml.finished_time =  ?";
-
 	$data = array($agency, $filename, $nmaprun_start, $finished_time);
 	$main_stmt = $db->prepare($main_sql);
 	$main_stmt->execute($data);
