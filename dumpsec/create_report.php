@@ -1,7 +1,6 @@
 <?php
 include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_sql = 	"SELECT DISTINCT 
 			dumpsec_user_table.agency, 
 			dumpsec_user_table.Host, 
@@ -10,7 +9,8 @@ $agency_sql = 	"SELECT DISTINCT
 		FROM 
 			dumpsec_user_table
 		";
-$agency_result = $db->query($agency_sql);ifError($plugin_result);
+$agency_stmt = $db->prepare($agency_sql);
+$agency_stmt->execute();
 ?>
 
 <HTML>
@@ -37,7 +37,7 @@ select {font-family: courier new}
   	  <select NAME="option" SIZE="10"  style="width:800px;margin:5px 0 5px 0;">
 		<option value="none" selected>[Agency]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Host]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Date/Time]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[File Name]</option>
 			<?php
-			while($agency_row = $agency_result->fetchRow(DB_FETCHMODE_ASSOC)){
+			while($agency_row = $agency_stmt->fetch(PDO::FETCH_ASSOC)){
 			  $value1 = str_replace(' ','&nbsp;',str_pad($agency_row["agency"], 15));
 			  $value2 = str_replace(' ','&nbsp;',str_pad($agency_row["Host"], 15));
 			  $value3 = str_replace(' ','&nbsp;',str_pad($agency_row["FileDate"], 20));
@@ -60,15 +60,3 @@ select {font-family: courier new}
 </body>
 </html>
 
-<?php
-function ifError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

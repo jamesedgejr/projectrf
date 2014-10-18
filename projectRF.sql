@@ -1,12 +1,3 @@
-/*
-MySQL Data Transfer
-Source Host: 192.168.0.109
-Source Database: projectRF
-Target Host: 192.168.0.109
-Target Database: projectRF
-Date: 3/12/2014 1:31:47 PM
-*/
-
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 -- Table structure for AppScan_ApplicationData_BrokenLinks
@@ -302,6 +293,8 @@ DROP TABLE IF EXISTS `kismet_results_newcore`;
 CREATE TABLE `kismet_results_newcore` (
   `record_id` int(10) NOT NULL AUTO_INCREMENT,
   `agency` varchar(255) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `floor` varchar(100) DEFAULT NULL,
   `file_name` varchar(100) DEFAULT NULL,
   `kismet_version` varchar(50) DEFAULT NULL,
   `start_time` varchar(50) DEFAULT NULL,
@@ -438,7 +431,7 @@ CREATE TABLE `kismet_results_newcore` (
   `wc_seen_card_seen_time` varchar(50) DEFAULT NULL,
   `wc_seen_card_seen_packets` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`record_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=24856 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=31149 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nessus_audit_file

@@ -118,6 +118,10 @@
 	</tr>
 	<tr>
 		<td></td>
+		<td width="95%"><a href="../kismet/create_csv.php">Create CSV</a></td>
+	</tr>
+	<tr>
+		<td></td>
 		<td width="95%"><a href="../kismet/upload_xmltokml.php">XML to KML (Oldcore)</a></td>
 	</tr>
 	<tr>

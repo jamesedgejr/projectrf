@@ -30,6 +30,12 @@ a:hover {text-decoration: underline}
 			<td><p>Enter Agency/Company Name: </p></td><td><input name="agency" type="text"></td>
 		</tr>
 		<tr>
+			<td><p>Location: </p></td><td><input name="location" type="text"></td>
+		</tr>
+		<tr>
+			<td><p>Floor: </p></td><td><input name="floor" type="text"></td>
+		</tr>
+		<tr>
 			<td></td>
 			<td>
 				<input type="submit" value="Process File" />

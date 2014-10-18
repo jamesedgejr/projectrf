@@ -14,6 +14,8 @@ a:hover {text-decoration: underline}
 
 <?php
 $agency = $_POST["agency"];
+$location = $_POST["location"];
+$floor = $_POST["floor"];
 $uploaddir = sys_get_temp_dir();
 $uploadfile = tempnam(sys_get_temp_dir(), basename($_FILES['userfile']['name']));
 $file_name = basename($_FILES['userfile']['name']);
@@ -195,6 +197,8 @@ foreach($xml->{'wireless-network'} as $wn){
 		$sql = "INSERT INTO kismet_results_newcore 
 				(
 				agency,
+				location,
+				floor,
 				file_name,
 				kismet_version,
 				start_time,
@@ -332,6 +336,8 @@ foreach($xml->{'wireless-network'} as $wn){
 			VALUES 
 				(
 				'$agency',
+				'$location',
+				'$floor',
 				'$file_name',
 				'$kismet_version', 
 				'$start_time',
