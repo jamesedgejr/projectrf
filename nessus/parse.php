@@ -66,10 +66,10 @@ foreach($xml->Report->ReportHost as $ReportHost){
 	foreach($ReportHost->HostProperties->tag as $tag){
 		switch ($tag[name]) {
 			case "bios-uuid":
-				$bios_uuid = mysql_real_escape_string($tag);
+				$bios_uuid = $tag;
 				break;
 			case "host-fqdn":
-				$fqdn = mysql_real_escape_string($tag);
+				$fqdn = $tag;
 				break;
 			case "HOST_END":
 				$host_end = strtotime($tag);
@@ -80,72 +80,72 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				$startScanArray[] = $host_start;
 				break;
 			case "host-ip":
-				$ip_addr = mysql_real_escape_string($tag);
+				$ip_addr = $tag;
 				break;
 			case "local-checks-proto":
-				$local_checks_proto = mysql_real_escape_string($tag);
+				$local_checks_proto = $tag;
 				break;
 			case "mac-address":
-				$mac_addr = mysql_real_escape_string($tag);
+				$mac_addr = $tag;
 				break;
 			case "netbios-name":
-				$netbios = mysql_real_escape_string($tag);
+				$netbios = $tag;
 				break;
 			case "operating-system":
-				$operating_system = mysql_real_escape_string($tag);
+				$operating_system = $tag;
 				break;
 			case "operating-system-unsupported":
-				$operating_system_unsupported = mysql_real_escape_string($tag);
+				$operating_system_unsupported = $tag;
 				break;
 /*-----PCI DSS COMPLIANCE -------------------------------------------------*/
 			case "pcidss:compliance:failed":
-				$pcidss_compliance_failed = mysql_real_escape_string($tag);
+				$pcidss_compliance_failed = $tag;
 				break;
 			case "pci-dss-compliance":
-				$pcidss_compliance = mysql_real_escape_string($tag);
+				$pcidss_compliance = $tag;
 				break;
 			case "pcidss:low_risk_flaw":
-				$pcidss_low_risk_flaw = mysql_real_escape_string($tag);
+				$pcidss_low_risk_flaw = $tag;
 				break;
 			case "pcidss:medium_risk_flaw":
-				$pcidss_medium_risk_flaw = mysql_real_escape_string($tag);
+				$pcidss_medium_risk_flaw = $tag;
 				break;
 			case "pcidss:high_risk_flaw":
-				$pcidss_high_risk_flaw = mysql_real_escape_string($tag);
+				$pcidss_high_risk_flaw = $tag;
 				break;
 			case "pcidss:www:xss":
-				$pcidss_www_xss = mysql_real_escape_string($tag);
+				$pcidss_www_xss = $tag;
 				break;
 			case "pcidss:www:header_injection":
-				$pcidss_www_header_injection = mysql_real_escape_string($tag);
+				$pcidss_www_header_injection = $tag;
 				break;
 			case "pcidss:directory_browsing":
-				$pcidss_directory_browsing = mysql_real_escape_string($tag);
+				$pcidss_directory_browsing = $tag;
 				break;
 			case "pcidss:obsolete_operating_system":
-				$pcidss_obsolete_operating_system = mysql_real_escape_string($tag);
+				$pcidss_obsolete_operating_system = $tag;
 				break;
 			case "pcidss:deprecated_ssl":
-				$pcidss_deprecated_ssl = mysql_real_escape_string($tag);
+				$pcidss_deprecated_ssl = $tag;
 				break;
 			case "pcidss:reachable_db":
-				$pcidss_reachable_db = mysql_real_escape_string($tag);
+				$pcidss_reachable_db = $tag;
 				break;
 			case "pcidss:expired_ssl_certificate":
-				$pcidss_expired_ssl_certificate = mysql_real_escape_string($tag);
+				$pcidss_expired_ssl_certificate = $tag;
 				break;
 /*-----PCI DSS COMPLIANCE -------------------------------------------------*/
 			case "smb-login-used":
-				$smb_login_used = mysql_real_escape_string($tag);
+				$smb_login_used = $tag;
 				break;
 			case "ssh-auth-meth":
-				$ssh_auth_meth = mysql_real_escape_string($tag);
+				$ssh_auth_meth = $tag;
 				break;
 			case "ssh-login-used":
-				$ssh_login_used = mysql_real_escape_string($tag);
+				$ssh_login_used = $tag;
 				break;
 			case "system-type":
-				$system_type = mysql_real_escape_string($tag);
+				$system_type = $tag;
 				break;
 			default:  //who knows all the wonderful tags nessus has created.  I specifically ignore MSxx-xxx, netstat-XXXX, patch-summary-XXXX, and traceroute tags.
 					if(!preg_match("/MS\d+-\d+/i", $tag[name])){

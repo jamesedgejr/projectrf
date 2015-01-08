@@ -2,11 +2,24 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$option = explode("%%", $_POST["option"]);
-$agency = $option[0];
-$Host = $option[1];
-$FileDate = $option[2];
-$FileName = $option[3];
+$agency = $_POST["agency"];
+$Host = $_POST["Host"];
+$FileDate = $_POST["FileDate"];
+$FileName = $_POST["FileName"];
+$includePasswords = $_POST["includePasswords"];
+
+$groupsArray = $_POST["groups"];
+foreach($groupsArray as $key => $value) {
+	if ($value == "REMOVE") unset($groupsArray[$key]);
+}
+$sql = "CREATE temporary TABLE dumpsec_tmp_groups (GroupName VARCHAR(255), INDEX ndx_GroupName (GroupName))";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+foreach ($groupsArray as $gA){
+	$sql="INSERT INTO dumpsec_tmp_groups (GroupName) VALUES (?)";
+	$stmt = $db->prepare($sql);
+	$stmt->execute(array($gA));
+}
 
 date_default_timezone_set('UTC');
 $myDir = "/var/www/projectRF/dumpsec/csvfiles/";
@@ -50,9 +63,25 @@ $main_sql = "SELECT DISTINCT
 			dumpsec_user_table.AcctExpiresTime,
 			dumpsec_user_table.LastLogonTime,
 			dumpsec_user_table.LastLogonServer,
-			dumpsec_user_table.LogonHours
+			dumpsec_user_table.LogonHours";
+		if($includePasswords == "yes"){
+			$main_sql .= ",
+						password_results.password_hash,
+						password_results.password_result
+						";
+		}
+$main_sql .="
 		FROM
 			dumpsec_user_table
+		INNER JOIN dumpsec_group_table ON dumpsec_user_table.UserName = dumpsec_group_table.GroupMember
+		INNER JOIN dumpsec_tmp_groups ON dumpsec_tmp_groups.GroupName = dumpsec_group_table.GroupName
+		";
+	if($includePasswords == "yes"){
+		$main_sql .= "
+			Left Join password_results ON password_results.agency = dumpsec_group_table.Agency AND password_results.username = dumpsec_group_table.GroupMember				
+		";
+	}	
+$main_sql .="	
 		WHERE
 			dumpsec_user_table.Agency =  ? AND
 			dumpsec_user_table.Host =  ? AND
@@ -67,12 +96,18 @@ $data = array($agency, $Host, $FileDate, $FileName);
 $main_stmt = $db->prepare($main_sql);
 $main_stmt->execute($data);
 
-fwrite($fh, "\"User Name\",\"Full Name\",\"Comment\",\"Password Last Changed\",\"Password Age (Days)\",\"Password Age (Years)\"\n");
+fwrite($fh, "\"User Name\",\"Full Name\",\"Comment\",\"Password Expires\",\"Password Last Changed\",\"Last Logon Time\",\"Password Age (Days)\",\"Password Age (Years)\"");
+if($includePasswords == "yes"){
+	fwrite($fh, ",\"Password\"");
+}
+fwrite($fh, "\n");
 while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
 	$username = $row["UserName"];
 	$fullname = $row["UserName"];
 	$comment = $row["Comment"];
+	$PswdExpires = $row["PswdExpires"];
 	$PswdLastSetTime = $row["PswdLastSetTime"];
+	$LastLogonTime = $row["LastLogonTime"];
 	
 	$FileDateUTC = strtotime($FileDate);
 	$PswdLastSetTimeUTC = strtotime($PswdLastSetTime);
@@ -80,7 +115,12 @@ while($row = $main_stmt->fetch(PDO::FETCH_ASSOC)){
 	$passwordAgeYears = $passwordAgeDays / 365;
 
 	
-	fwrite($fh, "\"$username\",\"$fullname\",\"$comment\",\"$PswdLastSetTime\",\"$passwordAgeDays\",\"$passwordAgeYears\"\n");
+	fwrite($fh, "\"$username\",\"$fullname\",\"$comment\",\"$PswdExpires\",\"$PswdLastSetTime\",\"$LastLogonTime\",\"$passwordAgeDays\",\"$passwordAgeYears\"");
+	if($includePasswords == "yes"){
+		$password_result = $row["password_result"];
+		fwrite($fh, ",\"$password_result\"");
+	}
+	fwrite($fh, "\n");
 
 ?>
 
