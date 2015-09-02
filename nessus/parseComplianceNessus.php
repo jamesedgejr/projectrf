@@ -13,6 +13,16 @@ a:hover {text-decoration: underline}
 	<td valign="top">
 
 <?php
+include('../main/config.php');
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v = new Valitron\Validator($_POST);
+$v->rule('slug', 'agency');
+if($v->validate()) {
+
+} else {
+    print_r($v->errors());
+	exit;
+} 
 $agency = $_POST["agency"];
 $uploaddir = sys_get_temp_dir();
 $uploadfile = tempnam(sys_get_temp_dir(), basename($_FILES['userfile']['name']));
@@ -38,12 +48,10 @@ else {
 	exit('Failed to open the xml file');
 } 
 
-include('../main/config.php');
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" );
+
 $randValue = rand();
 $compliancePluginArray = array("21156","21157","24760","33814","33929","33930","33931","46689");
-$report_name = $xml->Report[name];
+$report_name = preg_replace("/[\W]*/", '', $xml->Report[name]);
 foreach($xml->Report->ReportHost as $ReportHost){
 	/* 
 	   The name can be either an IP or domain name.
@@ -131,27 +139,57 @@ foreach($xml->Report->ReportHost as $ReportHost){
 					}
 		}
 	}
-	$sql = "INSERT INTO nessus_tags 
-				(fqdn,host_end,host_start,ip_addr,local_checks_proto,mac_addr,netbios,operating_system,pcidss_compliance,
-				pcidss_compliance_failed,pcidss_deprecated_ssl,pcidss_directory_browsing,
-				pcidss_expired_ssl_certificate,pcidss_high_risk_flaw,pcidss_low_risk_flaw,
-				pcidss_medium_risk_flaw,pcidss_obsolete_operating_system,pcidss_reachable_db,
-				pcidss_www_header_injection,pcidss_www_xss,ssh_auth_meth,ssh_login_used,smb_login_used,system_type)
+		$tags_sql = "INSERT INTO nessus_tags 
+			(
+				bios_uuid,
+				fqdn,
+				host_end,
+				host_name,
+				host_start,
+				ip_addr,
+				local_checks_proto,
+				mac_addr,
+				netbios,
+				operating_system,
+				operating_system_unsupported,
+				pcidss_compliance,
+				pcidss_compliance_failed,
+				pcidss_deprecated_ssl,
+				pcidss_directory_browsing,
+				pcidss_expired_ssl_certificate,
+				pcidss_high_risk_flaw,
+				pcidss_low_risk_flaw,
+				pcidss_medium_risk_flaw,
+				pcidss_obsolete_operating_system,
+				pcidss_reachable_db,
+				pcidss_www_header_injection,
+				pcidss_www_xss,
+				smb_login_used,
+				ssh_auth_meth,
+				ssh_login_used,
+				system_type
+			)
 			VALUES 
-				('$fqdn','$host_end','$host_start','$ip_addr','$local_checks_proto','$mac_addr','$netbios','$operating_system','$pcidss_compliance',
-				'$pcidss_compliance_failed','$pcidss_deprecated_ssl','$pcidss_directory_browsing','$pcidss_expired_ssl_certificate',
-				'$pcidss_high_risk_flaw','$pcidss_low_risk_flaw','$pcidss_medium_risk_flaw','$pcidss_obsolete_operating_system',
-				'$pcidss_reachable_db','$pcidss_www_header_injection','$pcidss_www_xss','$ssh_auth_meth','$ssh_login_used','$smb_login_used','$system_type')
-			";	
-	$result = $db->query($sql);ifDBError($result);
-	$sql = "SELECT LAST_INSERT_ID()";
-	$tagID = $db->getRow($sql);ifDBError($result);
+				(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+			";
+
+	$tags_stmt = $db->prepare($tags_sql);
+	$tags_sql_data = array($bios_uuid,$fqdn,$host_end,$host_name,$host_start,$ip_addr,$local_checks_proto,$mac_addr,$netbios,$operating_system,$operating_system_unsupported,$pcidss_compliance,$pcidss_compliance_failed,$pcidss_deprecated_ssl,$pcidss_directory_browsing,$pcidss_expired_ssl_certificate,$pcidss_high_risk_flaw,$pcidss_low_risk_flaw,$pcidss_medium_risk_flaw,$pcidss_obsolete_operating_system,$pcidss_reachable_db,$pcidss_www_header_injection,$pcidss_www_xss,$smb_login_used,$ssh_auth_meth,$ssh_login_used,$system_type);
+	$tags_stmt->execute($tags_sql_data);
+	$tagID = $db->lastInsertId();
 	
 	foreach ($ReportHost->ReportItem as $ReportItem){
+		$port = $ReportItem[port];
+		$svc_name = $ReportItem[svc_name];
+		$protocol = $ReportItem[protocol];
+		$severity = $ReportItem[severity];
 		$pluginID = $ReportItem[pluginID];
+		$pluginName = $ReportItem[pluginName];
+		$pluginFamily = $ReportItem[pluginFamily];
 		if(in_array($pluginID, $compliancePluginArray)) {
 			$severity = addslashes($ReportItem[severity]);
 			$pluginName = addslashes($ReportItem[pluginName]);
+			
 			$full_description = addslashes($ReportItem->description);
 			preg_match("/\"(.*)\"/",$ReportItem->description,$description);
 			$description = addslashes($description[1]);
@@ -170,9 +208,29 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				$endScanArray[] = $endEpoch;
 				$scan_start = $randValue;
 				$scan_end = $randValue;
-				$sql = "INSERT INTO nessus_compliance_results (agency, report_name, scan_start, scan_end, tagID, host_name, pluginID, pluginName, severity, description, plugin_output, remoteValue, policyValue, complianceError) VALUES ('$agency', '$report_name', '$scan_start', '$scan_end', '$tagID[0]', '$host_name', '$pluginID', '$pluginName', '$severity', '$description', '$plugin_output', '$remoteValue', '$policyValue', '$complianceError')";
-				$result = $db->query($sql);ifDBError($result);
 				
+				
+				$sql = "INSERT INTO nessus_compliance_results 
+						(
+							agency, 
+							complianceError,
+							description, 
+							host_name, 
+							plugin_output, 
+							pluginID, 
+							pluginName, 
+							policyValue, 
+							remoteValue, 
+							report_name, 
+							scan_end, 
+							scan_start, 
+							severity, 
+							tagID 
+						) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				$stmt = $db->prepare($sql);
+				$sql_data = array($agency, $complianceError, $description, $host_name, $plugin_output, $pluginID, $pluginName, $policyValue, $remoteValue, $report_name, $scan_end, $scan_start, $severity, $tagID[0]);
+				print_r($sql_data);
+				$stmt->execute($sql_data);
 			} elseif ($severity == "2") {
 				preg_match("/\[[A-Z]*](.*)/s",$full_description,$errors);
 				$complianceError = $errors[1];
@@ -184,8 +242,26 @@ foreach($xml->Report->ReportHost as $ReportHost){
 				$endScanArray[] = $endEpoch;
 				$scan_start = $randValue;
 				$scan_end = $randValue;
-				$sql = "INSERT INTO nessus_compliance_results (agency, report_name, scan_start, scan_end, tagID, host_name, pluginID, pluginName, severity, description, plugin_output, remoteValue, policyValue, complianceError) VALUES ('$agency', '$report_name', '$scan_start', '$scan_end', '$tagID[0]', '$host_name', '$pluginID', '$pluginName', '$severity', '$description', '$plugin_output', '$remoteValue', '$policyValue', '$complianceError')";
-				$result = $db->query($sql);ifDBError($result);
+				$sql = "INSERT INTO nessus_compliance_results 
+						(
+							agency, 
+							complianceError,
+							description, 
+							host_name, 
+							plugin_output, 
+							pluginID, 
+							pluginName, 
+							policyValue, 
+							remoteValue, 
+							report_name, 
+							scan_end, 
+							scan_start, 
+							severity, 
+							tagID 
+						) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				$stmt = $db->prepare($sql);
+				$sql_data = array($agency, $complianceError, $description, $host_name, $plugin_output, $pluginID, $pluginName, $policyValue, $remoteValue, $report_name, $scan_end, $scan_start, $severity, $tagID[0]);
+				$stmt->execute($sql_data);
 			}
 		}
 	}
@@ -197,8 +273,10 @@ sort($startScanArray);
 $scan_start = $startScanArray[0];
 rsort($endScanArray);
 $scan_end = $endScanArray[0];
-$sql = "UPDATE nessus_compliance_results SET scan_start = '$scan_start', scan_end = '$scan_end' WHERE scan_start = '$randValue' AND scan_end = '$randValue'";
-$result = $db->query($sql);ifDBError($result);
+$sql_update_nessus_results = "UPDATE nessus_results SET scan_start = ?, scan_end = ? WHERE scan_start = $randValue AND scan_end = $randValue";
+$stmt = $db->prepare($sql_update_nessus_results);
+$sql_data = array($scan_start,$scan_end);
+$stmt->execute($sql_data);
 ?>
 	<table cellspacing="5" cellpadding="5" width="600">
 		<tr>
@@ -225,27 +303,3 @@ $result = $db->query($sql);ifDBError($result);
 </td></tr></table>
 </body>
 </html>
-<?php 
-	/*
-		Clean up the database after every upload to remove all duplicates.  FOR DEBUGGING AND TESTING PURPOSES
-	*
-	$sql = "CREATE TEMPORARY TABLE results_temp SELECT DISTINCT agency, report_name, host_name, ip_addr, mac_addr, fqdn, netbios, operating_system, host_start, host_end, pluginID, pluginName, pluginFamily, port, service, protocol, severity, cvss_vector, cvss_score, risk_factor, exploitability_ease, vuln_publication_date, exploit_framework_metasploit, metasploit_name, description, plugin_publication_date, synopsis, see_also, patch_publication_date, exploit_available, plugin_modification_date, plugin_output, plugin_version, solution, cveList, bidList, osvdbList, certList, iavaList, cweList, msftList, secuniaList, edbList FROM nessus_results";
-	$result = $db->query($sql);ifDBError($result);
-	$sql = "TRUNCATE TABLE nessus_results";
-	$result = $db->query($sql);ifDBError($result);
-	$sql = "INSERT INTO nessus_results (agency, report_name, host_name, ip_addr, mac_addr, fqdn, netbios, operating_system, host_start, host_end, pluginID, pluginName, pluginFamily, port, service, protocol, severity, cvss_vector, cvss_score, risk_factor, exploitability_ease, vuln_publication_date, exploit_framework_metasploit, metasploit_name, description, plugin_publication_date, synopsis, see_also, patch_publication_date, exploit_available, plugin_modification_date, plugin_output, plugin_version, solution, cveList, bidList, osvdbList, certList, iavaList, cweList, msftList, secuniaList, edbList) SELECT results_temp.agency, results_temp.report_name, results_temp.host_name, results_temp.ip_addr, results_temp.mac_addr, results_temp.fqdn, results_temp.netbios, results_temp.operating_system, results_temp.host_start, results_temp.host_end, results_temp.pluginID, results_temp.pluginName, results_temp.pluginFamily, results_temp.port, results_temp.service, results_temp.protocol, results_temp.severity, results_temp.cvss_vector, results_temp.cvss_score, results_temp.risk_factor, results_temp.exploitability_ease, results_temp.vuln_publication_date, results_temp.exploit_framework_metasploit, results_temp.metasploit_name, results_temp.description, results_temp.plugin_publication_date, results_temp.synopsis, results_temp.see_also, results_temp.patch_publication_date, results_temp.exploit_available, results_temp.plugin_modification_date, results_temp.plugin_output, results_temp.plugin_version, results_temp.solution, results_temp.cveList, results_temp.bidList, results_temp.osvdbList, results_temp.certList, results_temp.iavaList, results_temp.cweList, results_temp.msftList, results_temp.secuniaList, results_temp.edbList FROM results_temp";
-	$result = $db->query($sql);ifDBError($result);
-	$sql = "DROP TEMPORARY TABLE results_temp";
-	$result = $db->query($sql);ifDBError($result);
-	*/
-function ifDBError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	}
-}
-?>

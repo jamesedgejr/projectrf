@@ -7,6 +7,66 @@ $Host = $_POST["Host"];
 $FileDate = $_POST["FileDate"];
 $FileName = $_POST["FileName"];
 $includePasswords = $_POST["includePasswords"];
+if($includePasswords){
+
+	$filename_user_hashes = $_FILES['user_hashes']['name'];
+	echo "<hr>" . $filename_user_hashes;
+	$uploaddir = sys_get_temp_dir();
+	$uploadfile_user_hashes = tempnam(sys_get_temp_dir(), basename($_FILES['user_hashes']['name']));
+	if (move_uploaded_file($_FILES['user_hashes']['tmp_name'], $uploadfile_user_hashes)) {
+		echo "<hr><p align=\"center\"><b>File ".$uploadfile_user_hashes." is valid, and was successfully uploaded.</b></p><hr>";
+		} else { 
+			echo "<h1>Upload Error!</h1>";
+			echo "An error occurred while executing this script. The file may be too large or the upload folder may have insufficient permissions.";
+			echo "<p />";
+			echo "Please examine the following items to see if there is an issue";
+			echo "<hr><pre>";
+			echo "1.  ".$uploaddir." (Temp) directory exists and has the correct permissions.<br />";
+			echo "2.  The php.ini file needs to be modified to allow for larger file uploads.<br />";
+			echo "3.  The file name is ".$filename_user_hashes.".  If that is blank then its not being uploaded<br />";
+			echo "</pre><hr>";
+			exit; 
+	}
+
+	$filename_hashes_pass = $_FILES['hashes_pass']['name'];
+	$uploaddir = sys_get_temp_dir();
+	$uploadfile_hashes_pass = tempnam(sys_get_temp_dir(), basename($_FILES['hashes_pass']['name']));
+	if (move_uploaded_file($_FILES['hashes_pass']['tmp_name'], $uploadfile_hashes_pass)) {
+		echo "<hr><p align=\"center\"><b>File ".$uploadfile_hashes_pass." is valid, and was successfully uploaded.</b></p><hr>";
+		} else { 
+			echo "<h1>Upload Error!</h1>";
+			echo "An error occurred while executing this script. The file may be too large or the upload folder may have insufficient permissions.";
+			echo "<p />";
+			echo "Please examine the following items to see if there is an issue";
+			echo "<hr><pre>";
+			echo "1.  ".$uploaddir." (Temp) directory exists and has the correct permissions.<br />";
+			echo "2.  The php.ini file needs to be modified to allow for larger file uploads.<br />";
+			echo "</pre><hr>";
+			exit; 
+	}
+	$user_hashes_sql = "CREATE temporary TABLE dumpsec_tmp_user_hashes (username VARCHAR(255), hash VARCHAR(255))";
+	$user_hashes_stmt = $db->prepare($user_hashes_sql);$user_hashes_stmt->execute();
+	$hashes_pass_sql = "CREATE temporary TABLE dumpsec_tmp_hashes_pass (hash VARCHAR(255), password VARCHAR(255))";
+	$hashes_pass_stmt = $db->prepare($hashes_pass_sql);$hashes_pass_stmt->execute();
+	if (($handle = fopen($uploadfile_user_hashes, "r")) !== FALSE) {
+		while (($data = fgetcsv($handle, 1000, ":")) !== FALSE) {
+			echo $data[0] . "::::" . $data[1] . "<br>";
+			$sql="INSERT INTO dumpsec_tmp_user_hashes (username,hash) VALUES (?,?)";
+			$stmt = $db->prepare($sql);
+			$stmt->execute(array($data[0],$data[1]));		
+		}
+	}
+	echo "<hr>";
+	if (($handle = fopen($uploadfile_hashes_pass, "r")) !== FALSE) {
+		while (($data = fgetcsv($handle, 1000, ":")) !== FALSE) {
+			echo $data[0] . "::::" . $data[1] . "<br>";
+			$sql="INSERT INTO dumpsec_tmp_hashes_pass (hash,password) VALUES (?,?)";
+			$stmt = $db->prepare($sql);
+			$stmt->execute(array($data[0],$data[1]));
+		}
+	}	
+
+}
 
 $groupsArray = $_POST["groups"];
 foreach($groupsArray as $key => $value) {

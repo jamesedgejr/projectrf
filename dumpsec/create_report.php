@@ -70,6 +70,7 @@ select {font-family: courier new}
      <tr>
       <td valign="top">
 	  <form name="f1"  action="" method="post">
+	  
 	  <p align="center">[ DumpSec Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.</p>
   	  <select NAME="option" SIZE="10"  style="width:800px;margin:5px 0 5px 0;" ONCHANGE="f1.submit()">
@@ -89,7 +90,8 @@ select {font-family: courier new}
 	</tr>  
 	<tr>
 	  <td style="width: 700px;" valign="top"> 
-	  <form name="f2" action="report.php" method="post">	  
+	  <form name="f2" action="report.php" method="post">
+	  <input type="hidden" name="MAX_FILE_SIZE" value="2000000000" />	  
 		<?php
 		//host list
 		if($agency == ""){
@@ -124,7 +126,7 @@ select {font-family: courier new}
 	<br><table>
 	  <TR>
 		<TD><p>
-		<input type="checkbox" value="yes" name="includePasswords" >Include Passwords</input><br>
+		
 		<input type="hidden" name="agency" value="<?php echo "$agency";?>">
 		<input type="hidden" name="Host" value="<?php echo "$Host";?>">
 		<input type="hidden" name="FileDate" value="<?php echo "$FileDate";?>">
@@ -132,6 +134,20 @@ select {font-family: courier new}
 		<INPUT TYPE="SUBMIT" NAME="submithost" VALUE="SUBMIT"></p>
 		</TD>
 	  </TR>
+		<tr>
+			<td>
+			<p> </p>
+			<hr>
+			<table>
+			  <tr>
+				<td colspan=2><input type="checkbox" value="yes" name="includePasswords" >Include Passwords</input></td></tr>
+				<tr><td><p>Select Username:Hash file: </p></td><td><input name="user_hashes" type="file" /></td></tr>
+				<tr><td><p>Select Hash:Password file: </p></td><td><input name="hashes_pass" type="file" /></td></tr>
+			
+			</table>
+			</td>
+		</tr>	  
+	  
 	</table>	  
 	  
 	  

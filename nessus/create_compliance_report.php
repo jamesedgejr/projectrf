@@ -2,6 +2,16 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
+$v = new Valitron\Validator($agency_temp);
+$v->rule('slug', '0');//validate agency
+$v->rule('slug','1');// validate report name
+$v->rule('numeric',['2','3']);//validate scan_start and scan_end
+if($v->validate()) {
+
+} else {
+    print_r($v->errors());
+	exit;
+} 
 $agency = $agency_temp[0];
 $report_name = $agency_temp[1];
 $scan_start = $agency_temp[2];

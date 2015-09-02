@@ -115,7 +115,7 @@ WHERE
 $stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
 $stmt->execute($data);
-fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\"\n");
+fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Family\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\",\"Exploit Ease\",\"Metasploit Name\"\n");
 /*
 CVE or BID
 CVSS
@@ -198,11 +198,11 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	} 
 	if($justVulnDB == "true" && !empty($vulnDBList[0])){
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
 		}
 	} elseif ($justVulnDB != "true") {
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\"\n");
+			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
 		}	
 	}
 }

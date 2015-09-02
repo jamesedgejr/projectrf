@@ -42,7 +42,6 @@ if(file_exists($uploadfile)) {
 else { 
 	exit('Failed to open the xml file');
 } 
-
 date_default_timezone_set('UTC');
 $myDir = "/var/www/projectRF/nmap/csvfiles/";
 $myFileName = "nmap_" . date('mdYHis') . ".csv";

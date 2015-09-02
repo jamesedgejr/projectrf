@@ -129,7 +129,8 @@ if($filetype == "group"){
 				$FileDate = $Row1Array[0] . " " . $Row1Array[1] . " " .  $Row1Array[2];
 				$Host = trim($Row1Array[9], "\\");
 			}
-			$row++; 
+			$row++;
+			$groupname = addslashes($data[0]); 
 			$comment = addslashes($data[1]);
 			$groupmember = addslashes($data[3]);
 			if ($row > 4) {
@@ -148,7 +149,7 @@ if($filetype == "group"){
 					'$FileDate', 
 					'$filename',
 					'$Host',
-					'$data[0]','$comment','$data[2]','$groupmember','$data[4]'
+					'$groupname','$comment','$data[2]','$groupmember','$data[4]'
 				)";
 				$results = $db->query($sql);ifDBError($results);
 			}

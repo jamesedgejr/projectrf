@@ -10,6 +10,16 @@ if(isset($report)){
 	}
 	foreach($report as $r){
 		$temp = explode(":", $r);
+		$v = new Valitron\Validator($temp);
+		$v->rule('slug', '0');//validate agency
+		$v->rule('slug','1');// validate report name
+		$v->rule('numeric',['2','3']);//validate scan_start and scan_end
+		if($v->validate()) {
+
+		} else {
+			print_r($v->errors());
+			exit;
+		} 
 		$agency = $temp[0];
 		$report_name = $temp[1];
 		$scan_start = $temp[2];
