@@ -32,35 +32,11 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td width="95%"><a href="../nessus/uploadCompliance.php">Import Nessus .nessus (v2) (Compliance)</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../nessus/uploadAudit.php">Import Nessus .audit (Compliance)</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><a href="../nessus/create_compliance_report.php">Nessus Compliance Report</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><a href="../nessus/create_compliance_csv.php">Nessus Compliance CSV</a></td>
-	</tr>
-	<tr>
-		<td></td>
 		<td><a href="../nessus/delete.php">Delete Nessus Reports</a></td>
 	</tr>
 	<tr>
 		<td></td>
 		<td><a href="../nessus/merge.php">Merge Nessus Reports</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><a href="../nessus/create_compare_report.php">Compare Nessus Reports</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td><a href="../nessus/create_compare_matrix.php">Compare Nessus Matrix</a></td>
 	</tr>
 	<tr><td colspan="2"><hr></td></tr>
 	<tr>
@@ -129,24 +105,5 @@
 		<td width="95%"><a href="../kismet/upload_xmltokml_newcore.php">XML to KML (Newcore)</a></td>
 	</tr>
 	<tr><td colspan="2"><hr></td></tr>
-	<tr>
-		<td colspan="2" width="150">IBM Rational AppScan</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../appscan/upload.php">XML Upload</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../appscan/create_csv_report.php">AppScan CSV Report</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../appscan/create_csv_report_jenn.php">Custom AppScan CSV Report (Jenn)</a></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td width="95%"><a href="../appscan/create_report.php">AppScan Report</a></td>
-	</tr>
 
 </table>
