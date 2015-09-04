@@ -2,6 +2,18 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
+$v = new Valitron\Validator($_POST);
+$v->rule('accepted', ['justVulnDB']);
+$v->rule('numeric', ['scan_start', 'scan_end']);
+$v->rule('slug','agency','isVulnDB');
+//$v->rule('regex','report_name','/[a-zA-Z]+/');
+$v->rule('length',1,['critical','high','medium','low','info']);
+$v->rule('integer',['critical','high','medium','low','info']);
+if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+} 
+
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
@@ -49,7 +61,7 @@ $scan_start = $_POST["scan_start"];
 $scan_end = $_POST["scan_end"];
 $isVulnDB = $_POST["isVulnDB"];
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nessus/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
