@@ -66,7 +66,7 @@ if($agency != ""){
 
 <HTML>
 <head>
-<title>CREATE NESSUS VULNERABILITY MATRIX</title>
+<title>CREATE NESSUS VULNERABILITY CSV FILE</title>
 <script>
 function selectAll(selectBox,selectAll) {
     // have we been passed an ID
@@ -263,7 +263,7 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="true" name="justVulnDB" checked>
+				<input type="checkbox" value="yes" name="justVulnDB" checked>
 			</td>
             <td style="width: 174px;">Only Vulnerabilities from Database Selected</td>
           </tr>
