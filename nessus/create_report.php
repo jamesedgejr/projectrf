@@ -4,7 +4,8 @@ $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass
 $agency_temp = explode(":", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
 $v->rule('slug', '0');//validate $agency
-$v->rule('slug','1');// validate report name
+$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate report name
+//$v->rule('slug','1');// validate report name
 $v->rule('numeric',['2','3']);//validate scan_start and scan_end
 if($v->validate()) {
 

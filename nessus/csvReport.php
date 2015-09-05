@@ -6,7 +6,7 @@ $v = new Valitron\Validator($_POST);
 $v->rule('accepted', ['justVulnDB']);
 $v->rule('numeric', ['scan_start', 'scan_end']);
 $v->rule('slug','agency','isVulnDB');
-//$v->rule('regex','report_name','/[a-zA-Z]+/');
+$v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');
 $v->rule('length',1,['critical','high','medium','low','info']);
 $v->rule('integer',['critical','high','medium','low','info']);
 if(!$v->validate()) {

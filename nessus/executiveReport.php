@@ -2,6 +2,19 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
+$v = new Valitron\Validator($_POST);
+$v->rule('accepted', ['cover']);
+$v->rule('numeric', ['scan_start', 'scan_end']);
+$v->rule('slug',['agency', 'byVuln']);
+$v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');
+$v->rule('length',1,['critical','high','medium','low','info']);
+$v->rule('integer',['critical','high','medium','low','info']);
+if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+} 
+
+
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
@@ -330,7 +343,7 @@ $isStyle = "style_nessus.css";
 <body>
 <?php
 //include cover page
-if($cover == "y"){
+if($cover == "yes"){
 ?>
 	<table class="execMain" style="width: 850px;">
 		<tr>
@@ -578,10 +591,10 @@ INNER JOIN nessus_tmp_family ON nessus_tmp_family.pluginFamily = nessus_results.
 WHERE
 	(nessus_results.severity = '3' OR nessus_results.severity = '2') AND
 	pluginName != '' AND
-	nessus_results.agency = '$agency' AND 
-	nessus_results.report_name = '$report_name' AND
-	nessus_results.scan_start = '$scan_start' AND
-	nessus_results.scan_end = '$scan_end'
+	nessus_results.agency = ? AND 
+	nessus_results.report_name = ? AND
+	nessus_results.scan_start = ? AND
+	nessus_results.scan_end = ?
 GROUP BY nessus_results.pluginName
 ORDER BY pluginCount DESC
 LIMIT 0,10";

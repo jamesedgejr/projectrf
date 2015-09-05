@@ -3,8 +3,8 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
-$v->rule('slug', '0');//validate $agency
-$v->rule('slug','1');// validate report name
+$v->rule('slug', '0');//validate agency
+$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate report name
 $v->rule('numeric',['2','3']);//validate scan_start and scan_end
 if($v->validate()) {
 
@@ -51,10 +51,10 @@ if($agency != ""){
 					FROM 
 						nessus_results 
 					WHERE 
-						nessus_results.agency='$agency' AND 
-						nessus_results.report_name='$report_name' AND
-						nessus_results.scan_start='$scan_start' AND
-						nessus_results.scan_end='$scan_end'
+						nessus_results.agency = ? AND 
+						nessus_results.report_name = ? AND
+						nessus_results.scan_start = ? AND
+						nessus_results.scan_end = ?
 					ORDER BY 
 						nessus_results.pluginFamily
 					";
@@ -202,7 +202,7 @@ AGENCY OR COMPANY THAT YOU WORK FOR
       <table style="text-align: left; width: 225px;" border="0" cellpadding="2" cellspacing="2">
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="cover">
+				<input type="checkbox" value="yes" name="cover">
 			</td>
             <td style="width: 174px;">Include Cover Page</td>
           </tr>

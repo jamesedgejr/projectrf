@@ -6,7 +6,7 @@ $v = new Valitron\Validator($_POST);
 $v->rule('accepted', ['isPlugName','isPlugFam','isPlugInfo','isPlugOut','isService','isCvss','isVulnPub','isExploit','isSynopsis','isDescription','isSolution','isSeeAlso','isCve','isBid','isOsvdb','isCert','isIava','isCWE','isMS','isSec','isEdb','isAffected','isNotes','cover']);
 $v->rule('numeric', ['scan_start', 'scan_end']);
 $v->rule('slug','agency');
-//$v->rule('regex','report_name','/[a-zA-Z]+/');
+$v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');
 $v->rule('length',1,['critical','high','medium','low','info']);
 $v->rule('integer',['critical','high','medium','low','info']);
 if(!$v->validate()) {
