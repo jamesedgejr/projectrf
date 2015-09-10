@@ -43,7 +43,7 @@ else {
 	exit('Failed to open the xml file');
 } 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nmap/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = "nmap_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
