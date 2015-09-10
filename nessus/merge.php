@@ -1,7 +1,13 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('slug','newAgencyName');
+$v1->rule('regex','newReportName','/[A-Za-z0-9 _ .-]+/');
+if(!$v1->validate()) {
+    print_r($v1->errors());
+	exit;
+} 
 $report = $_POST["report"];
 $newAgencyName = $_POST["newAgencyName"];
 $newReportName = $_POST["newReportName"];
@@ -12,6 +18,16 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 	}
 	foreach($report as $r){
 		$temp = explode(":", $r);
+		$v2 = new Valitron\Validator($temp);
+		$v2->rule('slug', '0');//validate agency
+		$v2->rule('regex','1','/[A-Za-z0-9 _ .-]+/');
+		$v2->rule('numeric',['2','3']);//validate scan_start and scan_end
+		if($v2->validate()) {
+
+		} else {
+			print_r($v2->errors());
+			exit;
+		} 
 		$agencyArray[] = $temp[0];
 		$reportNameArray[] = $temp[1];
 		$scanStartArray[] = $temp[2];
