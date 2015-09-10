@@ -5,7 +5,7 @@ $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass
 $v = new Valitron\Validator($_POST);
 $v->rule('accepted', ['justVulnDB']);
 $v->rule('numeric', ['scan_start', 'scan_end']);
-$v->rule('slug','agency','isVulnDB');
+$v->rule('slug',['agency','isVulnDB']);
 $v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');
 $v->rule('length',1,['critical','high','medium','low','info']);
 $v->rule('integer',['critical','high','medium','low','info']);

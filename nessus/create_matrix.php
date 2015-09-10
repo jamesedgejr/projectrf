@@ -4,7 +4,7 @@ $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass
 $agency_temp = explode(":", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
 $v->rule('slug', '0');//validate $agency
-$v->rule('slug','1');// validate report name
+$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate report name
 $v->rule('numeric',['2','3']);//validate scan_start and scan_end
 if($v->validate()) {
 
@@ -193,13 +193,13 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugName" checked>
+				<input type="checkbox" value="yes" name="isPlugName" checked>
 			</td>
             <td style="width: 174px;">Include Name</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="y" name="isPlugFam">
+				<input type="checkbox" value="yes" name="isPlugFam">
 			</td>
             <td style="width: 174px;">Include Family</td>
           </tr>

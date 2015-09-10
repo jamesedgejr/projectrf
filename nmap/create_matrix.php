@@ -3,6 +3,16 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $agency_temp = explode(":", $_POST["agency"]);
+$v = new Valitron\Validator($agency_temp);
+$v->rule('slug', '0');//validate agency
+$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate filename
+$v->rule('numeric',['2','3']);//validate nmaprun_start and finished_time
+if($v->validate()) {
+
+} else {
+    print_r($v->errors());
+	exit;
+} 
 $agency = $agency_temp[0];
 $filename = $agency_temp[1];
 $nmaprun_start = $agency_temp[2];
@@ -254,13 +264,13 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="up" name="isUp" checked>
+				<input type="checkbox" value="yes" name="isUp" checked>
 			</td>
             <td style="width: 174px;">Up</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="down" name="isDown">
+				<input type="checkbox" value="yes" name="isDown">
 			</td>
             <td style="width: 174px;">Down</td>
           </tr>
@@ -269,25 +279,25 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="open" name="isOpen" checked>
+				<input type="checkbox" value="yes" name="isOpen" checked>
 			</td>
             <td style="width: 174px;">Open</td>
           </tr>
           <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="closed" name="isClosed">
+				<input type="checkbox" value="yes" name="isClosed">
 			</td>
             <td style="width: 174px;">Closed</td>
           </tr>
          <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="filtered" name="isFiltered">
+				<input type="checkbox" value="yes" name="isFiltered">
 			</td>
             <td style="width: 174px;">Filtered</td>
           </tr>
          <tr>
             <td style="width: 30px;">
-				<input type="checkbox" value="open|filtered" name="isOpenFiltered">
+				<input type="checkbox" value="yes" name="isOpenFiltered">
 			</td>
             <td style="width: 174px;">Open|Filtered</td>
           </tr>

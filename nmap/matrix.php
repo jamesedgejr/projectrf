@@ -2,6 +2,19 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
+$v = new Valitron\Validator($_POST);
+$v->rule('accepted', ['isUp','isDown','isOpen','isClosed','isFiltered','isOpenFiltered']);
+$v->rule('numeric', ['nmaprun_start', 'finished_time']);
+$v->rule('slug','agency');
+$v->rule('regex','filename','/[A-Za-z0-9 _ .-]+/');
+$v->rule('length',4,'nsescript');
+$v->rule('alpha','nsescript');
+if(!$v->validate()) {
+    print_r($v->errors());
+	exit;
+} 
+
+
 #create temporary table a(a int primary key, b char(1)) engine=innodb;
 #create index b on a (b);
 
@@ -81,14 +94,14 @@ foreach ($sArray as $sA){
 }
 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nmap/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
 
 
 fwrite($fh, "\"HOST STATE\",\"IP\",\"DOMAIN NAME\",\"PRODUCT/VERSION\",\"SERVICE\",\"PORT/PROTOCOL\",\"PORT STATE\",\"SCRIPT ID\",\"SCRIPT OUTPUT\",\n");
-if($isOpen && $isUp){
+if($isOpen == "yes" && $isUp == "yes"){
 	$main_sql = "SELECT
 		nmap_runstats_xml.agency,
 		nmap_runstats_xml.filename,
@@ -163,7 +176,7 @@ if($isOpen && $isUp){
 		fwrite($fh, "\"$status_state\",\"$address_addr\",\"$hostname_name\",\"$port_service_product $port_service_version\",\"$port_service_name\",\"$port_portid/$port_protocol\",\"$port_state\",\"$script_id\",\"$script_output\",\"\",\"\",\n");
 	}
 }
-if($isClosed || $isFiltered || $isOpenFiltered){
+if($isClosed == "yes" || $isFiltered == "yes"  || $isOpenFiltered == "yes" ){
 	$sql = "SELECT
 		nmap_runstats_xml.agency,
 		nmap_runstats_xml.filename,
@@ -235,7 +248,7 @@ if($isClosed || $isFiltered || $isOpenFiltered){
 	}
 }
 
-if($isDown){
+if($isDown == "yes"){
 	$sql = "SELECT DISTINCT
 		nmap_runstats_xml.agency,
 		nmap_runstats_xml.filename,
