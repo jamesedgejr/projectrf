@@ -12,7 +12,7 @@ if(isset($report)){
 		$temp = explode(":", $r);
 		$v = new Valitron\Validator($temp);
 		$v->rule('slug', '0');//validate agency
-		$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');
+		$v->rule('regex','1','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
 		$v->rule('numeric',['2','3']);//validate scan_start and scan_end
 		if($v->validate()) {
 

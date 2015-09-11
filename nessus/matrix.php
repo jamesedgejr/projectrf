@@ -2,6 +2,19 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('accepted', ['isPlugName','isPlugFam']);
+$v1->rule('numeric', ['scan_start', 'scan_end']);
+$v1->rule('slug','agency');
+$v1->rule('alpha','pivot');
+$v1->rule('regex','report_name','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('length',1,['critical','high','medium','low','info']);
+$v1->rule('integer',['critical','high','medium','low','info']);
+if(!$v1->validate()) {
+    print_r($v1->errors());
+	exit;
+} 
+
 $hostArray = $_POST["host"];
 foreach($hostArray as $key => $value) {
 	if ($value == "REMOVE") unset($hostArray[$key]);
@@ -10,6 +23,12 @@ $sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX n
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
+	$v2 = new Valitron\Validator(array('host' => $hA));
+	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	if(!$v2->validate()) {
+		print_r($v2->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
@@ -19,6 +38,12 @@ $sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), IND
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
+	$v3 = new Valitron\Validator(array('family' => $f));
+	$v3->rule('regex','family', '/^([\w :.-])+$/i');//regex includes alpha/numeric, space, colon, dash, and period
+	if(!$v3->validate()) {
+		print_r($v3->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nessus_tmp_family (pluginFamily) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($f));
@@ -50,7 +75,7 @@ $isPlugFam = $_POST["isPlugFam"];
 $pivot = $_POST["pivot"];
 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nessus/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
@@ -74,7 +99,7 @@ a:hover {text-decoration: underline}
 	<td valign="top">
 		<hr>
 <?php
-if($isPlugName != "y" && $isPlugFam != "y"){
+if($isPlugName != "yes" && $isPlugFam != "yes"){
 			echo "You need to select either Plugin Name, Plugin Family, or both.  Deselecting both of them will produce a really useless report.1";
 ?>
 		<hr>
@@ -119,7 +144,7 @@ if($pivot == "left"){
 		$pluginName = $pD["pluginName"];
 		$pluginName = str_replace("&#039;","'",$pluginName);
 		$pluginName = str_replace("&lt;","<",$pluginName);
-		if($isPlugName == "y"){
+		if($isPlugName == "yes"){
 			fwrite($fh, "\"$pluginName\"");
 		}
 		fwrite($fh, ",");
@@ -131,7 +156,7 @@ if($pivot == "left"){
 		$pluginFamily = $pD["pluginFamily"];
 		$pluginFamily = str_replace("&#039;","'", $pluginFamily);
 		$pluginFamily = str_replace("&lt;","<", $pluginFamily);
-		if($isPlugFam == "y"){
+		if($isPlugFam == "yes"){
 			fwrite($fh, "\"$pluginFamily\"");
 		}
 		fwrite($fh, ",");
@@ -218,11 +243,11 @@ if($pivot == "left"){
 } else {//end pivot left ---------------------------------------------------------------------------------------------------------------------------------------------
 //hosts are across the top and vulnerabilities are along the left side
 
-	if($isPlugFam == "y" && $isPlugName == "y"){
+	if($isPlugFam == "yes" && $isPlugName == "yes"){
 		$spacer = "\"\",\"\",\"\",";
-	} elseif ($isPlugFam != "y" && $isPlugName == "y"){
+	} elseif ($isPlugFam != "yes" && $isPlugName == "yes"){
 		$spacer = "\"\",\"\",";
-	} elseif ($isPlugFam == "y" && $isPlugName != "y"){
+	} elseif ($isPlugFam == "yes" && $isPlugName != "yes"){
 		$spacer = "\"\",\"\",";
 	} else {
 		echo "You need to select either Plugin Name, Plugin Family, or both.  Deselecting both of them will produce a really useless report.2";
@@ -310,11 +335,11 @@ if($pivot == "left"){
 		$pluginFamily = $pR["pluginFamily"];
 		$pluginFamily = str_replace("&#039;","'",$pluginFamily);
 		$pluginFamily = str_replace("&lt;","<",$pluginFamily);
-		if($isPlugFam == "y" && $isPlugName == "y"){
+		if($isPlugFam == "yes" && $isPlugName == "yes"){
 			fwrite($fh, "\"$pluginFamily\",\"$pluginName\",");
-		} elseif ($isPlugFam != "y" && $isPlugName == "y"){
+		} elseif ($isPlugFam != "yes" && $isPlugName == "yes"){
 			fwrite($fh, "\"$pluginName\",");
-		} elseif ($isPlugFam == "y" && $isPlugName != "y"){
+		} elseif ($isPlugFam == "yes" && $isPlugName != "yes"){
 			fwrite($fh, "\"$pluginFamily\",");
 		} else {
 			echo "You need to select either Plugin Name, Plugin Family, or both.  Deselecting both of them will produce a really useless report.3";
