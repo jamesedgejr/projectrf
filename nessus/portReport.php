@@ -137,14 +137,15 @@ Remote SMTP server banner :
 
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-$v = new Valitron\Validator($_POST);
-$v->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL']);
-$v->rule('numeric', ['scan_start', 'scan_end']);
-$v->rule('slug','agency');
-if($v->validate()) {
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL']);
+$v1->rule('numeric', ['scan_start', 'scan_end']);
+$v1->rule('slug','agency');
+$v1->rule('regex','report_name', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+if($v1->validate()) {
 
 } else {
-    print_r($v->errors());
+    print_r($v1->errors());
 	exit;
 } 
 $hostArray = $_POST["host"];
@@ -155,6 +156,12 @@ $sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX n
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
+	$v2 = new Valitron\Validator(array('host' => $hA));
+	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	if(!$v2->validate()) {
+		print_r($v2->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
@@ -188,7 +195,7 @@ $scan_start = $_POST["scan_start"];
 $scan_end = $_POST["scan_end"];
 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nessus/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
@@ -472,7 +479,7 @@ function processMYSQLPluginOutput($plugin_output, $pluginID)
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="content-type">
-  <title>NESSUS VULNERABILITY MATRIX</title>
+  <title>NESSUS PORT REPORT</title>
 <style type="text/css">
 p {font-size: 90%}
 a {text-decoration: none}

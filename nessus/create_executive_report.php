@@ -196,6 +196,7 @@ AGENCY OR COMPANY THAT YOU WORK FOR
 		</td>
 		</tr>
 	</td></tr>
+<tr><td colspan="2"><p>The only valid characters are alphanumeric, space, newline (enter), brackets, parentheses, colon, semicolon, period, dash, and underscore.</p></td></tr>
 </table>
 	  </td>
       <td style="width: 250px;" valign="top" align="right">

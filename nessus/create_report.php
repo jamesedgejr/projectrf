@@ -184,14 +184,22 @@ select {font-family: courier new}
 	  <tr>
 	  <td>
 		<p>Who created this report?</p>
-		<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w1"></textarea></p>
-	  </td>
-	  <td>
-		<p>Who is this report for?</p>
-		<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w2"></textarea></p>
-	  </td>
-	  </tr>
-	</table>  
+<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w1">
+AGENCY OR COMPANY THAT YOU WORK FOR
+[YOUR CONTACT INFO]
+</textarea></p>
+		</td>
+		<td>
+			<p>Who is this report for?</p>
+<p><textarea style="width:300px;margin:5px 0 5px 0;" rows="5" name="w2">
+[AGENCY]
+[PERSON(S) RESPONSIBLE]
+</textarea></p>
+		</td>
+		</tr>
+	</td></tr>
+<tr><td colspan="2"><p>The only valid characters are alphanumeric, space, newline (enter), brackets, parentheses, colon, semicolon, period, dash, and underscore.</p></td></tr>
+</table> 
 	<br><table>
 	  <TR>
 		<TD>

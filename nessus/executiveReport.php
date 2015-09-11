@@ -1,16 +1,16 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-
-$v = new Valitron\Validator($_POST);
-$v->rule('accepted', ['cover']);
-$v->rule('numeric', ['scan_start', 'scan_end']);
-$v->rule('slug',['agency', 'byVuln']);
-$v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');
-$v->rule('length',1,['critical','high','medium','low','info']);
-$v->rule('integer',['critical','high','medium','low','info']);
-if(!$v->validate()) {
-    print_r($v->errors());
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('accepted', ['cover']);
+$v1->rule('numeric', ['scan_start', 'scan_end']);
+$v1->rule('slug', ['agency', 'byVuln']);
+$v1->rule('regex','report_name', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('regex',['w1','w2'], '/^([\w\s_.\[\]():;-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, and semi-colon
+$v1->rule('length',1,['critical','high','medium','low','info']);
+$v1->rule('integer',['critical','high','medium','low','info']);
+if(!$v1->validate()) {
+    print_r($v1->errors());
 	exit;
 } 
 
@@ -23,6 +23,12 @@ $sql = "CREATE temporary TABLE nessus_tmp_hosts (host_name VARCHAR(255), INDEX n
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
+	$v2 = new Valitron\Validator(array('host' => $hA));
+	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	if(!$v2->validate()) {
+		print_r($v2->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nessus_tmp_hosts (host_name) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($hA));
@@ -32,6 +38,12 @@ $sql = "CREATE temporary TABLE nessus_tmp_family (pluginFamily VARCHAR(255), IND
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
+	$v3 = new Valitron\Validator(array('family' => $f));
+	$v3->rule('regex','family', '/^([\w :.-])+$/i');//regex includes alpha/numeric, space, colon, dash, and period
+	if(!$v3->validate()) {
+		print_r($v3->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nessus_tmp_family (pluginFamily) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($f));
