@@ -24,7 +24,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
 	$v2 = new Valitron\Validator(array('host' => $hA));
-	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	$v2->rule('regex','host', '/^([\w.-])+$/');
 	if(!$v2->validate()) {
 		print_r($v2->errors());
 		exit;
@@ -39,7 +39,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
 	$v3 = new Valitron\Validator(array('family' => $f));
-	$v3->rule('regex','family', '/^([\w :.-])+$/i');//regex includes alpha/numeric, space, colon, dash, and period
+	$v3->rule('regex','family', '/^([\w :.-])+$/');//regex includes alpha/numeric, space, colon, dash, and period
 	if(!$v3->validate()) {
 		print_r($v3->errors());
 		exit;

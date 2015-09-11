@@ -157,7 +157,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
 	$v2 = new Valitron\Validator(array('host' => $hA));
-	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	$v2->rule('regex','host', '/^([\w.-])+$/');
 	if(!$v2->validate()) {
 		print_r($v2->errors());
 		exit;
