@@ -8,7 +8,7 @@ $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass
 $v = new Valitron\Validator($_GET);
 $v->rule('numeric', ['scan_start', 'scan_end']);
 $v->rule('slug','agency');
-$v->rule('regex','report_name','/[A-Za-z0-9 _ .-]+/');// validate report name
+$v->rule('regex','report_name','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
 $v->rule('alpha','byVuln');
 if(!$v->validate()) {
     print_r($v->errors());
