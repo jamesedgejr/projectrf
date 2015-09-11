@@ -41,7 +41,13 @@ else {
 
 include('../main/config.php'); 
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v = new Valitron\Validator($_POST);
+$v->rule('slug', 'agency');
+if(!$v->validate()) {
 
+    print_r($v->errors());
+	exit;
+} 
 $agency = $_POST["agency"]; 
 $nmaprun = $xml;
 $scaninfo = $xml->scaninfo;

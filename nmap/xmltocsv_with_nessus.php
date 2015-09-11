@@ -1,6 +1,12 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('slug','agency');
+if(!$v1->validate()) {
+    print_r($v1->errors());
+	exit;
+} 
 $agency = $_POST["agency"];
 ?>
 <html>

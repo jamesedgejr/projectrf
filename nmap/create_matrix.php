@@ -5,7 +5,7 @@ $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass
 $agency_temp = explode(":", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
 $v->rule('slug', '0');//validate agency
-$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate filename
+$v->rule('regex','1','/^([\w _.-])+$/');// validate filename
 $v->rule('numeric',['2','3']);//validate nmaprun_start and finished_time
 if($v->validate()) {
 
