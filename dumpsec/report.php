@@ -1,7 +1,16 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-
+$v = new Valitron\Validator($_POST);
+$v->rule('slug', 'agency');
+$v->rule('regex','Host','/^([\w.-])+$/'); 
+$v->rule('regex','FileDate','/^([\w \/:])+$/'); 
+$v->rule('regex','FileName','/^([\w _.-])+$/'); 
+$v->rule('accepted', 'includePasswords');
+if(!$v->validate()) {
+	print_r($v->errors());
+	exit;
+} 
 $agency = $_POST["agency"];
 $Host = $_POST["Host"];
 $FileDate = $_POST["FileDate"];
@@ -82,7 +91,7 @@ foreach ($groupsArray as $gA){
 }
 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/dumpsec/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = "dumpsec_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
