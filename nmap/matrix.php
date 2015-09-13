@@ -6,7 +6,7 @@ $v1 = new Valitron\Validator($_POST);
 $v1->rule('accepted', ['isUp','isDown','isOpen','isClosed','isFiltered','isOpenFiltered']);
 $v1->rule('numeric', ['nmaprun_start', 'finished_time']);
 $v1->rule('slug','agency');
-$v1->rule('regex','filename','/[A-Za-z0-9 _ .-]+/');
+$v1->rule('regex','filename','/^([\w _.-])+$/');
 $v1->rule('length',4,'nsescript');
 $v1->rule('alpha','nsescript');
 if(!$v1->validate()) {
@@ -45,6 +45,12 @@ $sql = "CREATE temporary TABLE nmap_tmp_port_nse (script_id VARCHAR(255) )";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($nsePort as $nP){
+	$v4 = new Valitron\Validator(array('nsePort' => $nP));
+	$v4->rule('regex','nsePort', '/^([\w-])+$/');
+	if(!$v4->validate()) {
+		print_r($v4->errors());
+		exit;
+	} 
 	$array = array($nP);
 	$sql="INSERT INTO nmap_tmp_port_nse (script_id) VALUES (?)";
 	$stmt = $db->prepare($sql);
@@ -58,6 +64,12 @@ $sql = "CREATE temporary TABLE nmap_tmp_host_nse (script_id VARCHAR(255) )";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($nseHost as $nH){
+	$v4 = new Valitron\Validator(array('nseHost' => $nH));
+	$v4->rule('regex','nseHost', '/^([\w-])+$/');
+	if(!$v4->validate()) {
+		print_r($v4->errors());
+		exit;
+	} 
 	$array = array($nH);
 	$sql="INSERT INTO nmap_tmp_host_nse (script_id) VALUES (?)";
 	$stmt = $db->prepare($sql);
@@ -72,6 +84,13 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($ports as $p){
 	$portsArray = explode(":", $p);
+	$v5 = new Valitron\Validator($portsArray);
+	$v5->rule('numeric','0');
+	$v5->rule('regex','1', '/^([\w _-])+$/');
+	if(!$v5->validate()) {
+		print_r($v5->errors());
+		exit;
+	} 
 	$array = array($portsArray[0],$portsArray[1]);
 	$sql="INSERT INTO nmap_tmp_ports (port_portid, port_service_name) VALUES (?,?)";
 	$stmt = $db->prepare($sql);

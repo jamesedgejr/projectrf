@@ -1,6 +1,17 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('slug','newAgencyName');
+$v1->rule('regex', 'newfileName','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('regex',['w1','w2'], '/^([\w\s_.\[\]():;-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, and semi-colon
+$v1->rule('length',1,['critical','high','medium','low','info']);
+$v1->rule('integer',['critical','high','medium','low','info']);
+if(!$v1->validate()) {
+    print_r($v1->errors());
+	exit;
+} 
+
 
 $filename = $_POST["filename"];
 $newAgencyName = $_POST["newAgencyName"];
@@ -12,6 +23,14 @@ if(isset($filename) && isset($newAgencyName) && isset($newfileName)){
 	}
 	foreach($filename as $f){
 		$temp = explode(":", $f);
+		$v2 = new Valitron\Validator($temp);
+		$v2->rule('slug', '0');//validate agency
+		$v2->rule('regex','1','/^([\w _.-])+$/');// validate filename
+		$v2->rule('numeric',['2','3']);//validate nmaprun_start and finished_time
+		if(!$v2->validate()) {
+			print_r($v2->errors());
+			exit;
+		} 
 		$agencyArray[] = $temp[0];
 		$fileNameArray[] = $temp[1];
 		$nmaprunStartArray[] = $temp[2];
@@ -24,15 +43,15 @@ if(isset($filename) && isset($newAgencyName) && isset($newfileName)){
 	for($x=0;$x<count($agencyArray);$x++){
 		$sql = "UPDATE nmap_runstats_xml
 				SET
-					nmap_runstats_xml.agency = '$newAgencyName',
-					nmap_runstats_xml.filename = '$newfileName',
-					nmap_runstats_xml.nmaprun_start = '$sortedNmaprunStart[0]',
-					nmap_runstats_xml.finished_time = '$sortedFinished[0]'
+					nmap_runstats_xml.agency = ?,
+					nmap_runstats_xml.filename = ?,
+					nmap_runstats_xml.nmaprun_start = ?,
+					nmap_runstats_xml.finished_time = ?
 				WHERE
-					nmap_runstats_xml.agency = '$agencyArray[$x]' AND
-					nmap_runstats_xml.filename = '$fileNameArray[$x]' AND
-					nmap_runstats_xml.nmaprun_start = '$nmaprunStartArray[$x]' AND
-					nmap_runstats_xml.finished_time = '$finishedTimeArray[$x]'
+					nmap_runstats_xml.agency = ? AND
+					nmap_runstats_xml.filename = ? AND
+					nmap_runstats_xml.nmaprun_start = ? AND
+					nmap_runstats_xml.finished_time = ?
 				";
 		$stmt = $db->prepare($sql);
 		$stmt->execute(array($newAgencyName, $newfileName, $sortedNmaprunStart[0], $sortedFinished, $agencyArray[$x], $fileNameArray[$x], $nmaprunStartArray[$x], $finishedTimeArray[$x]));
