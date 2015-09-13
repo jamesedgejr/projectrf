@@ -2,15 +2,15 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$v = new Valitron\Validator($_POST);
-$v->rule('accepted', ['isUp','isDown','isOpen','isClosed','isFiltered','isOpenFiltered']);
-$v->rule('numeric', ['nmaprun_start', 'finished_time']);
-$v->rule('slug','agency');
-$v->rule('regex','filename','/[A-Za-z0-9 _ .-]+/');
-$v->rule('length',4,'nsescript');
-$v->rule('alpha','nsescript');
-if(!$v->validate()) {
-    print_r($v->errors());
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('accepted', ['isUp','isDown','isOpen','isClosed','isFiltered','isOpenFiltered']);
+$v1->rule('numeric', ['nmaprun_start', 'finished_time']);
+$v1->rule('slug','agency');
+$v1->rule('regex','filename','/[A-Za-z0-9 _ .-]+/');
+$v1->rule('length',4,'nsescript');
+$v1->rule('alpha','nsescript');
+if(!$v1->validate()) {
+    print_r($v1->errors());
 	exit;
 } 
 
@@ -26,6 +26,12 @@ $sql = "CREATE temporary TABLE nmap_tmp_hosts (address_addr VARCHAR(15))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($host as $h){
+	$v2 = new Valitron\Validator(array('host' => $h));
+	$v2->rule('regex','host', '/^([\w.-])+$/');
+	if(!$v2->validate()) {
+		print_r($v2->errors());
+		exit;
+	} 
 	$array = array($h);
 	$sql="INSERT INTO nmap_tmp_hosts (address_addr) VALUES (?)";
 	$stmt = $db->prepare($sql);

@@ -3,6 +3,15 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
 $option = explode("%%", $_POST["option"]);
+$v = new Valitron\Validator($option);
+$v->rule('slug', '0');
+$v->rule('regex','1','/^([\w.-])+$/'); 
+$v->rule('regex','2','/^([\w \/:])+$/'); 
+$v->rule('regex','3','/^([\w _.-])+$/'); 
+if(!$v->validate()) {
+	print_r($v->errors());
+	exit;
+} 
 $agency = $option[0];
 $Host = $option[1];
 $FileDate = $option[2];

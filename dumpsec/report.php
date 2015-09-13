@@ -82,7 +82,7 @@ foreach ($groupsArray as $gA){
 }
 
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/dumpsec/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = "dumpsec_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
