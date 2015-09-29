@@ -17,9 +17,7 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $v = new Valitron\Validator($_POST);
 $v->rule('slug', 'agency');
-if($v->validate()) {
-
-} else {
+if(!$v->validate()) {
     print_r($v->errors());
 	exit;
 } 
@@ -64,6 +62,12 @@ else {
 */
 $xml_version =  $xml["version"];
 foreach ($xml->scans->scan as $scan){
+	preg_match("/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/",$scan['startTime'],$startTime_matches);
+	$epoch_startTime = strtotime("$startTime_matches[2]/$startTime_matches[3]/$startTime_matches[1] $startTime_matches[4]:$startTime_matches[5]:$startTime_matches[6]");
+
+	preg_match("/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/",$scan['endTime'],$endTime_matches);
+	$epoch_endTime = strtotime("$endTime_matches[2]/$endTime_matches[3]/$endTime_matches[1] $endTime_matches[4]:$endTime_matches[5]:$endTime_matches[6]");
+
 	$sql = "INSERT INTO nexpose_scans 
 			(
 				scan_id,
@@ -84,8 +88,8 @@ foreach ($xml->scans->scan as $scan){
 	$sql_data = array(
 						$scan_id,
 						htmlspecialchars($scan['name'], ENT_QUOTES),
-						$scan['startTime'],
-						$scan['endTime'],
+						$epoch_startTime,
+						$epoch_endTime,
 						$scan['status'],
 						$xml['version'],
 						$agency,

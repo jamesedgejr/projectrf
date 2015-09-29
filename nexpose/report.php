@@ -319,13 +319,13 @@ if($cover == "yes"){
 
 
 <?php
-/*
-$diff_seconds = $scan_end - $scan_start;
+
+$diff_seconds = $scan_endTime - $scan_startTime;
 $diff_hours = floor($diff_seconds/3600);
 $diff_seconds -= $diff_hours * 3600;
 $diff_minutes = floor($diff_seconds/60);
 $diff_seconds -= $diff_minutes * 60;
-*/
+
 ?>
 <table width="95%" align="center"><tr><td width="80%"></td><td class="right" align="left"><p>Report Created:  <?php echo date("F j, Y, g:i a");?></p></td></tr></table>
 <table width="850px" class="main">
@@ -333,13 +333,13 @@ $diff_seconds -= $diff_minutes * 60;
 		<td class="left" style="width:150px"><p>Scan Name:</p></td>
 		<td class="right"><p><?php echo "$agency - $scan_name" ?></p></td>
 		<td class="left" style="width:150px"><p></p>Scan Start:</p></td>
-		<td class="right"><p><?php echo $scan_startTime; ?></p></td>
+		<td class="right"><p><?php echo date("F j, Y, g:i a", $scan_startTime); ?></p></td>
 	</tr>
 	<tr>
 		<td class="left" style="width:100px"><p>Scan Duration:</p></td>
-		<td class="right"><p><?php /*printf('%d hours, %d minutes, %d seconds', $diff_hours, $diff_minutes, $diff_seconds); */?></p></td>
+		<td class="right"><p><?php printf('%d hours, %d minutes, %d seconds', $diff_hours, $diff_minutes, $diff_seconds); ?></p></td>
 		<td class="left" style="width:100px"><p>Scan End:</p></td>
-		<td class="right"><p><?php echo $scan_endTime; ?></p></td>
+		<td class="right"><p><?php echo date("F j, Y, g:i a", $scan_endTime); ?></p></td>
 	</tr>
 </table>
 <table width="850px" class="main">

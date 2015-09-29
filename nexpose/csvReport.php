@@ -66,7 +66,7 @@ $agency = $_POST["agency"];
 $justVulnDB = $_POST["justVulnDB"];
 $isVulnDB = $_POST["isVulnDB"];
 date_default_timezone_set('UTC');
-$myDir = "/var/www/projectRF/nexpose/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
