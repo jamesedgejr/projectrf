@@ -2,7 +2,7 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
-$v = new Valitron\Validator($_POST);
+$v1 = new Valitron\Validator($_POST);
 $v1->rule('accepted', ['isPlugName','isPlugFam','isPlugInfo','isPlugOut','isService','isCvss','isVulnPub','isExploit','isSynopsis','isDescription','isSolution','isSeeAlso','isCve','isBid','isOsvdb','isCert','isIava','isCWE','isMS','isSec','isEdb','isAffected','isNotes','cover']);
 $v1->rule('numeric', ['scan_start', 'scan_end']);
 $v1->rule('slug','agency');

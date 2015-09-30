@@ -7,9 +7,7 @@ $v->rule('slug', '0');//validate $agency
 $v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate report name
 //$v->rule('slug','1');// validate report name
 $v->rule('numeric',['2','3']);//validate scan_start and scan_end
-if($v->validate()) {
-
-} else {
+if(!$v->validate()) {
     print_r($v->errors());
 	exit;
 } 

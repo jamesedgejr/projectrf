@@ -139,21 +139,10 @@ WHERE
 $stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
 $stmt->execute($data);
-fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Family\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\",\"Exploit Ease\",\"Metasploit Name\"\n");
-/*
-CVE or BID
-CVSS
-Risk
-Host
-Protocol
-Port
-Name
-Synopsis
-Description
-Solution
-See Also
-Plugin Output
-*/
+$header = array("$isVulnDB","CVSS","Risk","IP Address","FQDN","Netbios","OS","Protocol","Port","Plugin ID","Family","Name","Synopsis","Description","Solution","See Also","Plugin Output","Exploit Ease","Metasploit Name");
+fputcsv($fh, $header);
+//fwrite($fh, "\"$isVulnDB\",\"CVSS\",\"Risk\",\"IP Address\",\"FQDN\",\"Netbios\",\"OS\",\"Protocol\",\"Port\",\"Plugin ID\",\"Family\",\"Name\",\"Synopsis\",\"Description\",\"Solution\",\"See Also\",\"Plugin Output\",\"Exploit Ease\",\"Metasploit Name\"\n");
+
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 
 	//not all of this will end up in the CSV file but it may someday...
@@ -222,11 +211,13 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	} 
 	if($justVulnDB == "true" && !empty($vulnDBList[0])){
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
+			//fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
+			fputcsv($fh, array($vDB,$cvss_base_score,$risk_factor,$ip_addr,$fqdn,$netbios,$operating_system,$protocol,$port,$pluginID,$pluginFamily,$pluginName,$synopsis,$description,$solution,$see_also,$plugin_output,$exploitability_ease,$metasploit_name);
 		}
 	} elseif ($justVulnDB != "true") {
 		foreach($vulnDBList as $vDB){
-			fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
+			//fwrite($fh, "\"$vDB\",\"$cvss_base_score\",\"$risk_factor\",\"$ip_addr\",\"$fqdn\",\"$netbios\",\"$operating_system\",\"$protocol\",\"$port\",\"$pluginID\",\"$pluginFamily\",\"$pluginName\",\"$synopsis\",\"$description\",\"$solution\",\"$see_also\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
+			fputcsv($fh, array($vDB,$cvss_base_score,$risk_factor,$ip_addr,$fqdn,$netbios,$operating_system,$protocol,$port,$pluginID,$pluginFamily,$pluginName,$synopsis,$description,$solution,$see_also,$plugin_output,$exploitability_ease,$metasploit_name);
 		}	
 	}
 }

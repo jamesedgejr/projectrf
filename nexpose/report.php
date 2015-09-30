@@ -1,19 +1,19 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-/*
-$v = new Valitron\Validator($_POST);
-$v->rule('accepted', ['isPlugName','isPlugFam','isPlugInfo','isPlugOut','isService','isCvss','isVulnPub','isExploit','isSynopsis','isDescription','isSolution','isSeeAlso','isCve','isBid','isOsvdb','isCert','isIava','isCWE','isMS','isSec','isEdb','isAffected','isNotes','cover']);
-$v->rule('numeric', ['scan_start', 'scan_end']);
-$v->rule('slug','agency');
-//$v->rule('regex','report_name','/[a-zA-Z]+/');
-$v->rule('length',1,['critical','high','medium','low','info']);
-$v->rule('integer',['critical','high','medium','low','info']);
-if(!$v->validate()) {
-    print_r($v->errors());
+
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('accepted', ['isVulnTitle','isTag','isVulnInfo','isDescription','isSolution','isVulnOut','isCvss','isVulnPub','isExploit','isApple','isBid','isCert','isCve','isMS','isOsvdb','isRedHat','isUrl','isXF','isNotes','isAffected','isService','cover']);
+$v1->rule('numeric', ['scan_start', 'scan_end']);
+$v1->rule('slug',['agency','isVulnDB']);
+$v1->rule('regex','report_name', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('length',1,['critical','high','medium','low','info']);
+$v1->rule('integer',['critical','high','medium','low','info']);
+if(!$v1->validate()) {
+    print_r($v1->errors());
 	exit;
 } 
-*/
+
 $nodeArray = $_POST["node"];
 foreach($nodeArray as $key => $value) {
 	if ($value == "REMOVE") unset($nodeArray[$key]);
@@ -22,11 +22,12 @@ $sql = "CREATE temporary TABLE nexpose_tmp_nodes (node_address VARCHAR(255), nod
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($nodeArray as $nA){
-	//$v = new Valitron\Validator(array($hA));
-	//$v->rule('regex', '0');
-	//if(!$v->validate()) {
-	//	print_r($v->errors());
-	//} 
+	$v2 = new Valitron\Validator(array('node' => $nA));
+	$v2->rule('regex','node', '/^([\w.-])+$/i');
+	if(!$v2->validate()) {
+		print_r($v2->errors());
+		exit;
+	} 
 	$temp_nodes_array = explode(":", $nA);
 	$sql="INSERT INTO nexpose_tmp_nodes (node_address, node_device_id) VALUES (?,?)";
 	$stmt = $db->prepare($sql);
@@ -37,6 +38,12 @@ $sql = "CREATE temporary TABLE nexpose_tmp_tags (tag VARCHAR(255), INDEX ndx_tag
 $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($tags as $t){
+	$v3 = new Valitron\Validator(array('tag' => $t));
+	$v3->rule('regex','tag', '/^([\w :.-])+$/i');//regex includes alpha/numeric, space, colon, dash, and period
+	if(!$v3->validate()) {
+		print_r($v3->errors());
+		exit;
+	} 
 	$sql="INSERT INTO nexpose_tmp_tags (tag) VALUES (?)";
 	$stmt = $db->prepare($sql);
 	$stmt->execute(array($t));
@@ -273,7 +280,7 @@ if($cover == "yes"){
 	<table class="main" style="width: 600px;">
 		<tr>
 			<td class="top" style="text-align:center;">
-				<p>NESSUS - Network Vunlerability Scanner</p>
+				<p>NEXPOSE - Network Vunlerability Scanner</p>
 			</td>
 		</tr>
 	</table><br>

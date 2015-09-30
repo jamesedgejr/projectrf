@@ -22,9 +22,7 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 		$v2->rule('slug', '0');//validate agency
 		$v2->rule('regex','1','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
 		$v2->rule('numeric',['2','3']);//validate scan_start and scan_end
-		if($v2->validate()) {
-
-		} else {
+		if(!$v2->validate()) {
 			print_r($v2->errors());
 			exit;
 		} 

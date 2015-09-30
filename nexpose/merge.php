@@ -2,6 +2,14 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 
+$v1 = new Valitron\Validator($_POST);
+$v1->rule('slug','new_agency');
+$v1->rule('regex',['new_scan_name','new_filename'], '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+if(!$v1->validate()) {
+    print_r($v1->errors());
+	exit;
+} 
+
 $report = $_POST["report"];
 $new_agency = $_POST["new_agency"];
 $new_scan_name = $_POST["new_scan_name"];
@@ -14,6 +22,14 @@ if(isset($report) && isset($new_agency) && isset($new_scan_name)){
 	}
 	foreach($report as $r){
 		$temp = explode(":@:", $r);
+		$v2 = new Valitron\Validator($temp);
+		$v2->rule('slug', '0');//validate agency
+		$v2->rule('regex',['1','2'],'/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+		$v2->rule('numeric',['3','4','5']);//validate scan_start and scan_end
+		if(!$v2->validate()) {
+			print_r($v2->errors());
+			exit;
+		} 
 		$agencyArray[] = $temp[0];
 		$filenameArray[] = $temp[1];
 		$scan_nameArray[] = $temp[2];
@@ -126,7 +142,7 @@ $merge_stmt->execute();
 
 <HTML>
 <head>
-<title>MERGE NESSUS REPORTS</title>
+<title>MERGE NEXPOSE REPORTS</title>
 <script>
 function selectAll(selectBox,selectAll) {
     // have we been passed an ID

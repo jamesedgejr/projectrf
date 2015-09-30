@@ -3,12 +3,11 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":@:", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
-$v->rule('slug', ['0','3','4']);//validate $agency
-$v->rule('numeric','5');//validate scan_start and scan_end
+$v->rule('slug', ['0']);//validate $agency
+$v->rule('regex',['1','2'],'/[A-Za-z0-9 _ .-]+/');// validate file name and scan name
+$v->rule('numeric',['3','4','5']);//validate scan_startTime and scan_endTime and scan_id
 //$v->rule('numeric','1','/[\d]+/');
-if($v->validate()) {
-
-} else {
+if(!$v->validate()) {
     print_r($v->errors());
 	exit;
 } 
