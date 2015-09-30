@@ -3,12 +3,10 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":@:", $_POST["agency"]);
 $v = new Valitron\Validator($agency_temp);
-$v->rule('slug', ['0','3','4']);//validate $agency
-$v->rule('numeric','5');//validate scan_start and scan_end
-//$v->rule('numeric','1','/[\d]+/');
-if($v->validate()) {
-
-} else {
+$v->rule('slug', ['0']);//validate $agency
+$v->rule('regex',['1','2'],'/[A-Za-z0-9 _ .-]+/');// validate file name and scan name
+$v->rule('numeric',['3','4','5']);//validate scan_startTime and scan_endTime and scan_id
+if(!$v->validate()) {
     print_r($v->errors());
 	exit;
 } 
@@ -114,8 +112,8 @@ select {font-family: courier new}
 			while($scan_row = $scan_stmt->fetch(PDO::FETCH_ASSOC)){
 			    $value1 = str_replace(' ','&nbsp;',str_pad($scan_row["agency"], 20));
 			    $value2 = str_replace(' ','&nbsp;',str_pad($scan_row["scan_name"], 70));
-				//$formatedDate = date("D M d H:i:s Y", $scan_row["endTime"]);
-				$value3 = str_replace(' ','&nbsp;',str_pad($scan_row["scan_endTime"], 20));
+				$formatedDate = date("D M d H:i:s Y", $scan_row["scan_endTime"]);
+				$value3 = str_replace(' ','&nbsp;',str_pad($formatedDate, 20));
 				echo "<option value='" . $scan_row["agency"] . ":@:" . $scan_row["filename"] . ":@:" . $scan_row["scan_name"] . ":@:" . $scan_row["scan_startTime"] . ":@:" . $scan_row["scan_endTime"] . ":@:" . $scan_row["scan_id"] . "'>" . $value1 . $value2 . $value3 . "</option>";
 			}
 			?>
