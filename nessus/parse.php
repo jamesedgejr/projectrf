@@ -52,7 +52,6 @@ $randValue = rand();
 $startScanArray = array();
 $endScanArray = array();
 $newTag = array();
-//$report_name = preg_replace("/[\W]*/", '', $xml->Report[name]);
 $report_name = $xml->Report[name];
 foreach($xml->Report->ReportHost as $ReportHost){
 	$scan_start = $randValue;

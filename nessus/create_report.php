@@ -2,15 +2,12 @@
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $agency_temp = explode(":", $_POST["agency"]);
-$v = new Valitron\Validator($agency_temp);
-$v->rule('slug', '0');//validate $agency
-$v->rule('regex','1','/[A-Za-z0-9 _ .-]+/');// validate report name
-//$v->rule('slug','1');// validate report name
-$v->rule('numeric',['2','3']);//validate scan_start and scan_end
-if($v->validate()) {
-
-} else {
-    print_r($v->errors());
+$v1 = new Valitron\Validator($agency_temp);
+$v1->rule('slug', '0');//validate $agency
+$v1->rule('regex','1', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
+$v1->rule('numeric',['2','3']);//validate scan_start and scan_end
+if(!$v1->validate()) {
+    print_r($v1->errors());
 	exit;
 } 
 

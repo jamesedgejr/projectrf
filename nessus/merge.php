@@ -3,7 +3,7 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $v1 = new Valitron\Validator($_POST);
 $v1->rule('slug','newAgencyName');
-$v1->rule('regex','newReportName', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('regex','newReportName', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
 if(!$v1->validate()) {
     print_r($v1->errors());
 	exit;
@@ -20,7 +20,7 @@ if(isset($report) && isset($newAgencyName) && isset($newReportName)){
 		$temp = explode(":", $r);
 		$v2 = new Valitron\Validator($temp);
 		$v2->rule('slug', '0');//validate agency
-		$v2->rule('regex','1','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+		$v2->rule('regex','1', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
 		$v2->rule('numeric',['2','3']);//validate scan_start and scan_end
 		if($v2->validate()) {
 

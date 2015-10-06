@@ -141,10 +141,8 @@ $v1 = new Valitron\Validator($_POST);
 $v1->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL']);
 $v1->rule('numeric', ['scan_start', 'scan_end']);
 $v1->rule('slug','agency');
-$v1->rule('regex','report_name', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
-if($v1->validate()) {
-
-} else {
+$v1->rule('regex','report_name', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
+if(!$v1->validate()) {
     print_r($v1->errors());
 	exit;
 } 

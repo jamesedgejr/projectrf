@@ -7,7 +7,7 @@ $v1->rule('accepted', ['isPlugName','isPlugFam']);
 $v1->rule('numeric', ['scan_start', 'scan_end']);
 $v1->rule('slug','agency');
 $v1->rule('alpha','pivot');
-$v1->rule('regex','report_name','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
+$v1->rule('regex','report_name', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
 $v1->rule('length',1,['critical','high','medium','low','info']);
 $v1->rule('integer',['critical','high','medium','low','info']);
 if(!$v1->validate()) {
