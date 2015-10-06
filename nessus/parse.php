@@ -17,9 +17,8 @@ include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $v = new Valitron\Validator($_POST);
 $v->rule('slug', 'agency');
-if($v->validate()) {
+if(!$v->validate()) {
 
-} else {
     print_r($v->errors());
 	exit;
 } 
@@ -53,7 +52,6 @@ $randValue = rand();
 $startScanArray = array();
 $endScanArray = array();
 $newTag = array();
-//$report_name = preg_replace("/[\W]*/", '', $xml->Report[name]);
 $report_name = $xml->Report[name];
 foreach($xml->Report->ReportHost as $ReportHost){
 	$scan_start = $randValue;

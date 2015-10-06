@@ -10,14 +10,12 @@ if(isset($report)){
 	}
 	foreach($report as $r){
 		$temp = explode(":", $r);
-		$v = new Valitron\Validator($temp);
-		$v->rule('slug', '0');//validate agency
-		$v->rule('regex','1','/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
-		$v->rule('numeric',['2','3']);//validate scan_start and scan_end
-		if($v->validate()) {
-
-		} else {
-			print_r($v->errors());
+		$v1 = new Valitron\Validator($temp);
+		$v1->rule('slug', '0');//validate agency
+		$v1->rule('regex','1', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
+		$v1->rule('numeric',['2','3']);//validate scan_start and scan_end
+		if(!$v1->validate()) {
+			print_r($v1->errors());
 			exit;
 		} 
 		$agency = $temp[0];

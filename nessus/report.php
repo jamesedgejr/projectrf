@@ -6,8 +6,7 @@ $v1 = new Valitron\Validator($_POST);
 $v1->rule('accepted', ['isPlugName','isPlugFam','isPlugInfo','isPlugOut','isService','isCvss','isVulnPub','isExploit','isSynopsis','isDescription','isSolution','isSeeAlso','isCve','isBid','isOsvdb','isCert','isIava','isCWE','isMS','isSec','isEdb','isAffected','isNotes','cover']);
 $v1->rule('numeric', ['scan_start', 'scan_end']);
 $v1->rule('slug','agency');
-$v1->rule('regex','report_name', '/^([\w _.-])+$/'); //regex includes alpha/numeric, space, underscore, dash, and period
-$v1->rule('regex',['w1','w2'], '/^([\w\s_.\[\]():;-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, and semi-colon
+$v1->rule('regex',['w1','w2','report_name'], '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
 $v1->rule('length',1,['critical','high','medium','low','info']);
 $v1->rule('integer',['critical','high','medium','low','info']);
 if(!$v1->validate()) {
@@ -24,7 +23,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($hostArray as $hA){
 	$v2 = new Valitron\Validator(array('host' => $hA));
-	$v2->rule('regex','host', '/^([\w.-])+$/i');
+	$v2->rule('regex','host', '/^([\w.-])+$/');
 	if(!$v2->validate()) {
 		print_r($v2->errors());
 		exit;
@@ -39,7 +38,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 foreach ($family as $f){
 	$v3 = new Valitron\Validator(array('family' => $f));
-	$v3->rule('regex','family', '/^([\w :.-])+$/i');//regex includes alpha/numeric, space, colon, dash, and period
+	$v3->rule('regex','family', '/^([\w :.-])+$/');//regex includes alpha/numeric, space, colon, dash, and period
 	if(!$v3->validate()) {
 		print_r($v3->errors());
 		exit;
