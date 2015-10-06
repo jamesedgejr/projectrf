@@ -16,7 +16,7 @@ a:hover {text-decoration: underline}
 		for the open source and commercial penetration testing tools <br>
 		used by auditors (and me...mostly me).</p>
 		<p>As time moves forward I can add additional report frameworks as time permits.  Requests are always welcome!</p>
-		<p>For tutorials on how to use some of the features see the project wiki at <a href="https://code.google.com/p/projectrf/w/list">https://code.google.com/p/projectrf/w/list</a></p>
+		<p>For tutorials on how to use some of the features see the project wiki at <a href="https://github.com/jamesedgejr/projectrf">https://github.com/jamesedgejr/projectrf</a></p>
 	</td>
 </tr></table>
 </body>
