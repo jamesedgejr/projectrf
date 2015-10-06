@@ -18,7 +18,7 @@ $scan_id = $agency_temp[1];
 $severity = $_POST["severity"];
 date_default_timezone_set('UTC');
 $date = date('mdYHis');
-$myDir = "/var/www/projectRF/edge/csvfiles/";
+$myDir = getcwd() . "/csvfiles/";
 $vuln_table_filename = $agency . "_vuln_table_" . $date . ".csv";
 $vuln_table_file = $myDir . $vuln_table_filename;
 $fh_vuln = fopen($vuln_table_file, 'w') or die("can't open $vuln_table_file for writing.  Please check folder permissions.");
