@@ -40,6 +40,26 @@
 	</tr>
 	<tr><td colspan="2"><hr></td></tr>
 	<tr>
+		<td colspan="2" width="150">Nexpose</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td width="95%"><a href="../nexpose/upload.php">Import XML</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td width="95%"><a href="../nexpose/create_report.php">Create Nexpose Report</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><a href="../nexpose/create_csvReport.php">Nexpose CSV Report</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><a href="../nexpose/merge.php">Merge Nexpose Reports</a></td>
+	</tr>
+	<tr><td colspan="2"><hr></td></tr>
+	<tr>
 		<td colspan="2" width="150">DumpSec</td>
 	</tr>
 	<tr>
