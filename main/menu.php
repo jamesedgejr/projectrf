@@ -4,11 +4,11 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td width="95%"><a href="../nessus/upload.php">Import Nessus .nessus (v2)</a></td>
+		<td width="95%"><a href="../nessus/upload.php">Import .nessus XML (v2)</a></td>
 	</tr>
 	<tr>
 		<td></td>
-		<td width="95%"><a href="../nessus/upload_v1.php">Import Nessus .nessus (v1)</a></td>
+		<td width="95%"><a href="../nessus/upload_v1.php">Import .nessus XML (v1)</a></td>
 	</tr>
 	<tr>
 		<td></td>
@@ -32,11 +32,11 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td width="95%"><a href="../nessus/uploadCompliance.php">Import Nessus .nessus (v2) (Compliance)</a></td>
+		<td width="95%"><a href="../nessus/uploadCompliance.php">Import .nessus (v2) (Compliance)</a></td>
 	</tr>
 	<tr>
 		<td></td>
-		<td width="95%"><a href="../nessus/uploadAudit.php">Import Nessus .audit (Compliance)</a></td>
+		<td width="95%"><a href="../nessus/uploadAudit.php">Import .audit (Compliance)</a></td>
 	</tr>
 	<tr>
 		<td></td>
