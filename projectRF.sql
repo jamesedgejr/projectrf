@@ -1,4 +1,3 @@
-
 -- ----------------------------
 -- Table structure for dumpsec_group_table
 -- ----------------------------
@@ -15,15 +14,8 @@ CREATE TABLE `dumpsec_group_table` (
   `GroupMember` varchar(255) DEFAULT NULL,
   `MemberType` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`RowID`)
-) ENGINE=MyISAM AUTO_INCREMENT=64146 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=254089 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Table structure for dumpsec_temp_groups
--- ----------------------------
-DROP TABLE IF EXISTS `dumpsec_temp_groups`;
-CREATE TABLE `dumpsec_temp_groups` (
-  `groups` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for dumpsec_user_table
@@ -61,7 +53,7 @@ CREATE TABLE `dumpsec_user_table` (
   `PasswordAgeDays` varchar(255) DEFAULT NULL,
   `LastLogonAgeDays` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`RowID`)
-) ENGINE=MyISAM AUTO_INCREMENT=335305 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=360388 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Table structure for kismet_results_newcore
@@ -208,63 +200,7 @@ CREATE TABLE `kismet_results_newcore` (
   `wc_seen_card_seen_time` varchar(50) DEFAULT NULL,
   `wc_seen_card_seen_packets` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`record_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=31149 DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Table structure for nessus_audit_file
--- ----------------------------
-DROP TABLE IF EXISTS `nessus_audit_file`;
-CREATE TABLE `nessus_audit_file` (
-  `auditCheckID` int(10) NOT NULL AUTO_INCREMENT,
-  `agency` varchar(100) NOT NULL,
-  `report_name` varchar(100) NOT NULL,
-  `check_type` varchar(7) DEFAULT NULL,
-  `check_policy` varchar(50) DEFAULT NULL,
-  `custom_item_type` varchar(50) DEFAULT NULL,
-  `description` tinytext,
-  `value_type` varchar(50) DEFAULT NULL,
-  `value_data` varchar(50) DEFAULT NULL,
-  `service` varchar(50) DEFAULT NULL,
-  `service_name` varchar(50) DEFAULT NULL,
-  `svc_option` varchar(50) DEFAULT NULL,
-  `acl_option` varchar(50) DEFAULT NULL,
-  `file` varchar(100) DEFAULT NULL,
-  `reg_option` varchar(50) DEFAULT NULL,
-  `reg_key` varchar(200) DEFAULT NULL,
-  `reg_item` varchar(50) DEFAULT NULL,
-  `reg_type` varchar(50) DEFAULT NULL,
-  `info` text,
-  `account_type` varchar(50) DEFAULT NULL,
-  `custom_item_check_type` varchar(100) DEFAULT NULL,
-  `right_type` varchar(100) DEFAULT NULL,
-  `group_name` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`auditCheckID`),
-  KEY `audit_file_index` (`agency`,`report_name`,`check_type`,`custom_item_type`,`value_type`,`value_data`,`service_name`,`svc_option`,`acl_option`,`file`,`reg_key`,`reg_item`) USING HASH
-) ENGINE=MyISAM AUTO_INCREMENT=39681 DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Table structure for nessus_compliance_results
--- ----------------------------
-DROP TABLE IF EXISTS `nessus_compliance_results`;
-CREATE TABLE `nessus_compliance_results` (
-  `resultsComplianceID` int(10) NOT NULL AUTO_INCREMENT,
-  `agency` varchar(100) NOT NULL,
-  `scan_start` varchar(10) DEFAULT NULL,
-  `scan_end` varchar(10) DEFAULT NULL,
-  `report_name` varchar(100) NOT NULL,
-  `host_name` varchar(50) DEFAULT NULL,
-  `tagID` varchar(10) DEFAULT NULL,
-  `pluginID` varchar(5) DEFAULT NULL,
-  `pluginName` varchar(100) DEFAULT NULL,
-  `severity` varchar(1) DEFAULT NULL,
-  `description` tinytext,
-  `plugin_output` tinytext,
-  `remoteValue` mediumtext,
-  `policyValue` mediumtext,
-  `complianceError` tinytext,
-  PRIMARY KEY (`resultsComplianceID`),
-  KEY `compliance_index` (`agency`,`report_name`,`host_name`,`severity`) USING HASH
-) ENGINE=MyISAM AUTO_INCREMENT=296816 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=33752 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nessus_results
@@ -280,8 +216,8 @@ CREATE TABLE `nessus_results` (
   `cveList` text,
   `cvss_base_score` decimal(5,1) DEFAULT NULL,
   `cvss_temporal_score` decimal(5,1) DEFAULT NULL,
-  `cvss_temporal_vector` varchar(10) DEFAULT NULL,
-  `cvss_vector` varchar(10) DEFAULT NULL,
+  `cvss_temporal_vector` varchar(25) DEFAULT NULL,
+  `cvss_vector` varchar(25) DEFAULT NULL,
   `cweList` text,
   `d2_elliot_name` varchar(255) DEFAULT NULL,
   `description` text,
@@ -327,7 +263,7 @@ CREATE TABLE `nessus_results` (
   KEY `nessus_pluginID_index` (`pluginID`) USING HASH,
   KEY `nessus_host_index` (`agency`,`scan_start`,`scan_end`,`report_name`,`port`,`service`,`protocol`) USING HASH,
   FULLTEXT KEY `nessus_plugin_index` (`pluginName`,`pluginFamily`,`severity`,`cvss_vector`,`risk_factor`,`description`,`synopsis`,`see_also`,`plugin_output`,`solution`,`cveList`,`bidList`,`msftList`)
-) ENGINE=MyISAM AUTO_INCREMENT=817630 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=1058472 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nessus_tags
@@ -344,7 +280,7 @@ CREATE TABLE `nessus_tags` (
   `local_checks_proto` varchar(255) DEFAULT NULL,
   `mac_addr` varchar(17) DEFAULT NULL,
   `netbios` varchar(16) DEFAULT NULL,
-  `operating_system` varchar(100) DEFAULT NULL,
+  `operating_system` varchar(255) DEFAULT NULL,
   `operating_system_unsupported` varchar(5) DEFAULT NULL,
   `pcidss_compliance_failed` varchar(10) DEFAULT NULL,
   `pcidss_compliance` varchar(10) DEFAULT NULL,
@@ -364,39 +300,197 @@ CREATE TABLE `nessus_tags` (
   `system_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tagID`),
   KEY `compliance_index` (`ip_addr`,`mac_addr`,`fqdn`,`netbios`,`operating_system`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=221326 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM AUTO_INCREMENT=225531 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
 
 -- ----------------------------
--- Table structure for nessus_temp_severity
+-- Table structure for nexpose_device_fingerprints
 -- ----------------------------
-DROP TABLE IF EXISTS `nessus_temp_severity`;
-CREATE TABLE `nessus_temp_severity` (
-  `severity` varchar(255) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `nexpose_device_fingerprints`;
+CREATE TABLE `nexpose_device_fingerprints` (
+  `device_fingerprint_id` int(10) NOT NULL AUTO_INCREMENT,
+  `device_id` varchar(100) DEFAULT NULL,
+  `device_certainty` float(4,2) DEFAULT NULL,
+  `device_class` varchar(100) DEFAULT NULL,
+  `device_vendor` varchar(255) DEFAULT NULL,
+  `device_family` varchar(255) DEFAULT NULL,
+  `device_product` varchar(255) DEFAULT NULL,
+  `device_version` varchar(255) DEFAULT NULL,
+  `agency` varchar(255) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`device_fingerprint_id`),
+  KEY `device_id` (`device_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7041 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for nessus_tmp_family
+-- Table structure for nexpose_endpoint_fingerprints
 -- ----------------------------
-DROP TABLE IF EXISTS `nessus_tmp_family`;
-CREATE TABLE `nessus_tmp_family` (
-  `pluginFamily` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `nexpose_endpoint_fingerprints`;
+CREATE TABLE `nexpose_endpoint_fingerprints` (
+  `endpoint_fingerprint_id` int(10) NOT NULL AUTO_INCREMENT,
+  `endpoint_id` varchar(100) DEFAULT NULL,
+  `endpoint_certainty` float(4,2) DEFAULT NULL,
+  `endpoint_vendor` varchar(255) DEFAULT NULL,
+  `endpoint_family` varchar(255) DEFAULT NULL,
+  `endpoint_product` varchar(255) DEFAULT NULL,
+  `endpoint_version` varchar(255) DEFAULT NULL,
+  `agency` varchar(255) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`endpoint_fingerprint_id`),
+  KEY `endpoint_index` (`endpoint_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3510 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for nessus_tmp_hosts
+-- Table structure for nexpose_endpoints
 -- ----------------------------
-DROP TABLE IF EXISTS `nessus_tmp_hosts`;
-CREATE TABLE `nessus_tmp_hosts` (
-  `host_name` varchar(255) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `nexpose_endpoints`;
+CREATE TABLE `nexpose_endpoints` (
+  `endpoint_id` int(10) NOT NULL AUTO_INCREMENT,
+  `device_id` varchar(100) DEFAULT NULL,
+  `endpoint_protocol` varchar(10) DEFAULT NULL,
+  `endpoint_port` varchar(10) DEFAULT NULL,
+  `endpoint_status` varchar(10) DEFAULT NULL,
+  `service_name` varchar(255) DEFAULT NULL,
+  `agency` varchar(255) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`endpoint_id`),
+  KEY `endpoint_index` (`device_id`,`endpoint_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13385 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for nessus_tmp_itemType
+-- Table structure for nexpose_exploits
 -- ----------------------------
-DROP TABLE IF EXISTS `nessus_tmp_itemType`;
-CREATE TABLE `nessus_tmp_itemType` (
-  `custom_item_type` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `nexpose_exploits`;
+CREATE TABLE `nexpose_exploits` (
+  `exploit_table_id` int(10) NOT NULL AUTO_INCREMENT,
+  `vuln_id` varchar(255) DEFAULT NULL,
+  `exploit_id` varchar(10) DEFAULT NULL,
+  `exploit_title` varchar(255) DEFAULT NULL,
+  `exploit_type` varchar(100) DEFAULT NULL,
+  `exploit_link` varchar(255) DEFAULT NULL,
+  `exploit_skillLevel` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`exploit_table_id`),
+  KEY `exploit_index` (`vuln_id`,`exploit_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3051 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_nodes
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_nodes`;
+CREATE TABLE `nexpose_nodes` (
+  `node_id` int(10) NOT NULL AUTO_INCREMENT,
+  `node_address` varchar(100) DEFAULT NULL,
+  `node_status` varchar(100) DEFAULT NULL,
+  `node_hardware_address` varchar(100) DEFAULT NULL,
+  `node_device_id` varchar(100) DEFAULT NULL,
+  `site_name` varchar(255) DEFAULT NULL,
+  `site_importance` varchar(255) DEFAULT NULL,
+  `scan_template` varchar(255) DEFAULT NULL,
+  `node_risk_score` varchar(255) DEFAULT NULL,
+  `node_name` varchar(255) DEFAULT NULL,
+  `agency` varchar(255) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`node_id`),
+  KEY `node_index` (`node_address`,`node_device_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1826 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_scans
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_scans`;
+CREATE TABLE `nexpose_scans` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `scan_id` varchar(100) NOT NULL,
+  `scan_name` varchar(255) DEFAULT NULL,
+  `scan_startTime` varchar(20) DEFAULT NULL,
+  `scan_endTime` varchar(20) DEFAULT NULL,
+  `scan_status` varchar(20) DEFAULT NULL,
+  `xml_version` varchar(20) DEFAULT NULL,
+  `agency` varchar(255) DEFAULT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `scan_index` (`scan_id`,`scan_name`,`scan_startTime`,`scan_endTime`,`agency`)
+) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_tags
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_tags`;
+CREATE TABLE `nexpose_tags` (
+  `tag_id` int(10) NOT NULL AUTO_INCREMENT,
+  `vuln_id` varchar(255) DEFAULT NULL,
+  `tag` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`tag_id`),
+  KEY `tag_index` (`vuln_id`,`tag`)
+) ENGINE=InnoDB AUTO_INCREMENT=26843 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_temp_nodes
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_temp_nodes`;
+CREATE TABLE `nexpose_temp_nodes` (
+  `node_address` varchar(255) DEFAULT NULL,
+  `node_device_id` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_temp_vulnerabiliites
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_temp_vulnerabiliites`;
+CREATE TABLE `nexpose_temp_vulnerabiliites` (
+  `vuln_id` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_tests
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_tests`;
+CREATE TABLE `nexpose_tests` (
+  `tests_id` int(10) NOT NULL AUTO_INCREMENT,
+  `test_id` varchar(100) DEFAULT NULL,
+  `scan_id` varchar(100) DEFAULT NULL,
+  `device_id` varchar(100) DEFAULT NULL,
+  `endpoint_id` varchar(100) DEFAULT NULL,
+  `test_key` varchar(100) DEFAULT NULL,
+  `test_status` varchar(100) DEFAULT NULL,
+  `test_vulnerable_since` varchar(100) DEFAULT NULL,
+  `test_pci_compliance_status` varchar(100) DEFAULT NULL,
+  `test_paragraph` text,
+  `agency` varchar(255) NOT NULL,
+  `filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`tests_id`),
+  KEY `tests_index` (`test_id`,`scan_id`,`device_id`,`endpoint_id`,`agency`)
+) ENGINE=InnoDB AUTO_INCREMENT=38437 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nexpose_vulnerabilities
+-- ----------------------------
+DROP TABLE IF EXISTS `nexpose_vulnerabilities`;
+CREATE TABLE `nexpose_vulnerabilities` (
+  `vuln_table_id` int(10) NOT NULL AUTO_INCREMENT,
+  `vuln_id` varchar(255) DEFAULT NULL,
+  `vuln_title` varchar(255) DEFAULT NULL,
+  `pciSeverity` varchar(100) DEFAULT NULL,
+  `cvssScore` float(4,1) DEFAULT NULL,
+  `cvssVector` varchar(50) DEFAULT NULL,
+  `vuln_published` varchar(50) DEFAULT NULL,
+  `vuln_added` varchar(50) DEFAULT NULL,
+  `vuln_modified` varchar(50) DEFAULT NULL,
+  `riskScore` varchar(50) DEFAULT NULL,
+  `description` text,
+  `solution` text,
+  `appleList` varchar(255) DEFAULT NULL,
+  `bidList` varchar(255) DEFAULT NULL,
+  `certList` varchar(255) DEFAULT NULL,
+  `cveList` varchar(255) DEFAULT NULL,
+  `msftList` varchar(255) DEFAULT NULL,
+  `osvdbList` varchar(255) DEFAULT NULL,
+  `redhatList` varchar(255) DEFAULT NULL,
+  `urlList` text,
+  `xfList` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`vuln_table_id`),
+  KEY `vuln_index` (`vuln_id`,`vuln_title`)
+) ENGINE=InnoDB AUTO_INCREMENT=9147 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_host_nse_xml
@@ -409,7 +503,7 @@ CREATE TABLE `nmap_host_nse_xml` (
   `script_output` text,
   PRIMARY KEY (`id`),
   KEY `nse_xml` (`id`,`host_id`,`script_id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=142095 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=142600 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_host_trace_xml
@@ -425,7 +519,7 @@ CREATE TABLE `nmap_host_trace_xml` (
   `hop_rtt` varchar(10) DEFAULT NULL,
   `hop_host` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=630 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=15235 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_hosts_xml
@@ -457,7 +551,7 @@ CREATE TABLE `nmap_hosts_xml` (
   `times_to` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `hosts_xml` (`id`,`runstats_id`,`status_state`(1)) USING HASH
-) ENGINE=MyISAM AUTO_INCREMENT=72554 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=87883 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nmap_osclass_xml
@@ -475,7 +569,7 @@ CREATE TABLE `nmap_osclass_xml` (
   `os_osclass_accuracy` varchar(3) DEFAULT NULL,
   `os_osclass_cpe` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=64121 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=76529 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nmap_osmatch_xml
@@ -493,7 +587,7 @@ CREATE TABLE `nmap_osmatch_xml` (
   `os_osmatch_line` varchar(10) DEFAULT NULL,
   `os_osfingerprint` text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=64018 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=74366 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nmap_port_nse_xml
@@ -507,7 +601,7 @@ CREATE TABLE `nmap_port_nse_xml` (
   `script_output` text,
   PRIMARY KEY (`id`),
   KEY `nse_xml` (`id`,`host_id`,`script_id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=142127 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=148039 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_ports_xml
@@ -529,7 +623,7 @@ CREATE TABLE `nmap_ports_xml` (
   `port_service_conf` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ports_xml` (`id`,`host_id`,`port_portid`,`port_state`(1),`port_service_name`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=225151 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=327810 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Table structure for nmap_runstats_xml
@@ -558,7 +652,15 @@ CREATE TABLE `nmap_runstats_xml` (
   `hosts_total` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `runstats` (`id`,`agency`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=2125 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nmap_temp_host_nse
+-- ----------------------------
+DROP TABLE IF EXISTS `nmap_temp_host_nse`;
+CREATE TABLE `nmap_temp_host_nse` (
+  `script_id` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for nmap_temp_hosts
@@ -574,6 +676,14 @@ CREATE TABLE `nmap_temp_hosts` (
 DROP TABLE IF EXISTS `nmap_temp_nse`;
 CREATE TABLE `nmap_temp_nse` (
   `script_type` varchar(255) DEFAULT NULL,
+  `script_id` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for nmap_temp_port_nse
+-- ----------------------------
+DROP TABLE IF EXISTS `nmap_temp_port_nse`;
+CREATE TABLE `nmap_temp_port_nse` (
   `script_id` varchar(255) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -595,5 +705,15 @@ CREATE TABLE `nmap_temp_portState` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records 
+-- Table structure for phpsec
 -- ----------------------------
+DROP TABLE IF EXISTS `phpsec`;
+CREATE TABLE `phpsec` (
+  `type` varchar(255) NOT NULL COMMENT 'Type of data.',
+  `id` varchar(255) NOT NULL COMMENT 'Item ID.',
+  `mac` binary(32) NOT NULL COMMENT 'Message Authentication Message.',
+  `time` int(11) unsigned NOT NULL COMMENT 'Unix time stamp of creation time.',
+  `data` text NOT NULL COMMENT 'Serialized object.',
+  UNIQUE KEY `id` (`id`),
+  KEY `type` (`type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
