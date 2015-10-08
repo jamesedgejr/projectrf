@@ -228,7 +228,7 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 		}
 	} elseif ($justVulnDB != "yes") {
 		foreach($vulnDBList as $vDB){
-			fputcsv($fh, array($vDB,$cvss_base_score,$risk_factor,$ip_addr,$fqdn,$netbios,$operating_system,$protocol,$port,$pluginID,$pluginFamily,$pluginName,$synopsis,$description,$solution,$see_also,$plugin_output,$exploitability_ease,$metasploit_name));\",\"$plugin_output\",\"$exploitability_ease\",\"$metasploit_name\"\n");
+			fputcsv($fh, array($vDB,$cvss_base_score,$risk_factor,$ip_addr,$fqdn,$netbios,$operating_system,$protocol,$port,$pluginID,$pluginFamily,$pluginName,$synopsis,$description,$solution,$see_also,$plugin_output,$exploitability_ease,$metasploit_name));
 		}	
 	}
 }
