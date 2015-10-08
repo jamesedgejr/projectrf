@@ -241,14 +241,12 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	} elseif ($isVulnDB == "Secunia") {
 		$vulnDBList = $secuniaList;
 	} 
-	if($justVulnDB == "true" && !empty($vulnDBList[0])){
+	if($justVulnDB == "yes" && !empty($vulnDBList[0])){
 		foreach($vulnDBList as $vDB){
-			//fwrite($fh, "\"$vDB\",\"$cvssScore\",\"\",\"$node_address\",\"$node_name\",\"$operating_system\",\"$endpoint_protocol\",\"$endpoint_port\",\"$service_details\",\"$vuln_id\",\"$vuln_title\",\"$description\",\"$solution\"\n");
 			fputcsv($fh, array($vDB,$cvssScore,"",$node_address,$node_name,$operating_system,$endpoint_protocol,$endpoint_port,$service_details,$vuln_id,$vuln_title,$description,$solution,$paragraph));
 		}
-	} elseif ($justVulnDB != "true") {
+	} elseif ($justVulnDB != "yes") {
 		foreach($vulnDBList as $vDB){
-			//fwrite($fh, "\"$vDB\",\"$cvssScore\",\"\",\"$node_address\",\"$node_name\",\"$operating_system\",\"$endpoint_protocol\",\"$endpoint_port\",\"$service_details\",\"$vuln_id\",\"$vuln_title\",\"$description\",\"$solution\"\n");
 			fputcsv($fh, array($vDB,$cvssScore,"",$node_address,$node_name,$operating_system,$endpoint_protocol,$endpoint_port,$service_details,$vuln_id,$vuln_title,$description,$solution,$paragraph));
 		}	
 	}
