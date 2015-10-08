@@ -54,7 +54,8 @@ $myFileName = $agency . "_" . date('mdYHis') . ".csv";
 $myFile = $myDir . $myFileName;
 $fh = fopen($myFile, 'w') or die("can't open $myFile for writing.  Please check folder permissions.");
 
-fwrite($fh, "\"IP\",\"HOSTNAME\",\"FQDN\",\"OS\",\"PRODUCT\",\"SERVICE\",\"PORT\"\n");
+$header = array("IP","HOSTNAME","FQDN","OS","PRODUCT","SERVICE","PORT NUMBER","PORT PROTOCOL","STATUS");
+fputcsv($fh, $header);
 $current_ip = "";
 foreach($xml->host as $host){
 	$ipv4_address = $hostname_name = $os = "";
@@ -107,19 +108,19 @@ foreach($xml->host as $host){
 		  $port_service_product = $port_service_name = $port_portid = $port_protocol = "";
 		  $port_protocol = $port[protocol];
 		  $port_portid = $port[portid];
-		  $port_service_name = $port->service[name];
-		  $port_service_product = $port->service[product];
-		  $port_service_version = $port->service[version];
+			$port_service_name = $port->service[name];
+			$port_service_product = $port->service[product];
+			$port_service_version = $port->service[version];
 		  $port_state = $port->state[state];
 		  //if($status == "up" && $port_service_name != "tcpwrapped" && $port_service_name != "msrpc" && $port_state == "open"){
-		  if($status == "up" && $port_state == "open"){
+		  if($status == "up" && ($port_state == "open" || $port_state == "closed")){
 			//if($current_ip != $ipv4_address){
 			//	fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$os\",");
 			//	$current_ip = $ipv4_address;
 			//} else {
 			//	fwrite($fh, "\"\",\"\",\"\",");
 			//}
-			fwrite($fh, "\"$ipv4_address\",\"$hostname_name\",\"$hostname_fqdn\",\"$os\",\"$port_service_product $port_service_version\",\"$port_service_name\",\"$port_portid/$port_protocol\"\n");
+			fputcsv($fh, array($ipv4_address,$hostname_name,$hostname_fqdn,$os,"$port_service_product $port_service_version",$port_service_name,$port_portid,$port_protocol,$port_state));
 		  }
 	  }//end port foreach
 	}//end status up if

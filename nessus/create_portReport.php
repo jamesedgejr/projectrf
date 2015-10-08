@@ -163,6 +163,12 @@ select {font-family: courier new}
           </tr>
           <tr>
             <td style="width: 30px;">
+				<input type="checkbox" value="yes" name="isMYSQL" checked>
+			</td>
+            <td style="width: 174px;">Database (MySQL)</td>
+          </tr>
+          <tr>
+            <td style="width: 30px;">
 				<input type="checkbox" value="yes" name="isDNS" checked>
 			</td>
             <td style="width: 174px;">DNS</td>

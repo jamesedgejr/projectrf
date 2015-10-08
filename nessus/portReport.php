@@ -2,54 +2,7 @@
 
 //Database Report
 //plugins:  
-// MSSQL 11217, 
-// MSSQL 10674 [Databases]:Microsoft SQL Server UDP Query Remote Version Disclosure
-/*
-A &#039;ping&#039; request returned the following information about the remote
-SQL instances :
 
-  ServerName   : JADESQL2W
-  InstanceName : SHAREPOINTS
-  IsClustered  : No
-  Version      : 9.00.4035.00
-  tcp          : 65520
-
-  ServerName   : JADESQL2W
-  InstanceName : SQLUAT
-  IsClustered  : No
-  Version      : 9.00.4035.00
-  tcp          : 63073
-*/
-// MSSQL 10144 [Service detection]:Microsoft SQL Server TCP/IP Listener Detection
-/*
-The remote SQL Server version is 9.0.4060.0.
-*/
-// MySQL 10719 [Databases]:MySQL Server Detection
-/*
-Version  : 5.1.44-community
-Protocol : 10
-Server Status : SERVER_STATUS_AUTOCOMMIT
-Server Capabilities : 
-  CLIENT_LONG_PASSWORD (new more secure passwords)
-  CLIENT_FOUND_ROWS (Found instead of affected rows)
-  CLIENT_LONG_FLAG (Get all column flags)
-  CLIENT_CONNECT_WITH_DB (One can specify db on connect)
-  CLIENT_NO_SCHEMA (Don&#039;t allow database.table.column)
-  CLIENT_COMPRESS (Can use compression protocol)
-  CLIENT_ODBC (ODBC client)
-  CLIENT_LOCAL_FILES (Can use LOAD DATA LOCAL)
-  CLIENT_IGNORE_SPACE (Ignore spaces before &quot;(&quot;
-  CLIENT_PROTOCOL_41 (New 4.1 protocol)
-  CLIENT_INTERACTIVE (This is an interactive client)
-  CLIENT_SIGPIPE (IGNORE sigpipes)
-  CLIENT_TRANSACTIONS (Client knows about transactions)
-  CLIENT_RESERVED (Old flag for 4.1 protocol)
-  CLIENT_SECURE_CONNECTION (New 4.1 authentication)
-*/
-//10144 [Service detection]:Microsoft SQL Server TCP/IP Listener Detection
-/*
-The remote SQL Server version is 10.50.2550.0.
-*/
 //22073 [Service detection]:Oracle Database Detection??
 //10658 [Databases]:Oracle Database tnslsnr Service Remote Version Disclosure
 //need valid output
@@ -138,7 +91,7 @@ Remote SMTP server banner :
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
 $v1 = new Valitron\Validator($_POST);
-$v1->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL']);
+$v1->rule('accepted', ['isHTTP','isMSSQL','isDNS','isSSH','isSNMP','isMYSQL','isVPN']);
 $v1->rule('numeric', ['scan_start', 'scan_end']);
 $v1->rule('slug','agency');
 $v1->rule('regex','report_name', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
@@ -171,6 +124,7 @@ $isDNS = $_POST["isDNS"];
 $isSSH = $_POST["isSSH"];
 $isSNMP = $_POST["isSNMP"];
 $isMYSQL = $_POST["isMYSQL"];
+$isVPN = $_POST["isVPN"];
 $pluginArray = array();
 if($isHTTP){ array_push($pluginArray, "24260","57034");}
 if($isMSSQL){ array_push($pluginArray, "11217","10674");}
@@ -178,6 +132,7 @@ if($isMYSQL){ array_push($pluginArray, "10719");}
 if($isDNS){ array_push($pluginArray, "72780");}
 if($isSSH){ array_push($pluginArray, "10267");}
 if($isSNMP){ array_push($pluginArray, "10800");}
+if($isVPN){array_push($pluginArray, "11935","62695");}
 $sql = "CREATE temporary TABLE nessus_tmp_pluginID (pluginID VARCHAR(255), INDEX ndx_host_name (pluginID))";
 $stmt = $db->prepare($sql);
 $stmt->execute();
@@ -225,7 +180,8 @@ $sql = "SELECT DISTINCT
 $stmt = $db->prepare($sql);
 $data = array($agency, $report_name, $scan_start, $scan_end);
 $stmt->execute($data);
-fwrite($fh, "\"HOSTNAME FQDN\",\"HOSTNAME NETBIOS\",\"IP\",\"OS\",\"PORT/PROTOCOL\",\"SERVICE\",\"PRODUCT\",\"EXTRA1\",\"EXTRA2\",\"EXTRA3\"\n");
+$header = array("HOSTNAME FQDN","HOSTNAME NETBIOS","IP","OS","PORT/PROTOCOL","SERVICE","PRODUCT","EXTRA1","EXTRA2","EXTRA3","EXTRA4","EXTRA5");
+fputcsv($fh, $header);
 while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$pluginID = $row['pluginID'];
 	$pluginName = $row['pluginName'];
@@ -243,15 +199,15 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	if($pluginID =="11217"){
 		$instance_count = processMSSQLPluginOutput($row['plugin_output'], $pluginID);
 		for($x = 1;$x<=$instance_count;$x++){
-			//echo "STUFF:" . $database_version[$x] . "," . $mssql_path[$x] . "," .$mssql_named_instance[$x] . "," .$mssql_recommended_version[$x] . "," .$mssql_server_name[$x] . "<hr>";
-			fwrite($fh, "\"$fqdn\",\"$netbios\",\"$ip_addr\",\"$operating_system\",\"$port/$protocol\",\"$service\",\"$database_version[$x]\",\"$mssql_path[$x]\",\"$mssql_named_instance[$x]\",\"$mssql_server_name[$x]\",\n");
+		//																													EXTRA1					EXTRA2	
+			fputcsv($fh, array($fqdn,$netbios,$ip_addr,$operating_system,"$port/$protocol",$service,$database_version[$x],$mssql_path[$x],$mssql_recommended_version[$x]));
 		}
 	}
 	if($pluginID =="10674"){
 		$instance_count = processMSSQLPluginOutput($row['plugin_output'], $pluginID);
 		for($x = 1;$x<=$instance_count;$x++){
-			//echo "STUFF:" . $database_version[$x] . "," . $mssql_path[$x] . "," .$mssql_named_instance[$x] . "," .$mssql_recommended_version[$x] . "," .$mssql_server_name[$x] . "<hr>";
-			fwrite($fh, "\"$fqdn\",\"$netbios\",\"$ip_addr\",\"$operating_system\",\"$port/$protocol\",\"$service\",\"$database_version[$x]\",\"$mssql_path[$x]\",\"$mssql_named_instance[$x]\",\"$mssql_server_name[$x]\",\n");
+		//																													EXTRA1						EXTRA2				EXTRA3			EXTRA4
+			fputcsv($fh, array($fqdn,$netbios,$ip_addr,$operating_system,"$port/$protocol",$service,$database_version[$x],$mssql_named_instance[$x],$mssql_server_name[$x],$mssql_tcp[$x],$mssql_np[$x]));
 		}
 	}
 	if($pluginID =="24260"){
@@ -276,6 +232,44 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	}
 }//end while
 
+
+// MSSQL 11217
+/*
+
+  Version             : 10.50.1617.0 (2008 R2 + MS11-049 Fix (KB 2494088)) Express Edition
+  Path                : c:\Program Files\Microsoft SQL Server\MSSQL10_50.VITALCAST\MSSQL\Binn
+  Named Instance      : vitalcast
+  Recommended Version : 10.50.6000 (2008 R2 SP3).
+
+
+*/
+
+// MSSQL 10674 [Databases]:Microsoft SQL Server UDP Query Remote Version Disclosure
+/*
+A &#039;ping&#039; request returned the following information about the remote
+SQL instances :
+
+  ServerName   : JADESQL2W
+  InstanceName : SHAREPOINTS
+  IsClustered  : No
+  Version      : 9.00.4035.00
+  tcp          : 65520
+
+  ServerName   : JADESQL2W
+  InstanceName : SQLUAT
+  IsClustered  : No
+  Version      : 9.00.4035.00
+  tcp          : 63073
+*/
+// MSSQL 10144 [Service detection]:Microsoft SQL Server TCP/IP Listener Detection
+/*
+The remote SQL Server version is 9.0.4060.0.
+*/
+
+//10144 [Service detection]:Microsoft SQL Server TCP/IP Listener Detection
+/*
+The remote SQL Server version is 10.50.2550.0.
+*/
 function processMSSQLPluginOutput($plugin_output, $pluginID) 
 {
 	global $database_version;global $mssql_path;global $mssql_named_instance;global $mssql_recommended_version;
@@ -299,7 +293,7 @@ function processMSSQLPluginOutput($plugin_output, $pluginID)
 						$database_version[$instance_count] = trim($typeArray[1]);
 						break;
 					case "Path":
-						$mssql_path[$instance_count] = trim($typeArray[1]);
+						$mssql_path[$instance_count] = trim($typeArray[1]) . ":" . trim($typeArray[2]);
 						break;
 					case "Named Instance":
 						$mssql_named_instance[$instance_count] = trim($typeArray[1]);
@@ -378,6 +372,25 @@ function processDNSPluginOutput($plugin_output, $pluginID)
 	}
 }
 
+function processIKEPluginOutput($plugin_output, $pluginID)
+{
+	global $ms_dns_reported_version;global $ms_dns_extended_version;
+	$plugin_output_array = explode("\n",$plugin_output);
+	foreach ($plugin_output_array as $poA){
+		$typeArray = explode(":",$poA);
+		switch (trim($typeArray[0])) {
+			case "Reported version":
+				$ms_dns_reported_version = trim($typeArray[1]);
+				break;
+			case "Extended version":
+				$ms_dns_extended_version = trim($typeArray[1]);
+				break;
+			default:
+				//echo $typeArray[0] . "<br>";
+				break;				
+		}
+	}
+}
 function processSNMPPluginOutput($plugin_output, $pluginID)
 {
 	global $sysDescr; global $sysObjectID; global $sysUptime; global $sysContact; global $sysName; global $sysLocation; global $sysServices;
@@ -441,6 +454,28 @@ function processSSHPluginOutput($plugin_output, $pluginID)
 	}
 }
 
+// MySQL 10719 [Databases]:MySQL Server Detection
+/*
+Version  : 5.1.44-community
+Protocol : 10
+Server Status : SERVER_STATUS_AUTOCOMMIT
+Server Capabilities : 
+  CLIENT_LONG_PASSWORD (new more secure passwords)
+  CLIENT_FOUND_ROWS (Found instead of affected rows)
+  CLIENT_LONG_FLAG (Get all column flags)
+  CLIENT_CONNECT_WITH_DB (One can specify db on connect)
+  CLIENT_NO_SCHEMA (Don&#039;t allow database.table.column)
+  CLIENT_COMPRESS (Can use compression protocol)
+  CLIENT_ODBC (ODBC client)
+  CLIENT_LOCAL_FILES (Can use LOAD DATA LOCAL)
+  CLIENT_IGNORE_SPACE (Ignore spaces before &quot;(&quot;
+  CLIENT_PROTOCOL_41 (New 4.1 protocol)
+  CLIENT_INTERACTIVE (This is an interactive client)
+  CLIENT_SIGPIPE (IGNORE sigpipes)
+  CLIENT_TRANSACTIONS (Client knows about transactions)
+  CLIENT_RESERVED (Old flag for 4.1 protocol)
+  CLIENT_SECURE_CONNECTION (New 4.1 authentication)
+*/
 function processMYSQLPluginOutput($plugin_output, $pluginID)
 {
 	global $mysql_version; global $mysql_protocol; global $mysql_server_status; global $mysql_server_capabilities;
@@ -462,7 +497,7 @@ function processMYSQLPluginOutput($plugin_output, $pluginID)
 				$poA_current_index = key($plugin_output_array);
 				$mysql_server_capabilities = "";
 				for($x=$poA_current_index;$x<=$poA_last_index;$x++){
-					$mysql_server_capabilities .= $plugin_output_array[$x];
+					$mysql_server_capabilities .= $plugin_output_array[$x] . "\n";
 				}
 				break;			
 			default:
