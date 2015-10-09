@@ -1,20 +1,24 @@
 <?php
 include('../main/config.php');
 $db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
-$agency_temp = explode(":", $_POST["agency"]);
-$v1 = new Valitron\Validator($agency_temp);
-$v1->rule('slug', '0');//validate $agency
-$v1->rule('regex','1', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
-$v1->rule('numeric',['2','3']);//validate scan_start and scan_end
-if(!$v1->validate()) {
-    print_r($v1->errors());
-	exit;
-} 
+if(isset($_POST["agency"])){
 
-$agency = $agency_temp[0];
-$report_name = $agency_temp[1];
-$scan_start = $agency_temp[2];
-$scan_end = $agency_temp[3];
+	$agency_temp = explode(":", $_POST["agency"]);
+	$v1 = new Valitron\Validator($agency_temp);
+	$v1->rule('slug', '0');//validate $agency
+	$v1->rule('regex','1', '/^([\w\s_.\[\]():;@-])+$/'); //regex includes alpha/numeric, space, underscore, dash, period, white space, brackets, parentheses, colon, "at" symbol, and semi-colon
+	$v1->rule('numeric',['2','3']);//validate scan_start and scan_end
+	if(!$v1->validate()) {
+		print_r($v1->errors());
+		exit;
+	}
+ 
+	$agency = $agency_temp[0];
+	$report_name = $agency_temp[1];
+	$scan_start = $agency_temp[2];
+	$scan_end = $agency_temp[3];
+}
+
 $agency_sql = 	"SELECT DISTINCT 
 					nessus_results.agency, 
 					nessus_results.report_name, 
@@ -25,7 +29,7 @@ $agency_sql = 	"SELECT DISTINCT
 				";
 $agency_stmt = $db->prepare($agency_sql);
 $agency_stmt->execute();
-if($agency != ""){
+if(isset($agency)){
 	$host_sql = "SELECT DISTINCT
 					nessus_tags.host_name,
 					nessus_tags.ip_addr,
@@ -117,7 +121,7 @@ select {font-family: courier new}
 	  <form name="f2" action="report.php" method="post">
 		<?php
 		//host list
-		if($agency == ""){
+		if(!isset($agency)){
 		?>
 			<p align="center">[ Hosts ]</p>
 			<SELECT MULTIPLE NAME="host" SIZE="25" style="width:700px;margin:5px 0 5px 0;">
@@ -151,7 +155,7 @@ select {font-family: courier new}
 		?>
 		<?php
 		//nessus plugin families
-		if($agency == ""){
+		if(!isset($agency)){
 		?>
 			<p align="center">[ Plugin Families ]</p>
 			<SELECT MULTIPLE NAME="family" SIZE="15" style="width:700px;margin:5px 0 5px 0;">
@@ -200,10 +204,10 @@ AGENCY OR COMPANY THAT YOU WORK FOR
 	<br><table>
 	  <TR>
 		<TD>
-		<input type="hidden" name="agency" value="<?php echo "$agency";?>">
-		<input type="hidden" name="report_name" value="<?php echo "$report_name";?>">
-		<input type="hidden" name="scan_start" value="<?php echo "$scan_start";?>">
-		<input type="hidden" name="scan_end" value="<?php echo "$scan_end";?>">
+		<input type="hidden" name="agency" value="<?php if(isset($agency)) { echo "$agency"; }?>">
+		<input type="hidden" name="report_name" value="<?php if(isset($report_name)) { echo "$report_name"; }?>">
+		<input type="hidden" name="scan_start" value="<?php if(isset($scan_start)) { echo "$scan_start"; }?>">
+		<input type="hidden" name="scan_end" value="<?php if(isset($scan_end)) { echo "$scan_end"; }?>">
 		<INPUT TYPE="SUBMIT" NAME="submithost" VALUE="SUBMIT">
 		</TD>
 	  </TR>
