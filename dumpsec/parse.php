@@ -67,7 +67,7 @@ if($filetype == "user"){
 				} else {
 					$LastLogonAgeDays = "none";
 				}
-				$username = addslashes($data[0]);
+				$username = addslashes(strtolower($data[0]));
 				$fullname = addslashes($data[1]);
 				$comment = addslashes($data[3]);
 				$homedir = addslashes($data[5]);
@@ -130,9 +130,9 @@ if($filetype == "group"){
 				$Host = trim($Row1Array[9], "\\");
 			}
 			$row++;
-			$groupname = addslashes($data[0]); 
+			$groupname = addslashes(strtolower($data[0])); 
 			$comment = addslashes($data[1]);
-			$groupmember = addslashes($data[3]);
+			$groupmember = addslashes(strtolower($data[3]));
 			if ($row > 4) {
 				$sql = "INSERT INTO dumpsec_group_table (
 					Agency,

@@ -148,5 +148,12 @@
 		<td></td>
 		<td width="95%"><a href="../appscan/create_report.php">AppScan Report</a></td>
 	</tr>
-
+	<tr><td colspan="2"><hr></td></tr>
+	<tr>
+		<td colspan="2" width="150">Compare Results</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td width="95%"><a href="../compare/create_compare_nessus_nmap_portReport.php">Ports Scan (Nmap/Nessus)</a></td>
+	</tr>
 </table>

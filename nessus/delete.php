@@ -37,10 +37,10 @@ if(isset($report)){
 		
 		$delete_results_sql = "DELETE FROM nessus_results
 						WHERE
-							nessus_results.agency = '$agency' AND 
-							nessus_results.report_name = '$report_name' AND
-							nessus_results.scan_start = '$scan_start' AND
-							nessus_results.scan_end = '$scan_end'
+							nessus_results.agency = ? AND 
+							nessus_results.report_name = ? AND
+							nessus_results.scan_start = ? AND
+							nessus_results.scan_end = ?
 						";
 		$delete_results_data = array($agency, $report_name, $scan_start, $scan_end);
 		$delete_results_stmt = $db->prepare($delete_results_sql);

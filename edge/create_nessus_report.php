@@ -25,7 +25,7 @@ select {font-family: courier new}
 <table style="text-align: left; width: 950px;" border="0" cellpadding="0" cellspacing="0">
     <tr>
       <td colspan="2">
-	  <form action="edge2.php" method="post">
+	  <form action="edge4.php" method="post">
 	  <p align="center">[ Nessus Reports ]</p>
 	  <p align="center">Select Agency/Report name that you uploaded to the database.</p>
   	  <select NAME="agency">
@@ -53,6 +53,7 @@ select {font-family: courier new}
 	  </select>
  	  </td>
 	</tr>
+	<tr><td colspan="2"><p><input type="text" name="custom_list"></p></td></tr>
 	<tr><td colspan="2">
 	 <table>
           <tr>
