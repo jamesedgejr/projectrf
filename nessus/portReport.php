@@ -125,7 +125,7 @@ $isSSH = $_POST["isSSH"];
 $isSNMP = $_POST["isSNMP"];
 $isMYSQL = $_POST["isMYSQL"];
 $isVPN = $_POST["isVPN"];
-$pluginArray = array();
+$pluginArray = array("22964");
 if($isHTTP){ array_push($pluginArray, "24260","57034");}
 if($isMSSQL){ array_push($pluginArray, "11217","10674");}
 if($isMYSQL){ array_push($pluginArray, "10719");}
@@ -194,8 +194,12 @@ while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 	$port = $row['port'];
 	$service = $row['service'];
 	$protocol = $row['protocol'];
+	$plugin_output = $row['plugin_output'];
 	$database_version = $mssql_path = $mssql_named_instance = $mssql_recommended_version = $mssql_server_name = $mssql_is_clustered = $mssql_tcp = $mssql_np = $mysql_protocol = $mysql_server_status = $mysql_server_capabilities = array();
 
+	if($pluginID == "22964"){//																						EXTRA1
+		fputcsv($fh, array($fqdn,$netbios,$ip_addr,$operating_system,"$port/$protocol",$service,$plugin_output,"generic plugin"));
+	}
 	if($pluginID =="11217"){
 		$instance_count = processMSSQLPluginOutput($row['plugin_output'], $pluginID);
 		for($x = 1;$x<=$instance_count;$x++){
