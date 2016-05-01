@@ -68,7 +68,15 @@
 	</tr>
 	<tr>
 		<td></td>
+		<td width="95%"><a href="../dumpsec/upload_password.php">Import Password Results</a></td>
+	</tr>
+	<tr>
+		<td></td>
 		<td width="95%"><a href="../dumpsec/create_report.php">Create DumpSec Report</a></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td width="95%"><a href="../dumpsec/create_password_report.php">Create Password Report</a></td>
 	</tr>
 	<tr>
 	<tr><td colspan="2"><hr></td></tr>
