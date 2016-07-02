@@ -14,6 +14,15 @@ a:hover {text-decoration: underline}
 	</td>
 	<td valign="top">
 <?php
+include('../main/config.php');
+$db = new PDO("mysql:host=$dbhost;dbname=$dbname;charset=utf8", $dbuser, $dbpass);
+$v = new Valitron\Validator($_POST);
+$v->rule('slug', 'agency');
+if(!$v->validate()) {
+
+    print_r($v->errors());
+	exit;
+} 
 ini_set("memory_limit","256M");
 $filename = $_FILES['userfile']['name'];
 $filetype = $_POST["filetype"];
@@ -32,16 +41,11 @@ if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
 		echo "</pre><hr>";
 		exit; 
 }
-
-
-include('../main/config.php'); 
-require_once( 'DB.php' );
-$db = DB::connect( "mysql://$dbuser:$dbpass@$dbhost/$dbname" ); 
+$agency = $_POST["agency"];
+$Host = $FileDate = ""; 
 
 if($filetype == "user"){
 	$row = 1;
-	$agency = $_POST["agency"];
-	$Host = $FileDate = ""; 
 	if (($handle = fopen($uploadfile, "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
 			if($row == 1){
@@ -52,10 +56,29 @@ if($filetype == "user"){
 			$row++; 
 			if ($row > 4) {
 				$FileDateUTC = strtotime($FileDate);
-				$LastLogonTime = $data[17];
+				$UserName = addslashes($data[0]);
+				$FullName = addslashes($data[1]);
+				$AccountType = $data[2];
+				$Comment = addslashes($data[3]);
+				$HomeDrive = $data[4];
+				$HomeDir = addslashes($data[5]);
+				$Profile = $data[6];
+				$LogonScript = $data[7];
+				$Workstations = $data[8];
+				$PswdCanBeChanged = trim($data[9]);
 				$PswdLastSetTime = $data[10];
-				$LastLogonTimeUTC = strtotime($LastLogonTime);
-				$PswdLastSetTimeUTC = strtotime($PswdLastSetTime);
+					$PswdLastSetTimeUTC = strtotime($PswdLastSetTime);
+				$PswdRequired = trim($data[11]);
+				$PswdExpires = trim($data[12]);
+				$PswdExpiresTime = $data[13];
+				$AcctDisabled = trim($data[14]);
+				$AcctLockedOut = trim($data[15]);
+				$AcctExpiresTime = $data[16];
+				$LastLogonTime = $data[17];
+					$LastLogonTimeUTC = strtotime($LastLogonTime);
+				$LastLogonServer = $data[18];
+				$LogonHours = $data[19];
+				$Sid = $data[20];
 				
 				if($PswdLastSetTimeUTC != "") {
 					$PasswordAgeDays = ($FileDateUTC - $PswdLastSetTimeUTC) / 86400;
@@ -67,10 +90,9 @@ if($filetype == "user"){
 				} else {
 					$LastLogonAgeDays = "none";
 				}
-				$username = addslashes($data[0]);
-				$fullname = addslashes($data[1]);
-				$comment = addslashes($data[3]);
-				$homedir = addslashes($data[5]);
+
+				
+				
 				$sql = "INSERT INTO dumpsec_user_table (
 						Agency,
 						FileDate,
@@ -96,22 +118,13 @@ if($filetype == "user"){
 						LastLogonTime,
 						LastLogonServer,
 						LogonHours,
-						RasDialin,
-						RasCallback,
-						RasCallbackNumber,
 						PasswordAgeDays,
 						LastLogonAgeDays
-				) VALUES (
-						'$agency',
-						'$FileDate', 
-						'$filename',
-						'$Host',
-						'$username','$fullname','$data[2]','$comment','$data[4]','$homedir',
-						'$data[6]','$data[7]','$data[8]','$data[9]','$data[10]','$data[11]',
-						'$data[12]','$data[13]','$data[14]','$data[15]','$data[16]','$data[17]',
-						'$data[18]','$data[19]','$data[20]','$data[21]','$data[22]','$PasswordAgeDays','$LastLogonAgeDays'
-				)";
-				$results = $db->query($sql);ifDBError($results);
+				) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+				";
+				$stmt = $db->prepare($sql);
+				$sql_data = array($agency, $FileDate, $filename, $Host, $UserName, $FullName, $AccountType, $Comment, $HomeDrive, $HomeDir, $Profile, $LogonScript, $Workstations, $PswdCanBeChanged, $PswdLastSetTime, $PswdRequired, $PswdExpires, $PswdExpiresTime, $AcctDisabled, $AcctLockedOut, $AcctExpiresTime, $LastLogonTime, $LastLogonServer, $LogonHours, $PasswordAgeDays, $LastLogonAgeDays);
+				$stmt->execute($sql_data);
 			}// end if
 		}// end while
 		fclose($handle);
@@ -120,8 +133,6 @@ if($filetype == "user"){
 
 if($filetype == "group"){
 	$row = 1;
-	$agency = $_POST["agency"];
-	$Host = $FileDate = ""; 
 	if (($handle = fopen($uploadfile, "r")) !== FALSE) {
 		while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
 			if($row == 1){
@@ -130,9 +141,11 @@ if($filetype == "group"){
 				$Host = trim($Row1Array[9], "\\");
 			}
 			$row++;
-			$groupname = addslashes($data[0]); 
-			$comment = addslashes($data[1]);
-			$groupmember = addslashes($data[3]);
+			$GroupName = addslashes($data[0]); 
+			$Comment = addslashes($data[1]);
+			$GroupType = $data[2];
+			$GroupMember = addslashes($data[3]);
+			$MemberType = $data[4];
 			if ($row > 4) {
 				$sql = "INSERT INTO dumpsec_group_table (
 					Agency,
@@ -144,14 +157,11 @@ if($filetype == "group"){
 					GroupType,
 					GroupMember,
 					MemberType
-				) VALUES (
-					'$agency',
-					'$FileDate', 
-					'$filename',
-					'$Host',
-					'$groupname','$comment','$data[2]','$groupmember','$data[4]'
-				)";
-				$results = $db->query($sql);ifDBError($results);
+				) VALUES (?,?,?,?,?,?,?,?,?)
+				";
+				$stmt = $db->prepare($sql);
+				$sql_data = array($agency, $FileDate, $filename, $Host, $GroupName, $Comment, $GroupType, $GroupMember, $MemberType);
+				$stmt->execute($sql_data);
 			}
 		} //end while
 		fclose($handle);
@@ -162,17 +172,4 @@ if($filetype == "group"){
 </td></tr></table>
 </body></html>
 
-<?php
 
-function ifDBError($error)
-{
-	if (PEAR::isError($error)) {
-		echo 'Standard Message: ' . $error->getMessage() . "</br>";
-		echo 'Standard Code: ' . $error->getCode() . "</br>";
-		echo 'DBMS/User Message: ' . $error->getUserInfo() . "</br>";
-		echo 'DBMS/Debug Message: ' . $error->getDebugInfo() . "</br>";
-		exit;
-	} 
-}
-
-?>
